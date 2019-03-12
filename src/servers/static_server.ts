@@ -1,8 +1,6 @@
-import { ApolloServer, gql, PubSub, makeExecutableSchema } from 'apollo-server'
+import { ApolloServer, gql, PubSub } from 'apollo-server'
 import { SmartContractEngine } from '../../script_execution/src/adapter'
 import axios from 'axios'
-import { generateSchema } from './schema_generator'
-import { currentPort, addServerToTracker, serverTracker } from './proxy'
 
 const {
   EXECUTION_SERVICE_URI
@@ -53,15 +51,6 @@ export function buildApiServer(pubSub: PubSub) {
           // Check for existing instance running that contract. If it doesn't exist,
           // create it, otherwise do nothing
           const port = currentPort
-          new ApolloServer({
-            schema: makeExecutableSchema(generateSchema(contractAddress, engine, pubSub)),
-            introspection: true
-          })
-            .listen({ port })
-            .then(({ url }) => {
-              addServerToTracker({ port, contractAddress, engine, contractName })
-              console.log(`🚀 ${contractAddress} server ready at ${url}`)
-            })
         },
       },
       Subscription: {

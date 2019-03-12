@@ -1,5 +1,5 @@
 import { PubSub } from 'apollo-server'
-import { buildApiServer } from './server'
+import { buildApiServer } from './servers/static_server'
 
 const {
   CARDANO_API_PORT,
