@@ -52,6 +52,8 @@
   "dependencies": {
     "apollo-server": "^2.4.8",
     "axios": "^0.18.0",
+    "decompress": "^4.2.0",
+    "rimraf": "^2.6.3",
     "tcp-port-used": "^1.0.1"
   }
 }

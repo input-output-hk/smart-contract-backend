@@ -1,6 +1,7 @@
 import { ApolloServer, gql, PubSub } from 'apollo-server'
 import { SmartContractEngine } from '../../script_execution/src/adapter'
 import axios from 'axios'
+import { getLoadedContracts } from './contract_servers';
 
 const {
   EXECUTION_SERVICE_URI
@@ -28,7 +29,7 @@ export function buildApiServer(pubSub: PubSub) {
             contracts: [Contract]!
         }
         type Mutation {
-            addSchema(newSchema: String!, contractAddress: String!, engine: String!, contractName: String!): Boolean
+            initialiseContract(contractAddress: String!, bundleLocation: String!): Boolean
             submitTx(signedTx: String!, engine: String!): Boolean
         }
         type Subscription {
@@ -38,7 +39,7 @@ export function buildApiServer(pubSub: PubSub) {
     resolvers: {
       Query: {
         contracts() {
-          return serverTracker
+          return getLoadedContracts()
         }
       },
       Mutation: {
@@ -47,7 +48,7 @@ export function buildApiServer(pubSub: PubSub) {
             .then(() => true)
             .catch(() => false)
         },
-        addSchema(_, { contractAddress, engine, contractName }: { contractAddress: string, engine: SmartContractEngine, contractName: string }) {
+        initialiseContract(_, { contractAddress, bundleLocation }: { contractAddress: string, bundleLocation: string }) {
           // Check for existing instance running that contract. If it doesn't exist,
           // create it, otherwise do nothing
           const port = currentPort
