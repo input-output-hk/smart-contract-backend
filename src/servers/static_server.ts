@@ -1,14 +1,13 @@
 import { ApolloServer, gql, PubSub } from 'apollo-server'
-import { SmartContractEngine } from '../../script_execution/src/adapter'
 import axios from 'axios'
-import { getLoadedContracts } from './contract_servers';
+import { getLoadedContracts, findServerByAddress, addServerToTracker } from './contract_servers';
+import { loadBundle } from '../bundles';
 
 const {
   EXECUTION_SERVICE_URI
 } = process.env
 
 export function buildApiServer(pubSub: PubSub) {
-
   return new ApolloServer({
     typeDefs: gql`
         type TxInfo {
@@ -48,10 +47,17 @@ export function buildApiServer(pubSub: PubSub) {
             .then(() => true)
             .catch(() => false)
         },
+        // TODO: We need to keep track of the number of clients connected to a
+        // contact, so we know when we can tear it down
         initialiseContract(_, { contractAddress, bundleLocation }: { contractAddress: string, bundleLocation: string }) {
-          // Check for existing instance running that contract. If it doesn't exist,
-          // create it, otherwise do nothing
-          const port = currentPort
+          const server = findServerByAddress(contractAddress)
+          if (server) {
+            return true
+          }
+
+          return loadBundle(contractAddress, bundleLocation)
+            .then(({ graphQlSchema, engine }) => addServerToTracker({ graphQlSchema, engine, contractAddress }))
+            .then(() => true)
         },
       },
       Subscription: {

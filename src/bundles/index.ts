@@ -11,7 +11,7 @@
 */
 
 import axios from 'axios'
-import { checkFolderExists, createDirectory, writeFile } from './fs';
+import { checkFolderExists, createDirectory, writeFile, removeDirectoryWithContents } from './fs';
 const decompress = require('decompress')
 
 export interface ContractMeta {
@@ -38,7 +38,7 @@ export async function getBundleInfo(contractAddress: string): Promise<{ bundlePa
   return { bundlePath, bundleDir, exists: bundleExists }
 }
 
-export async function loadBundle(contractAddress: string, location: string): Promise<{ graphQlSchema: any }> {
+export async function loadBundle(contractAddress: string, location: string): Promise<{ graphQlSchema: any, engine: 'solidity' | 'plutus' }> {
   const { bundlePath, bundleDir, exists } = await getBundleInfo(contractAddress)
   if (!exists) {
     await fetchAndWriteBundle({
@@ -49,5 +49,8 @@ export async function loadBundle(contractAddress: string, location: string): Pro
   }
 
   const graphQlSchema = require(`${bundleDir}/graphQlSchema.js`)
-  return { graphQlSchema }
+  const contractMeta: ContractMeta = require(`${bundleDir}/meta.json`)
+  await removeDirectoryWithContents(bundleDir)
+
+  return { graphQlSchema, engine: contractMeta.engine }
 }
