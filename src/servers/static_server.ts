@@ -19,9 +19,7 @@ export function buildApiServer(pubSub: PubSub) {
             txInfo: [TxInfo]
         }
         type Contract {
-          contractName: String
           engine: String
-          abi: String
           contractAddress: String
         }
         type Query {
