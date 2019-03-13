@@ -1,49 +1,16 @@
-import { ApolloServer, makeExecutableSchema, ServerInfo } from 'apollo-server'
+import { ApolloServer, makeExecutableSchema } from 'apollo-server'
+import { ContractServer, availablePorts, contractServers } from '../storage'
 const tcpPortUsed = require('tcp-port-used')
 
-const {
-  LOWER_PORT_BOUND,
-  UPPER_PORT_BOUND
-} = process.env
-
-interface ContractServer {
-  port: number
-  contractAddress: string
-  engine: 'plutus' | 'solidity'
-  graphQlSchema: any
-  graphQlInstance: ServerInfo
-}
-
-interface PortAccess {
-  [port: number]: boolean
-}
-
-export let serverTracker: ContractServer[] = []
-export let portRange = initialisePortReferences(
-  Number(LOWER_PORT_BOUND),
-  Number(UPPER_PORT_BOUND)
-)
-
-export function initialisePortReferences (lowerPortBound: number, upperPortBound: number): PortAccess {
-  let portRange: PortAccess = {}
-
-  while (lowerPortBound <= upperPortBound) {
-    portRange[lowerPortBound] = false
-    lowerPortBound++
-  }
-
-  return portRange
-}
-
-// TODO: This function side-effects portRange and serverTracker. Reconsider
 export async function addServerToTracker (contractInfo: Partial<ContractServer>): Promise<void> {
-  const [portKey] = Object.entries(portRange).find(([_, inUse]) => inUse === false)
+  const ports = availablePorts.findAll()
+  const [portKey] = Object.entries(ports).find(([_, inUse]) => inUse === false)
   if (!portKey) {
     throw new Error('Port range consumed')
   }
 
   const port = Number(portKey)
-  portRange[port] = true
+  availablePorts.update(port, true)
 
   const portAvailable = await tcpPortUsed.check(port, '127.0.0.1')
   if (!portAvailable) {
@@ -61,26 +28,23 @@ export async function addServerToTracker (contractInfo: Partial<ContractServer>)
     graphQlInstance
   } as ContractServer
 
-  serverTracker.push(server)
+  contractServers.create(server)
 }
 
-export function removeServerFromTracker (contractAddress: string) {
-  const contractServer = findServerByAddress(contractAddress)
+export function closeAndRemoveServer (contractAddress: string) {
+  const contractServer = contractServers.find(contractAddress)
   return new Promise((resolve, reject) => {
     contractServer.graphQlInstance.server.close((err: Error) => {
       if (err) return reject(err)
-      serverTracker = serverTracker.filter((st) => st.contractAddress !== contractAddress)
+      contractServers.remove(contractAddress)
       resolve()
     })
   })
 }
 
-export function findServerByAddress (contractAddress: string): ContractServer {
-  return serverTracker.find(server => server.contractAddress === contractAddress)
-}
-
 export function getLoadedContracts (): Partial<ContractServer>[] {
-  return serverTracker.map(st => {
+  const servers = contractServers.findAll()
+  return servers.map(st => {
     return {
       contractAddress: st.contractAddress,
       engine: st.engine
