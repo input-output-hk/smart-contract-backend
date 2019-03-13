@@ -18,7 +18,7 @@ export const availablePorts: StorageInteractions<portAccess.PortAccess, number, 
   find: portAccess.find,
   findAll: portAccess.findAll,
   update: portAccess.update,
-  remove: () => { throw new Error('No delete operation for Port Access storage') }
+  remove: () => { throw new Error('No remove operation for Port Access storage') }
 }
 
 export const contractServers: StorageInteractions<serverTracker.ContractServer[], string, serverTracker.ContractServer> = {
