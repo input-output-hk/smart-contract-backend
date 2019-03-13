@@ -1,26 +1,25 @@
 import { expect, use } from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
+import { fetchAndWriteBundle, loadBundle, getBundleInfo } from '.'
+import { removeDirectoryWithContents, checkFolderExists } from './fs'
 use(chaiAsPromised)
-import { fetchAndWriteBundle, loadBundle, getBundleInfo, ContractMeta } from '.'
-import { removeDirectoryWithContents } from './fs';
 const nock = require('nock')
-
-const bundle = 'H4sIALeciFwAA+3T32rCMBQG8F37FFlv3EAkqbVCYXd7AXEPYNRjq6R/lqRTGX33Je0obOB2Mycb3+8iIacnIS39Ui2rbK4W64xyOd6bmwvgnMdRxPw8i6ftzMNu3QqnEyYmURQKEYchZ1xMw1l0w/glLvNZbazU7ipG5nsytizO9Lm27faLc7pXYf38R+TlplY0pmNVamvYA3sdMGZPFT3S1iQsfVZLV+hKbF6TPrUdXkZKlQlbWL0r0tu22LhxOXKDJlOqF9LuiK693Zp83Ht336/9Dlvrgg0PpVab4Xu56U9tBs21P9W/lJP1sT/72/+E7/IveNznXwjh8h/xCfL/K3wAAyrSXUFBwoJK1bY2waitHmldW7lS9OTC758epMm7Z5k0ma/I1XoTIJoAAAAAAAAAAAAAAAAAAAAA1/MGI4n2JwAoAAA='
+const bundle = 'H4sIAB6kiFwAA+3T3WrCMBQHcK/7FFlv3EAkibVCYXd7AXEPYNSjVdIPknQqo+++tBVhA7ebOdn2/10knJOckJSejVFlOtWzZUqZGu5s7wo453EUsWaexON25rKLW3IsmBhFkRRScikZF2MZT3qMX+MyH1XWKeOvYlW2I+uK/MI+v229/uSc7insPP8SWbGqNA3pUBbGWfbIXgPG3LGkJ1rbhM191MVsWpE5tsuNlLQuEjZzZptv7tpk7cf5wA+GbKFfyPj6bntbmryvvX84x02Fq0zO+vvC6FX/lK7Pp9ZBHdz6Q/1RGbmm7S/+9t/hq/4XPD71v4iFEL7/Iz6K0P8/oenBkPLNNqcwYWGpK1fZcNBmD7SsnFpoevb936zulc26tVTZtMmoxXIVBvWtXwEAAAAAAAAAAAAAAAAAAADwf70BWHGY/wAoAAA='
 const bundleContractAddress = 'abcd'
 
 describe('bundle management', () => {
+  beforeEach(() => {
+    nock('http://localhost:22222')
+      .get('/')
+      .reply(200, { bundle })
+  })
+
+  afterEach(async () => {
+    nock.cleanAll()
+    await removeDirectoryWithContents(`${__dirname}/${bundleContractAddress}`)
+  })
+
   describe('fetchAndWriteBundle', () => {
-    beforeEach(() => {
-      nock('http://localhost:22222')
-        .get('/')
-        .reply(200, { bundle })
-    })
-
-    afterEach(async () => {
-      nock.cleanAll()
-      await removeDirectoryWithContents(`${__dirname}/${bundleContractAddress}`)
-    })
-
     it('throws an error if the bundle isnt available at the specified location', async () => {
       const badLocationError = fetchAndWriteBundle({
         bundlePath: `${__dirname}/${bundleContractAddress}/${bundleContractAddress}.tar.gz`,
@@ -37,18 +36,30 @@ describe('bundle management', () => {
         bundleDir: `${__dirname}/${bundleContractAddress}`,
         location: 'http://localhost:22222'
       })
+
+      const bundleDirExists = await checkFolderExists(`${__dirname}/${bundleContractAddress}`)
+      expect(bundleDirExists).to.eql(true)
     })
   })
 
   describe('getBundleInfo', () => {
+    it('returns the correct bundle info', async () => {
+      const expectedInfo = {
+        bundlePath: `${__dirname}/${bundleContractAddress}/${bundleContractAddress}.tar.gz`,
+        bundleDir: `${__dirname}/${bundleContractAddress}`,
+        exists: false
+      }
 
+      const bundleInfo = await getBundleInfo(bundleContractAddress)
+      expect(bundleInfo).to.eql(expectedInfo)
+    })
   })
 
   describe('loadBundle', () => {
-
-  })
-
-  describe('unloadBundle', () => {
-
+    it('returns the expect schema and meta data', async () => {
+      const { graphQlSchema, engine } = await loadBundle(bundleContractAddress, 'http://localhost:22222')
+      expect(engine).to.eql('plutus')
+      expect(Object.keys(graphQlSchema)).to.eql(['typeDefs', 'resolvers'])
+    })
   })
 })
