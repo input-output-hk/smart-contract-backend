@@ -9,7 +9,8 @@
     "dev:serve": "node --inspect -r dotenv/config -r ts-node/register -- src/index.ts",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint --fix \"src/**/*.ts\"",
-    "start": "npm run build && node -r dotenv/config dist/index.js"
+    "start": "npm run build && node -r dotenv/config dist/index.js",
+    "test": "npm run lint && ts-mocha --exit \"src/**/*.spec.ts\""
   },
   "repository": {
     "type": "git",
@@ -53,6 +54,8 @@
     "apollo-server": "^2.4.8",
     "axios": "^0.18.0",
     "decompress": "^4.2.0",
+    "dotenv": "^6.2.0",
+    "graphql": "^14.1.1",
     "rimraf": "^2.6.3",
     "tcp-port-used": "^1.0.1"
   }

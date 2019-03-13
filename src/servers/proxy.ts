@@ -1,11 +1,11 @@
 import * as http from 'http'
-import { findServerByAddress } from './contract_servers';
+import { findServerByAddress } from './contract_servers'
 const httpProxy = require('http-proxy')
 const proxy = httpProxy.createProxyServer({})
 
 const {
   CARDANO_API_PORT,
-  CONTRACT_PROXY_PORT,
+  CONTRACT_PROXY_PORT
 } = process.env
 
 http.createServer(function (req, res) {

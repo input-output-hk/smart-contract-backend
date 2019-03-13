@@ -1,39 +1,39 @@
 import * as fs from 'fs'
 const rimraf = require('rimraf')
 
-export function checkFolderExists(path: string): Promise<boolean> {
-  return new Promise((res, rej) => {
+export function checkFolderExists (path: string): Promise<boolean> {
+  return new Promise((resolve, reject) => {
     fs.stat(path, (err, stats) => {
-      if (err) return res(false)
-      if (stats.isDirectory()) return res(true)
-      return res(false)
+      if (err) return resolve(false)
+      if (stats.isDirectory()) return resolve(true)
+      return resolve(false)
     })
   })
 }
 
-export function createDirectory(path: string) {
-  return new Promise((res, rej) => {
+export function createDirectory (path: string) {
+  return new Promise((resolve, reject) => {
     fs.mkdir(path, (err) => {
-      if (err) return rej(err)
-      return res()
+      if (err) return reject(err)
+      return resolve()
     })
   })
 }
 
-export function removeDirectoryWithContents(path: string) {
-  return new Promise((res, rej) => {
+export function removeDirectoryWithContents (path: string) {
+  return new Promise((resolve, reject) => {
     rimraf(path, (err: Error, _: any) => {
-      if (err) return rej(err)
-      return res()
+      if (err) return reject(err)
+      return resolve()
     })
   })
 }
 
-export function writeFile(path: string, payload: Buffer) {
-  return new Promise((res, rej) => {
+export function writeFile (path: string, payload: Buffer) {
+  return new Promise((resolve, reject) => {
     fs.writeFile(path, payload, (err) => {
-      if (err) return rej(err)
-      return res()
+      if (err) return reject(err)
+      return resolve()
     })
   })
 }
