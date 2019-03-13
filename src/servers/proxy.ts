@@ -1,5 +1,5 @@
 import * as http from 'http'
-import { findServerByAddress } from './contract_servers'
+import { contractServers } from '../storage'
 const httpProxy = require('http-proxy')
 const proxy = httpProxy.createProxyServer({})
 
@@ -10,7 +10,7 @@ const {
 
 http.createServer(function (req, res) {
   const url = req.url
-  const server = findServerByAddress(url.substr(1))
+  const server = contractServers.find(url.substr(1))
 
   if (server) {
     proxy.web(req, res, { target: `http://localhost:${server.port}` })
