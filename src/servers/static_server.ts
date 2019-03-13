@@ -11,13 +11,8 @@ const {
 export function buildApiServer (pubSub: PubSub) {
   return new ApolloServer({
     typeDefs: gql`
-      type TxInfo {
-        key: String
-        value: String
-      }
       type SigningRequest {
         tx: String!
-        txInfo: [TxInfo]
       }
       type Contract {
         engine: String

@@ -8,15 +8,17 @@ const {
   CONTRACT_PROXY_PORT
 } = process.env
 
-http.createServer(function (req, res) {
-  const url = req.url
-  const server = contractServers.find(url.substr(1))
+export function initializeProxy () {
+  http.createServer(function (req, res) {
+    const url = req.url
+    const server = contractServers.find(url.substr(1))
 
-  if (server) {
-    proxy.web(req, res, { target: `http://localhost:${server.port}` })
-  } else {
-    proxy.web(req, res, { target: `http://localhost:${CARDANO_API_PORT}` })
-  }
-}).listen(CONTRACT_PROXY_PORT)
+    if (server) {
+      proxy.web(req, res, { target: `http://localhost:${server.port}` })
+    } else {
+      proxy.web(req, res, { target: `http://localhost:${CARDANO_API_PORT}` })
+    }
+  }).listen(CONTRACT_PROXY_PORT)
 
-console.log(`Contract Proxy running at ${CONTRACT_PROXY_PORT}`)
+  console.log(`Contract Proxy running at ${CONTRACT_PROXY_PORT}`)
+}
