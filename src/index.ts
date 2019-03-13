@@ -1,5 +1,6 @@
 import { PubSub } from 'apollo-server'
 import { buildApiServer } from './servers/static_server'
+import { contractServers, availablePorts } from './storage'
 
 const {
   CARDANO_API_PORT,
@@ -21,4 +22,8 @@ if (
 
 buildApiServer(new PubSub())
   .listen({ port: CARDANO_API_PORT })
-  .then(({ url }) => console.log(`🚀 Cardano API ready at ${url}`))
+  .then(({ url }) => {
+    contractServers.initialize()
+    availablePorts.initialize()
+    console.log(`🚀 Cardano API ready at ${url}`)
+  })

@@ -10,7 +10,8 @@
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint --fix \"src/**/*.ts\"",
     "start": "npm run build && node -r dotenv/config dist/index.js",
-    "test": "npm run lint && ts-mocha --exit \"src/**/*.spec.ts\""
+    "test": "npm run lint && ts-mocha --exit \"src/**/*.spec.ts\"",
+    "test:watch": "ts-mocha -w --exit \"src/**/*.spec.ts\""
   },
   "repository": {
     "type": "git",
@@ -33,11 +34,13 @@
   "homepage": "https://github.com/input-output-hk/smart-contract-api#readme",
   "devDependencies": {
     "@types/chai": "^4.1.7",
+    "@types/chai-as-promised": "^7.1.0",
     "@types/expect": "^1.20.4",
     "@types/mocha": "^5.2.6",
     "@types/node": "^11.11.1",
     "@typescript-eslint/eslint-plugin": "^1.4.2",
     "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
     "eslint": "^5.15.1",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.16.0",

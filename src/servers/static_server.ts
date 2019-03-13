@@ -1,7 +1,8 @@
 import { ApolloServer, gql, PubSub } from 'apollo-server'
 import axios from 'axios'
-import { getLoadedContracts, findServerByAddress, addServerToTracker } from './contract_servers'
+import { getLoadedContracts, addServer } from './contract_servers'
 import { loadBundle } from '../bundles'
+import { contractServers } from '../storage'
 
 const {
   EXECUTION_SERVICE_URI
@@ -10,28 +11,28 @@ const {
 export function buildApiServer (pubSub: PubSub) {
   return new ApolloServer({
     typeDefs: gql`
-        type TxInfo {
-          key: String
-          value: String
-        }
-        type SigningRequest {
-            tx: String!
-            txInfo: [TxInfo]
-        }
-        type Contract {
-          engine: String
-          contractAddress: String
-        }
-        type Query {
-            contracts: [Contract]!
-        }
-        type Mutation {
-            initialiseContract(contractAddress: String!, bundleLocation: String!): Boolean
-            submitTx(signedTx: String!, engine: String!): Boolean
-        }
-        type Subscription {
-            transactionSigningRequest(publicKey: String!): SigningRequest
-        }
+      type TxInfo {
+        key: String
+        value: String
+      }
+      type SigningRequest {
+        tx: String!
+        txInfo: [TxInfo]
+      }
+      type Contract {
+        engine: String
+        contractAddress: String
+      }
+      type Query {
+        contracts: [Contract]!
+      }
+      type Mutation {
+        initialiseContract(contractAddress: String!, bundleLocation: String!): Boolean
+        submitTx(signedTx: String!, engine: String!): Boolean
+      }
+      type Subscription {
+        transactionSigningRequest(publicKey: String!): SigningRequest
+      }
     `,
     resolvers: {
       Query: {
@@ -40,7 +41,7 @@ export function buildApiServer (pubSub: PubSub) {
         }
       },
       Mutation: {
-        submitTx (_, args) {
+        submitTx (_: any, args: any) {
           return axios.post(`${EXECUTION_SERVICE_URI}/submitTx`, args)
             .then(() => true)
             .catch(() => false)
@@ -50,20 +51,20 @@ export function buildApiServer (pubSub: PubSub) {
         // TODO: Consider a per contract initialisation lock to prevent
         // race conditions whereby we could boot multiple instances
         // of the same contract
-        initialiseContract (_, { contractAddress, bundleLocation }: { contractAddress: string, bundleLocation: string }) {
-          const server = findServerByAddress(contractAddress)
+        initialiseContract (_: any, { contractAddress, bundleLocation }: { contractAddress: string, bundleLocation: string }) {
+          const server = contractServers.find(contractAddress)
           if (server) {
             return true
           }
 
           return loadBundle(contractAddress, bundleLocation)
-            .then(({ graphQlSchema, engine }) => addServerToTracker({ graphQlSchema, engine, contractAddress }))
+            .then(({ graphQlSchema, engine }) => addServer({ graphQlSchema, engine, contractAddress }))
             .then(() => true)
         }
       },
       Subscription: {
         transactionSigningRequest: {
-          subscribe: (_, { publicKey }) => pubSub.asyncIterator(publicKey)
+          subscribe: (_: any, { publicKey }: { publicKey: string }) => pubSub.asyncIterator(publicKey)
         }
       }
     },

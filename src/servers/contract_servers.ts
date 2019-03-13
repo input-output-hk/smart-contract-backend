@@ -2,19 +2,19 @@ import { ApolloServer, makeExecutableSchema } from 'apollo-server'
 import { ContractServer, availablePorts, contractServers } from '../storage'
 const tcpPortUsed = require('tcp-port-used')
 
-export async function addServerToTracker (contractInfo: Partial<ContractServer>): Promise<void> {
+export async function addServer (contractInfo: Partial<ContractServer>): Promise<void> {
   const ports = availablePorts.findAll()
-  const [portKey] = Object.entries(ports).find(([_, inUse]) => inUse === false)
-  if (!portKey) {
+  const portEntry = Object.entries(ports).find(([_, inUse]) => inUse === false)
+  if (!portEntry) {
     throw new Error('Port range consumed')
   }
 
-  const port = Number(portKey)
+  const port = Number(portEntry[0])
   availablePorts.update(port, true)
 
-  const portAvailable = await tcpPortUsed.check(port, '127.0.0.1')
-  if (!portAvailable) {
-    return addServerToTracker(contractInfo)
+  const portInUse = await tcpPortUsed.check(port, '127.0.0.1')
+  if (portInUse) {
+    return addServer(contractInfo)
   }
 
   const graphQlInstance = await new ApolloServer({
