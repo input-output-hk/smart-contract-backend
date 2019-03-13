@@ -55,6 +55,7 @@
   },
   "dependencies": {
     "apollo-server": "^2.4.8",
+    "apollo-server-testing": "^2.4.8",
     "axios": "^0.18.0",
     "decompress": "^4.2.0",
     "dotenv": "^6.2.0",

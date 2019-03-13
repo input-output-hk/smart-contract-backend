@@ -1,7 +1,7 @@
 import { PubSub } from 'apollo-server'
-import { buildApiServer } from './servers/static_server'
-import { contractServers, availablePorts } from './storage'
-import { initializeProxy } from './servers/proxy'
+import { buildApiServer } from './lib/servers/static_server'
+import { contractServers, availablePorts } from './lib/storage'
+import { initializeProxy } from './lib/servers/proxy'
 
 const {
   CARDANO_API_PORT,
