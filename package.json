@@ -9,7 +9,9 @@
     "dev:serve": "node --inspect -r dotenv/config -r ts-node/register -- src/index.ts",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint --fix \"src/**/*.ts\"",
-    "start": "npm run build && node -r dotenv/config dist/index.js"
+    "start": "npm run build && node -r dotenv/config dist/index.js",
+    "test": "npm run lint && ts-mocha --exit \"src/**/*.spec.ts\"",
+    "test:watch": "ts-mocha -w --exit \"src/**/*.spec.ts\""
   },
   "repository": {
     "type": "git",
@@ -32,10 +34,13 @@
   "homepage": "https://github.com/input-output-hk/smart-contract-api#readme",
   "devDependencies": {
     "@types/chai": "^4.1.7",
+    "@types/chai-as-promised": "^7.1.0",
     "@types/expect": "^1.20.4",
     "@types/mocha": "^5.2.6",
+    "@types/node": "^11.11.1",
     "@typescript-eslint/eslint-plugin": "^1.4.2",
     "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
     "eslint": "^5.15.1",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.16.0",
@@ -47,5 +52,20 @@
     "ts-mocha": "^6.0.0",
     "ts-node": "^8.0.2",
     "typescript": "^3.3.3333"
+  },
+  "dependencies": {
+    "apollo-link": "^1.2.10",
+    "apollo-link-http": "^1.5.13",
+    "apollo-server": "^2.4.8",
+    "apollo-server-testing": "^2.4.8",
+    "axios": "^0.18.0",
+    "cross-fetch": "^3.0.1",
+    "decompress": "^4.2.0",
+    "dotenv": "^6.2.0",
+    "graphql": "^14.1.1",
+    "http-proxy": "^1.17.0",
+    "nock": "^10.0.6",
+    "rimraf": "^2.6.3",
+    "tcp-port-used": "^1.0.1"
   }
 }

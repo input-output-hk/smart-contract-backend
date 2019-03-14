@@ -1,9 +1,24 @@
 # Smart Contract API
-```
-npm install -S smart-contract-api
-// or
-yarn add smart-contract-api
-```
 
 ## Development
-TypeScript source, [StandardJS rules enforced using eslint](https://standardjs.com/#can-i-use-a-javascript-language-variant-like-flow-or-typescript)
+
+### Testing
+Unit tests are placed inline within the `lib` directory. Integrations tests a located in the `test` directory.
+
+Run the test suit with `npm test`
+
+### Lib
+#### Bundles
+Manages decoding, uncompressing, writing and removal of bundles from the file system,
+
+#### Servers
+##### Static Server
+Manages the initialization of new contracts, transaction submission and registers pubsub handlers
+
+##### Contract Server
+Dynamically booted GraphQL instances with schemas passed from the smart contract bundle.
+
+#### Storage
+Generic storage interface for the list of contract servers, and available ports for new contract servers.
+
+Storage is currently in-memory, but could easily be moved to sqlite or similar.
