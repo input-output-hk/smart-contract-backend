@@ -9,7 +9,7 @@ const {
 } = process.env
 
 export function initializeProxy () {
-  http.createServer(function (req, res) {
+  const server = http.createServer(function (req, res) {
     const url = req.url
     const server = contractServers.find(url.substr(1))
 
@@ -21,4 +21,6 @@ export function initializeProxy () {
   }).listen(CONTRACT_PROXY_PORT)
 
   console.log(`Contract Proxy running at ${CONTRACT_PROXY_PORT}`)
+
+  return server
 }
