@@ -42,7 +42,7 @@ describe('Integration Suite', () => {
   describe('Static Server', () => {
     describe('Query', () => {
       describe('Contracts', () => {
-        it('returns an empty array if there are no contract servers', async () => {
+        it('returns an empty array if there are no contracts initialized', async () => {
           const { query } = createTestClient(staticApi)
           const result = await query({
             query: gql`query {
@@ -56,11 +56,11 @@ describe('Integration Suite', () => {
           expect(result.data.contracts).to.eql([])
         })
 
-        it('returns loaded contracts when they exist', async () => {
+        it('returns initialized contracts', async () => {
           const { query } = createTestClient(staticApi)
           await query({
             query: gql`mutation {
-              initialiseContract(contractAddress: "abcd", bundleLocation: "http://localhost:22222")
+              initializeContract(contractAddress: "abcd", bundleLocation: "http://localhost:22222")
             }`
           })
 
@@ -83,11 +83,11 @@ describe('Integration Suite', () => {
 
     describe(('Mutation'), () => {
       describe('initializeContract', () => {
-        it('creates a contract server that is accessible through the proxy', async () => {
+        it('creates a contract API server that is accessible through the proxy', async () => {
           const { query } = createTestClient(staticApi)
           await query({
             query: gql`mutation {
-              initialiseContract(contractAddress: "abcd", bundleLocation: "http://localhost:22222")
+              initializeContract(contractAddress: "abcd", bundleLocation: "http://localhost:22222")
             }`
           })
 
@@ -106,7 +106,7 @@ describe('Integration Suite', () => {
           const { query } = createTestClient(staticApi)
           const result = await query({
             query: gql`mutation {
-              initialiseContract(contractAddress: "abcd", bundleLocation: "http://localhost:32222")
+              initializeContract(contractAddress: "abcd", bundleLocation: "http://localhost:32222")
             }`
           })
 

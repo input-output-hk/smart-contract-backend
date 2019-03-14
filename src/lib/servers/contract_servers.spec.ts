@@ -1,13 +1,13 @@
 import { expect, use } from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 
-import { getLoadedContracts, closeAndRemoveServer, addServer } from './contract_servers'
+import { getInitializedContracts, closeAndRemoveServer, addServer } from './contract_servers'
 import { contractServers, ContractServer, availablePorts } from '../storage'
 import { ServerInfo, gql } from 'apollo-server'
 use(chaiAsPromised)
 
 describe('contracts', () => {
-  describe('getLoadedContracts', () => {
+  describe('getInitializedContracts', () => {
     it('returns configured contract servers instances', () => {
       contractServers.initialize()
 
@@ -21,7 +21,7 @@ describe('contracts', () => {
 
       contractServers.create(server)
 
-      const contracts = getLoadedContracts()
+      const contracts = getInitializedContracts()
       expect(contracts.length).to.eql(1)
       expect(Object.keys(contracts[0])).to.eql(['contractAddress', 'engine'])
     })

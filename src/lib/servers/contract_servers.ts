@@ -44,7 +44,7 @@ export function closeAndRemoveServer (contractAddress: string) {
   })
 }
 
-export function getLoadedContracts (): Partial<ContractServer>[] {
+export function getInitializedContracts (): Partial<ContractServer>[] {
   const servers = contractServers.findAll()
   return servers.map(st => {
     return {

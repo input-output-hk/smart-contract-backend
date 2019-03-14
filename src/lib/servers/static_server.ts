@@ -1,6 +1,6 @@
 import { ApolloServer, gql, PubSub } from 'apollo-server'
 import axios from 'axios'
-import { getLoadedContracts, addServer } from './contract_servers'
+import { getInitializedContracts, addServer } from './contract_servers'
 import { loadBundle } from '../bundles'
 import { contractServers } from '../storage'
 
@@ -12,7 +12,7 @@ export function buildApiServer (pubSub: PubSub) {
   return new ApolloServer({
     typeDefs: gql`
       type SigningRequest {
-        tx: String!
+        transaction: String!
       }
       type Contract {
         engine: String
@@ -22,8 +22,8 @@ export function buildApiServer (pubSub: PubSub) {
         contracts: [Contract]!
       }
       type Mutation {
-        initialiseContract(contractAddress: String!, bundleLocation: String!): Boolean
-        submitTx(signedTx: String!, engine: String!): Boolean
+        initializeContract(contractAddress: String!, bundleLocation: String!): Boolean
+        submitTransaction(signedTransaction: String!, engine: String!): Boolean
       }
       type Subscription {
         transactionSigningRequest(publicKey: String!): SigningRequest
@@ -32,21 +32,16 @@ export function buildApiServer (pubSub: PubSub) {
     resolvers: {
       Query: {
         contracts () {
-          return getLoadedContracts()
+          return getInitializedContracts()
         }
       },
       Mutation: {
-        submitTx (_: any, args: any) {
-          return axios.post(`${EXECUTION_SERVICE_URI}/submitTx`, args)
+        submitTransaction (_: any, args: any) {
+          return axios.post(`${EXECUTION_SERVICE_URI}/submitTransaction`, args)
             .then(() => true)
             .catch(() => false)
         },
-        // TODO: We need to keep track of the number of clients connected to a
-        // contact, so we know when we can tear it down and cleanup the file system
-        // TODO: Consider a per contract initialisation lock to prevent
-        // race conditions whereby we could boot multiple instances
-        // of the same contract
-        initialiseContract (_: any, { contractAddress, bundleLocation }: { contractAddress: string, bundleLocation: string }) {
+        initializeContract (_: any, { contractAddress, bundleLocation }: { contractAddress: string, bundleLocation: string }) {
           const server = contractServers.find(contractAddress)
           if (server) {
             return true

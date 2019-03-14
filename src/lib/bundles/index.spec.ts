@@ -42,19 +42,6 @@ describe('bundle management', () => {
     })
   })
 
-  describe('getBundleInfo', () => {
-    it('returns the correct bundle info', async () => {
-      const expectedInfo = {
-        bundlePath: `${__dirname}/${bundleContractAddress}/${bundleContractAddress}.tar.gz`,
-        bundleDir: `${__dirname}/${bundleContractAddress}`,
-        exists: false
-      }
-
-      const bundleInfo = await getBundleInfo(bundleContractAddress)
-      expect(bundleInfo).to.eql(expectedInfo)
-    })
-  })
-
   describe('loadBundle', () => {
     it('returns the expect schema and meta data', async () => {
       const { graphQlSchema, engine } = await loadBundle(bundleContractAddress, 'http://localhost:22222')
