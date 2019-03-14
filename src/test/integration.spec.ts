@@ -1,9 +1,12 @@
+import fetch from 'cross-fetch'
 import { boot } from '../lib'
 import { ApolloServer, gql } from 'apollo-server'
 import { Server } from 'http'
 import { contractServers } from '../lib/storage'
 import { closeAndRemoveServer } from '../lib/servers/contract_servers'
 import { expect } from 'chai'
+import { execute, makePromise, GraphQLRequest } from 'apollo-link'
+import { HttpLink } from 'apollo-link-http'
 const nock = require('nock')
 const { createTestClient } = require('apollo-server-testing')
 
@@ -77,13 +80,39 @@ describe('Integration Suite', () => {
         })
       })
     })
-  })
 
-  describe('Proxy Server', () => {
+    describe(('Mutation'), () => {
+      describe('initializeContract', () => {
+        it('creates a contract server that is accessible through the proxy', async () => {
+          const { query } = createTestClient(staticApi)
+          await query({
+            query: gql`mutation {
+              initialiseContract(contractAddress: "abcd", bundleLocation: "http://localhost:22222")
+            }`
+          })
 
-  })
+          const link = new HttpLink({ uri: 'http://localhost:5002/abcd', fetch })
+          const operation: GraphQLRequest = {
+            query: gql`query {
+              hello
+            }`
+          }
 
-  describe('Contract Servers', () => {
+          const result = await makePromise(execute(link, operation))
+          expect(result.data.hello).to.eql('world')
+        })
 
+        it('errors when the bundle is not available', async () => {
+          const { query } = createTestClient(staticApi)
+          const result = await query({
+            query: gql`mutation {
+              initialiseContract(contractAddress: "abcd", bundleLocation: "http://localhost:32222")
+            }`
+          })
+
+          expect(result.errors[0].message).to.eql('Bundle not available at http://localhost:32222')
+        })
+      })
+    })
   })
 })

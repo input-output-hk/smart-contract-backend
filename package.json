@@ -54,9 +54,12 @@
     "typescript": "^3.3.3333"
   },
   "dependencies": {
+    "apollo-link": "^1.2.10",
+    "apollo-link-http": "^1.5.13",
     "apollo-server": "^2.4.8",
     "apollo-server-testing": "^2.4.8",
     "axios": "^0.18.0",
+    "cross-fetch": "^3.0.1",
     "decompress": "^4.2.0",
     "dotenv": "^6.2.0",
     "graphql": "^14.1.1",
