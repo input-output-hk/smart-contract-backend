@@ -4,7 +4,7 @@ import { fetchAndWriteBundle, loadBundle, getBundleInfo } from '.'
 import { removeDirectoryWithContents, checkFolderExists } from './fs'
 use(chaiAsPromised)
 const nock = require('nock')
-const bundle = 'H4sIAB6kiFwAA+3T3WrCMBQHcK/7FFlv3EAkibVCYXd7AXEPYNSjVdIPknQqo+++tBVhA7ebOdn2/10knJOckJSejVFlOtWzZUqZGu5s7wo453EUsWaexON25rKLW3IsmBhFkRRScikZF2MZT3qMX+MyH1XWKeOvYlW2I+uK/MI+v229/uSc7insPP8SWbGqNA3pUBbGWfbIXgPG3LGkJ1rbhM191MVsWpE5tsuNlLQuEjZzZptv7tpk7cf5wA+GbKFfyPj6bntbmryvvX84x02Fq0zO+vvC6FX/lK7Pp9ZBHdz6Q/1RGbmm7S/+9t/hq/4XPD71v4iFEL7/Iz6K0P8/oenBkPLNNqcwYWGpK1fZcNBmD7SsnFpoevb936zulc26tVTZtMmoxXIVBvWtXwEAAAAAAAAAAAAAAAAAAADwf70BWHGY/wAoAAA='
+const bundle = 'H4sIAMuqiVwAA+2UTW/bMAyGe/avEHTpBhSFnDguEGC3YscORXsbdlBsOlYmS4Ekpy2G/PdZcpLZTpxclgED+FwEkSLFVx9cGr4un+VLVkLF71f25gowxtIkIX58SGdhZJN27onTZEbiaZJMppPZhE0Ji2dTNrsh7BrFDKmt46YpxfJqBdZpNbKuWVYUZ/K0Wshh/E+odF5LuIf3tTbOki/kV0SI+1jDIxR2HmaE0J9C5XRO6KPO6gqUo3etPYdCKOGEVrZxfw9GsgvqBX5brCBzr23eXcguSVineAV03onsxD55313Xs+Gy9svpcw3mgx5c205GoRyYgmcQKvvR8eTCNLWIzbGnECDzrpK+ml5VX/3ak2LGBJ0X1RdWgpSa9tzbwQ7cLMNdDFUEp7/Bs9tr9VRL6S/kuIqR4EH1+cngcemX5feP4MUZoZb0aM02OjcfntLgsqNTcXtra9kdJZU666igvk24xsD2G1AIUh7iaB8b9jZgtdyAOXye8Eb/JAo3++lz53gMuNoocvumjcxve7WErNH2mv8fnG/7o23vb3Ch/7OYpYf+z1LW9P+EJTH2/3+Bf4bNS14KFT7dWtautuFnUniHrHZ8IeG1bQj0jduq9ZXclt7CF1lOr/pAEQRBEARBEARBEARBEARBEARBEARBEAS5yG9u53GoACgAAA=='
 const bundleContractAddress = 'abcd'
 
 describe('bundle management', () => {

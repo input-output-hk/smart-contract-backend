@@ -1,8 +1,9 @@
 import { ApolloServer, makeExecutableSchema } from 'apollo-server'
 import { ContractServer, availablePorts, contractServers } from '../storage'
+import { unloadBundle } from '../bundles';
 const tcpPortUsed = require('tcp-port-used')
 
-export async function addServer (contractInfo: Partial<ContractServer>): Promise<void> {
+export async function addServer(contractInfo: Partial<ContractServer>): Promise<void> {
   const ports = availablePorts.findAll()
   const portEntry = Object.entries(ports).find(([_, inUse]) => inUse === false)
   if (!portEntry) {
@@ -31,18 +32,19 @@ export async function addServer (contractInfo: Partial<ContractServer>): Promise
   contractServers.create(server)
 }
 
-export function closeAndRemoveServer (contractAddress: string) {
+export function closeAndRemoveServer(contractAddress: string) {
   const contractServer = contractServers.find(contractAddress)
   return new Promise((resolve, reject) => {
-    contractServer.graphQlInstance.server.close((err: Error) => {
+    contractServer.graphQlInstance.server.close(async (err: Error) => {
       if (err) return reject(err)
       contractServers.remove(contractAddress)
+      await unloadBundle(contractAddress)
       resolve()
     })
   })
 }
 
-export function getLoadedContracts (): Partial<ContractServer>[] {
+export function getLoadedContracts(): Partial<ContractServer>[] {
   const servers = contractServers.findAll()
   return servers.map(st => {
     return {
