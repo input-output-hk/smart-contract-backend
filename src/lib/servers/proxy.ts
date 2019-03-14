@@ -3,8 +3,7 @@ import { contractServers } from '../storage'
 const httpProxy = require('http-proxy')
 const proxy = httpProxy.createProxyServer({})
 
-
-export function initializeProxy() {
+export function initializeProxy () {
   const {
     CARDANO_API_PORT,
     CONTRACT_PROXY_PORT
