@@ -3,7 +3,7 @@
 ## Development
 
 ### Testing
-Unit tests are placed inline within the `src` directory. Integrations tests a located in the `test` directory.
+Unit tests are placed inline within the `src` directory. Integration tests are located in the `test` directory for each service.
 
 Run the test suit with `npm test`
 
