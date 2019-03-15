@@ -1,15 +1,15 @@
-# Smart Contract API
+# Smart Contract Backend
 
 ## Development
 
 ### Testing
-Unit tests are placed inline within the `lib` directory. Integrations tests a located in the `test` directory.
+Unit tests are placed inline within the `src` directory. Integrations tests a located in the `test` directory.
 
 Run the test suit with `npm test`
 
 ### Services
 #### Bundles
-Manages decoding, uncompressing, writing and removal of bundles from the file system,
+Manages decoding, decompressing, writing and removal of bundles from the file system,
 
 #### API
 ##### Static Server
