@@ -1,5 +1,5 @@
 # Smart Contract Backend
-
+[![Build Status](https://badge.buildkite.com/98630c500ae3e689c2299bc83e9311a07847c624699640fd37.svg)](https://buildkite.com/input-output-hk/smart-contract-backend)
 ## Development
 
 ### Testing
