@@ -1,8 +1,8 @@
 import { ApolloServer, gql, PubSub } from 'apollo-server'
 import axios from 'axios'
 import { getInitializedContracts, addServer } from './contract_servers'
-import { loadBundle } from '../bundles'
-import { contractServers } from '../storage'
+import { loadBundle } from '../../bundles'
+import { contractServers } from '../../storage'
 
 const {
   EXECUTION_SERVICE_URI
