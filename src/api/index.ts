@@ -1,7 +1,7 @@
 import { PubSub, ServerInfo } from 'apollo-server'
-import { buildApiServer } from './servers/static_server'
-import { contractServers, availablePorts } from './storage'
-import { initializeProxy } from './servers/proxy'
+import { buildApiServer } from './lib/static_server'
+import { contractServers, availablePorts } from '../storage'
+import { initializeProxy } from './lib/proxy'
 import { Server } from 'http'
 import { ApolloServer } from 'apollo-server-express'
 
