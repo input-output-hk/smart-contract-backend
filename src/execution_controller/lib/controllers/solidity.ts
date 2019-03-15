@@ -7,15 +7,15 @@ export const solidityExecutionController: ExecutionController<any, RawEthereumTr
   submit: submitSolidityTransaction
 }
 
-function submitSolidityTransaction(signedTransaction: string, web3Instance: any) {
+function submitSolidityTransaction (signedTransaction: string, web3Instance: any) {
   return web3Instance.eth.sendSignedTransaction(signedTransaction)
 }
 
-export function getContractReference(abi: string, address: string, web3Instance: any) {
+export function getContractReference (abi: string, address: string, web3Instance: any) {
   return web3Instance.eth.Contract(abi, address)
 }
 
-function callSolidityEngine(payload: ContractExecutionInstruction, web3Instance: any) {
+function callSolidityEngine (payload: ContractExecutionInstruction, web3Instance: any) {
   const contract = getContractReference(payload.contractCode, payload.contractAddress, web3Instance)
 
   return payload.methodArguments && payload.methodArguments.length
@@ -30,7 +30,7 @@ export interface RawEthereumTransaction {
   gas: number
 }
 
-async function generateSolidityTransaction(payload: ContractExecutionInstruction, web3Instance: any): Promise<RawEthereumTransaction> {
+async function generateSolidityTransaction (payload: ContractExecutionInstruction, web3Instance: any): Promise<RawEthereumTransaction> {
   const contract = getContractReference(payload.contractCode, payload.contractAddress, web3Instance)
 
   const data = payload.methodArguments && payload.methodArguments.length

@@ -3,7 +3,7 @@ import { SmartContractEngine, ContractExecutionInstruction } from '.'
 import { ContractExecutionOptions } from '../..'
 import { requestSignature, initializeWeb3Instance } from './external'
 
-export function readContract(payload: ContractExecutionInstruction, opts: ContractExecutionOptions): any {
+export function readContract (payload: ContractExecutionInstruction, opts: ContractExecutionOptions): any {
   switch (payload.engine) {
     case SmartContractEngine.solidity:
       const web3Instance = initializeWeb3Instance(opts.web3Provider)
@@ -13,7 +13,7 @@ export function readContract(payload: ContractExecutionInstruction, opts: Contra
   }
 }
 
-export async function executeContract(payload: ContractExecutionInstruction, opts: ContractExecutionOptions): Promise<any> {
+export async function executeContract (payload: ContractExecutionInstruction, opts: ContractExecutionOptions): Promise<any> {
   switch (payload.engine) {
     case SmartContractEngine.solidity:
       const web3Instance = initializeWeb3Instance(opts.web3Provider)
@@ -25,7 +25,7 @@ export async function executeContract(payload: ContractExecutionInstruction, opt
   }
 }
 
-export function submitSignedTransaction({ signedTransaction, engine }: { signedTransaction: string, engine: SmartContractEngine }, opts: ContractExecutionOptions): Promise<any> {
+export function submitSignedTransaction ({ signedTransaction, engine }: { signedTransaction: string, engine: SmartContractEngine }, opts: ContractExecutionOptions): Promise<any> {
   switch (engine) {
     case SmartContractEngine.solidity:
       const web3Instance = initializeWeb3Instance(opts.web3Provider)

@@ -5,7 +5,7 @@ import gql from 'graphql-tag'
 import { SmartContractEngine } from '.'
 const Web3 = require('web3')
 
-export function publishNewContract(
+export function publishNewContract (
   { engine, address, name, contractCode }: { engine: SmartContractEngine, address: string, name: string, contractCode: string },
   proxyUri: string
 ) {
@@ -20,7 +20,7 @@ export function publishNewContract(
   return makePromise(execute(link, operation))
 }
 
-export function requestSignature(
+export function requestSignature (
   { transaction, publicKey }: { transaction: any, publicKey: string },
   proxyUri: string
 ) {
@@ -35,7 +35,7 @@ export function requestSignature(
   return makePromise(execute(link, operation))
 }
 
-export function initializeWeb3Instance(web3Provider: string) {
+export function initializeWeb3Instance (web3Provider: string) {
   if (!web3Provider) {
     throw new Error('Web3 provider not supplied. Solidity not executable')
   }

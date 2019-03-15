@@ -9,25 +9,25 @@ export interface ContractExecutionOptions {
 export class ContractExecution {
   private executionOptions: ContractExecutionOptions
 
-  constructor(opts: ContractExecutionOptions) {
+  constructor (opts: ContractExecutionOptions) {
     this.executionOptions = opts
   }
 
-  public publishNewContract(
+  public publishNewContract (
     args: { engine: SmartContractEngine, address: string, name: string, contractCode: string }
   ): Promise<any> {
     return contractExecutionAdapter.publishNewContract(args, this.executionOptions.cardanoClientProxiUri)
   }
 
-  public readContract(payload: ContractExecutionInstruction): any {
+  public readContract (payload: ContractExecutionInstruction): any {
     return contractExecutionAdapter.readContract(payload, this.executionOptions)
   }
 
-  public executeContract(payload: ContractExecutionInstruction): any {
+  public executeContract (payload: ContractExecutionInstruction): any {
     return contractExecutionAdapter.executeContract(payload, this.executionOptions)
   }
 
-  public submitSignedTransaction({ signedTransaction, engine }: { signedTransaction: string, engine: SmartContractEngine }): any {
+  public submitSignedTransaction ({ signedTransaction, engine }: { signedTransaction: string, engine: SmartContractEngine }): any {
     return contractExecutionAdapter.submitSignedTransaction({ signedTransaction, engine }, this.executionOptions)
   }
 }
