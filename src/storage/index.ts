@@ -1,7 +1,7 @@
-import * as portAccess from './port_access'
-import * as serverTracker from './server_tracker'
-export { ContractServer } from './server_tracker'
-export { PortAccess } from './port_access'
+import * as portAccess from './lib/port_access'
+import * as serverTracker from './lib/server_tracker'
+export { ContractServer } from './lib/server_tracker'
+export { PortAccess } from './lib/port_access'
 
 interface StorageInteractions<Collection, Id, Value> {
   initialize(): void

@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { availablePorts } from '.'
+import { availablePorts } from '..'
 
 describe('availablePorts', () => {
   beforeEach(() => {

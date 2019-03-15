@@ -2,7 +2,7 @@ import { expect, use } from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 
 import { getInitializedContracts, closeAndRemoveServer, addServer } from './contract_servers'
-import { contractServers, ContractServer, availablePorts } from '../storage'
+import { contractServers, ContractServer, availablePorts } from '../../storage'
 import { ServerInfo, gql } from 'apollo-server'
 use(chaiAsPromised)
 

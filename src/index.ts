@@ -1,4 +1,4 @@
-import { boot } from './lib'
+import { boot as bootApi } from './api'
 
 const {
   CARDANO_API_PORT,
@@ -18,4 +18,4 @@ if (
   throw new Error('Required ENVs not set')
 }
 
-boot()
+bootApi()

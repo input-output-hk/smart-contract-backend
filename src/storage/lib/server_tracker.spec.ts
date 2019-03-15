@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { ContractServer, contractServers } from '.'
+import { ContractServer, contractServers } from '..'
 
 describe('contractServers', () => {
   beforeEach(() => {
