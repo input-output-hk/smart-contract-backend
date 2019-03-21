@@ -1,4 +1,4 @@
-import { PubSub, ServerInfo } from 'apollo-server'
+import { PubSub } from 'apollo-server'
 import { buildApiServer } from './lib/static_server'
 import { contractServers, availablePorts } from '../storage'
 import { initializeProxy } from './lib/proxy'
