@@ -1,12 +1,7 @@
 import { Observable, interval } from 'rxjs'
 import { distinctUntilChanged, mergeMap, pluck, takeWhile } from 'rxjs/operators'
-import axios, { AxiosResponse } from 'axios'
-
-const fetchAddresses = (addresses: string[], walletUrl: string) =>
-  axios.get(`${walletUrl}/address?addresses=${addresses.join(',')}`)
-
-const fetchBlockHeight = (walletUrl: string) =>
-  axios.get(`${walletUrl}/blockHeight`)
+import { AxiosResponse } from 'axios'
+import { fetchAddresses, fetchBlockHeight } from './wallet'
 
 const isSuccessResponse = (response: AxiosResponse) =>
   ([200, 201, 204].includes(response.status))

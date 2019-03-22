@@ -18,6 +18,14 @@ export function buildApiServer (pubSub: PubSub) {
         engine: String
         contractAddress: String
       }
+      enum ChainTopic {
+        blockHeight
+        utxo
+      }
+      type ChainSubscription {
+        topic: String!
+        topicArguments: String
+      }
       type Query {
         contracts: [Contract]!
       }
@@ -27,6 +35,7 @@ export function buildApiServer (pubSub: PubSub) {
       }
       type Subscription {
         transactionSigningRequest(publicKey: String!): SigningRequest
+        chainSubscription(): String!
       }
     `,
     resolvers: {
