@@ -3,14 +3,14 @@ import { availablePorts } from '..'
 
 describe('availablePorts', () => {
   beforeEach(() => {
-    process.env.LOWER_PORT_BOUND = '10'
-    process.env.UPPER_PORT_BOUND = '20'
+    process.env.CONTRACT_SERVER_LOWER_PORT_BOUND = '10'
+    process.env.CONTRACT_SERVER_UPPER_PORT_BOUND = '20'
     availablePorts.initialize()
   })
 
   afterEach(() => {
-    process.env.LOWER_PORT_BOUND = ''
-    process.env.UPPER_PORT_BOUND = ''
+    process.env.CONTRACT_SERVER_LOWER_PORT_BOUND = ''
+    process.env.CONTRACT_SERVER_UPPER_PORT_BOUND = ''
   })
 
   describe('initialize', () => {

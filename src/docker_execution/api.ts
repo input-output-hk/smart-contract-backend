@@ -35,19 +35,19 @@ export function configureApi () {
 }
 
 export function bootApi () {
-  const { API_PORT, CONTAINER_LOWER_PORT_BOUND, CONTAINER_UPPER_PORT_BOUND } = process.env
+  const { DOCKER_EXECUTION_API_PORT, CONTAINER_LOWER_PORT_BOUND, CONTAINER_UPPER_PORT_BOUND } = process.env
 
-  if (!API_PORT || !CONTAINER_LOWER_PORT_BOUND || !CONTAINER_UPPER_PORT_BOUND) {
+  if (!DOCKER_EXECUTION_API_PORT || !CONTAINER_LOWER_PORT_BOUND || !CONTAINER_UPPER_PORT_BOUND) {
     throw new Error('Missing environment config')
   }
 
   const app = configureApi()
-  const server = app.listen(Number(API_PORT), (err: any) => {
+  const server = app.listen(Number(DOCKER_EXECUTION_API_PORT), (err: any) => {
     if (err) {
-      throw new Error(`Unable to boot API on port ${API_PORT}`)
+      throw new Error(`Unable to boot API on port ${DOCKER_EXECUTION_API_PORT}`)
     }
 
-    console.log(`Smart Contract Docker Engine listening on Port ${API_PORT}`)
+    console.log(`Smart Contract Docker Engine listening on Port ${DOCKER_EXECUTION_API_PORT}`)
   })
 
   const { address, port } = server.address().valueOf() as any

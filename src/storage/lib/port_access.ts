@@ -18,13 +18,13 @@ export function initializePortReferences (lowerPortBound: number, upperPortBound
 
 export function initialize () {
   const {
-    LOWER_PORT_BOUND,
-    UPPER_PORT_BOUND
+    CONTRACT_SERVER_LOWER_PORT_BOUND,
+    CONTRACT_SERVER_UPPER_PORT_BOUND
   } = process.env
 
   portRange = initializePortReferences(
-    Number(LOWER_PORT_BOUND),
-    Number(UPPER_PORT_BOUND)
+    Number(CONTRACT_SERVER_LOWER_PORT_BOUND),
+    Number(CONTRACT_SERVER_UPPER_PORT_BOUND)
   )
 }
 
