@@ -1,4 +1,4 @@
-import { boot as bootApi } from './api'
+import { configureApi as bootApi } from './api'
 
 const {
   CARDANO_API_PORT,

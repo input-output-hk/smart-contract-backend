@@ -1,5 +1,5 @@
 import fetch from 'cross-fetch'
-import { boot } from '..'
+import { configureApi } from '..'
 import { ApolloServer, gql } from 'apollo-server'
 import { Server } from 'http'
 import { contractServers } from '../../storage'
@@ -26,7 +26,7 @@ describe('Integration Suite', () => {
     process.env.LOWER_PORT_BOUND = '10000'
     process.env.UPPER_PORT_BOUND = '10100'
 
-    const servers = await boot()
+    const servers = await configureApi()
     staticApi = servers.staticApi as ApolloServer
     proxyServer = servers.proxy
   })

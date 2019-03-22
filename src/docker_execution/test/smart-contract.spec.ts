@@ -4,7 +4,7 @@ import * as request from 'supertest'
 import { Server } from 'http'
 import { readFileSync } from 'fs'
 import { loadContainer, initializeDockerClient, findContainerId } from '../docker-api'
-const executable = readFileSync(`${__dirname}/../../test/smart_contract_server_mock/smart_contract_server_base64.txt`)
+const executable = readFileSync(`${__dirname}/../../../test/smart_contract_server_mock/smart_contract_server_base64.txt`)
 
 describe('api', () => {
   let app: Server
