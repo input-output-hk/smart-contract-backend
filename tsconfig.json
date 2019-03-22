@@ -12,7 +12,8 @@
     "sourceMap": true,
     "composite": true,
     "rootDir": "src",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true
   },
   "include": [
     "src/**/*"
