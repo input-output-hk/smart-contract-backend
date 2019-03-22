@@ -1,0 +1,15 @@
+{
+  "swagger": {
+    "outputDirectory": "./dist",
+    "entryFile": "./src/docker_execution/index.ts",
+    "basePath": "/"
+  },
+  "routes": {
+    "basePath": "/",
+    "entryFile": "./src/docker_execution/api.ts",
+    "routesDir": "./src/docker_execution"
+  },
+  "compilerOptions": {
+    "baseUrl": "src"
+  }
+}

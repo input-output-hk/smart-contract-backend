@@ -67,15 +67,15 @@ describe('contracts', () => {
     }
 
     beforeEach(() => {
-      process.env.LOWER_PORT_BOUND = '10000'
-      process.env.UPPER_PORT_BOUND = '10001'
+      process.env.CONTRACT_SERVER_LOWER_PORT_BOUND = '10000'
+      process.env.CONTRACT_SERVER_UPPER_PORT_BOUND = '10001'
       availablePorts.initialize()
       contractServers.initialize()
     })
 
     afterEach(async () => {
-      process.env.LOWER_PORT_BOUND = ''
-      process.env.UPPER_PORT_BOUND = ''
+      process.env.CONTRACT_SERVER_LOWER_PORT_BOUND = ''
+      process.env.CONTRACT_SERVER_UPPER_PORT_BOUND = ''
       const servers = contractServers.findAll()
       await Promise.all(servers.map(s => closeAndRemoveServer(s.contractAddress)))
     })
