@@ -88,5 +88,20 @@
     "find-free-port": "^2.0.0",
     "swagger-ui-dist": "^3.21.0",
     "tsoa": "^2.3.8"
+  },
+  "nyc": {
+    "extension": [
+      ".ts"
+    ],
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "src/**/*.spec.ts"
+    ],
+    "reporter": [
+      "html"
+    ],
+    "all": true
   }
 }
