@@ -2,10 +2,14 @@
 
 ## Development
 
+Swagger API documentation at `/docs`
+
 ### Testing
 Unit tests are placed inline within the `src` directory. Integration tests are located in the `test` directory for each service.
 
 Run the test suit with `npm test`
+
+A running Docker daemon is required for the tests to run.
 
 ### Services
 #### API
@@ -14,6 +18,9 @@ Manages the initialization of new contracts, transaction submission and register
 
 ##### Contract Server
 Dynamically booted GraphQL instances with schemas passed from the smart contract bundle.
+
+#### Docker Execution
+A Docker-based execution engine compatible with off-chain Plutus x86 bytecode. The engine uses containers for isolated execution and routes incoming requests via the contract's HTTP interface.
 
 #### Bundles
 Manages decoding, decompressing, writing and removal of bundles from the file system,
