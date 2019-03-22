@@ -1,5 +1,5 @@
 {
-  "name": "smart-contract-api",
+  "name": "smart-contract-backend",
   "version": "0.1.0",
   "description": "",
   "main": "index.js",
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/input-output-hk/smart-contract-api.git"
+    "url": "git+https://github.com/input-output-hk/smart-contract-backend.git"
   },
   "keywords": [
     "Apollo",
@@ -31,9 +31,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/input-output-hk/smart-contract-api/issues"
+    "url": "https://github.com/input-output-hk/smart-contract-backend/issues"
   },
-  "homepage": "https://github.com/input-output-hk/smart-contract-api#readme",
+  "homepage": "https://github.com/input-output-hk/smart-contract-backend#readme",
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/chai-as-promised": "^7.1.0",
@@ -74,20 +74,21 @@
     "apollo-server": "^2.4.8",
     "apollo-server-testing": "^2.4.8",
     "axios": "^0.18.0",
+    "body-parser": "^1.18.3",
     "cross-fetch": "^3.0.1",
     "decompress": "^4.2.0",
+    "dockerode": "^2.5.8",
     "dotenv": "^6.2.0",
+    "express": "^4.16.4",
+    "find-free-port": "^2.0.0",
     "graphql": "^14.1.1",
     "http-proxy": "^1.17.0",
     "nock": "^10.0.6",
     "rimraf": "^2.6.3",
-    "tcp-port-used": "^1.0.1",
-    "body-parser": "^1.18.3",
-    "dockerode": "^2.5.8",
-    "express": "^4.16.4",
-    "find-free-port": "^2.0.0",
     "swagger-ui-dist": "^3.21.0",
-    "tsoa": "^2.3.8"
+    "tcp-port-used": "^1.0.1",
+    "tsoa": "^2.3.8",
+    "web3": "^1.0.0-beta.50"
   },
   "nyc": {
     "extension": [
