@@ -1,5 +1,5 @@
 import * as http from 'http'
-import { contractServers } from '../../storage'
+import { contractServers } from '../../infrastructure/storage'
 const httpProxy = require('http-proxy')
 const proxy = httpProxy.createProxyServer({})
 

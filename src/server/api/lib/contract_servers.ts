@@ -1,6 +1,6 @@
 import { ApolloServer, makeExecutableSchema } from 'apollo-server'
-import { ContractServer, availablePorts, contractServers } from '../../storage'
-import { unloadBundle } from '../../bundles'
+import { ContractServer, availablePorts, contractServers } from '../../infrastructure/storage'
+import { unloadBundle } from '../../infrastructure/bundle_fetcher'
 const tcpPortUsed = require('tcp-port-used')
 
 export async function addServer (contractInfo: Partial<ContractServer>): Promise<void> {
