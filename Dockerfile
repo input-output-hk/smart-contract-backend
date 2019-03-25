@@ -10,7 +10,7 @@ RUN npm run build
 FROM node:10.15.3-alpine as test
 COPY --from=builder /application /application
 WORKDIR /application
-CMD ["npm test"]
+CMD ["npm", "test"]
 
 FROM node:10.15.3-alpine as production-deps
 RUN apk add --update git python krb5 krb5-libs gcc make g++ krb5-dev

@@ -2,11 +2,11 @@ import * as Docker from 'dockerode'
 import { writeFile, unlink } from 'fs'
 const fp = require('find-free-port')
 
-export function initializeDockerClient() {
+export function initializeDockerClient () {
   return new Docker({ socketPath: '/var/run/docker.sock' })
 }
 
-export async function findContainerId(contractAddress: string): Promise<{ containerId: string }> {
+export async function findContainerId (contractAddress: string): Promise<{ containerId: string }> {
   const docker = initializeDockerClient()
   const containers = await docker.listContainers()
   const targetContainer = containers.find((container) => container.Names[0] === `/${contractAddress}`)
@@ -14,7 +14,7 @@ export async function findContainerId(contractAddress: string): Promise<{ contai
   return { containerId: targetContainer.Id }
 }
 
-export async function findContainerPort(contractAddress: string): Promise<number> {
+export async function findContainerPort (contractAddress: string): Promise<number> {
   const { containerId } = await findContainerId(contractAddress)
   if (!containerId) return 0
 
@@ -25,7 +25,7 @@ export async function findContainerPort(contractAddress: string): Promise<number
   return Number(portMappings[0].HostPort)
 }
 
-export async function buildImage(dockerfileRelativePath: string, imageName: string) {
+export async function buildImage (dockerfileRelativePath: string, imageName: string) {
   const docker = initializeDockerClient()
 
   const buildOpts: any = {
@@ -40,7 +40,7 @@ export async function buildImage(dockerfileRelativePath: string, imageName: stri
   })
 }
 
-export function writeExecutable(executable: string, executablePath: string) {
+export function writeExecutable (executable: string, executablePath: string) {
   const executableData = Buffer.from(executable, 'base64')
 
   return new Promise((resolve, reject) => {
@@ -51,7 +51,7 @@ export function writeExecutable(executable: string, executablePath: string) {
   })
 }
 
-export function removeExecutable(executablePath: string) {
+export function removeExecutable (executablePath: string) {
   return new Promise((resolve, reject) => {
     unlink(executablePath, (error) => {
       if (error) return reject(error)
@@ -60,7 +60,7 @@ export function removeExecutable(executablePath: string) {
   })
 }
 
-export function writeDockerfile(executablePath: string) {
+export function writeDockerfile (executablePath: string) {
   const dockerfile = `
     FROM ubuntu:18.04
     RUN ["mkdir", "/plutus"]
@@ -77,13 +77,13 @@ export function writeDockerfile(executablePath: string) {
   })
 }
 
-export async function createContainer({ contractAddress, lowerPortBound, upperPortBound }: { contractAddress: string, lowerPortBound: number, upperPortBound: number }) {
+export async function createContainer ({ contractAddress, lowerPortBound, upperPortBound }: { contractAddress: string, lowerPortBound: number, upperPortBound: number }) {
   const { RUNTIME } = process.env
   const docker = initializeDockerClient()
   const [freePort] = await fp(lowerPortBound, upperPortBound)
   const baseHostConfig = {
     AutoRemove: true,
-    PortBindings: { '8000/tcp': [{ 'HostPort': `${freePort}` }] },
+    PortBindings: { '8000/tcp': [{ 'HostPort': `${freePort}` }] }
   }
 
   const targetHostConfig = RUNTIME === 'docker'
@@ -102,7 +102,7 @@ export async function createContainer({ contractAddress, lowerPortBound, upperPo
   return { port: freePort }
 }
 
-export async function loadContainer({ executable, contractAddress, lowerPortBound, upperPortBound }: { executable: string, contractAddress: string, lowerPortBound: number, upperPortBound: number }): Promise<{ port: number }> {
+export async function loadContainer ({ executable, contractAddress, lowerPortBound, upperPortBound }: { executable: string, contractAddress: string, lowerPortBound: number, upperPortBound: number }): Promise<{ port: number }> {
   const containerRunning = (await findContainerId(contractAddress)).containerId
   if (containerRunning) return
 
@@ -116,7 +116,7 @@ export async function loadContainer({ executable, contractAddress, lowerPortBoun
   return createContainer({ contractAddress, lowerPortBound, upperPortBound })
 }
 
-export async function unloadContainer(contractAddress: string) {
+export async function unloadContainer (contractAddress: string) {
   const { containerId } = await findContainerId(contractAddress)
   if (!containerId) return
 
