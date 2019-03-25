@@ -17,7 +17,7 @@ describe('dockerApi', () => {
   })
 
   describe('loadContainer', () => {
-    hostSpecItFn('successfully boots a container that accepts HTTP on the returned port -- [host runtime]', async () => {
+    hostSpecItFn('successfully boots a container that accepts HTTP on the returned port -- [host networking]', async () => {
       const { port } = await loadContainer({ executable: executable.toString(), contractAddress: 'abcd', lowerPortBound: 10000, upperPortBound: 11000 })
 
       const result = await axios.post(`http://localhost:${port}`, {
@@ -28,7 +28,7 @@ describe('dockerApi', () => {
       expect(result.status).to.eql(200)
     })
 
-    dockerSpecItFn('successfully boots a container that accepts HTTP on the returned port -- [docker runtime]', async () => {
+    dockerSpecItFn('successfully boots a container that accepts HTTP on the returned port -- [docker networking]', async () => {
       await loadContainer({ executable: executable.toString(), contractAddress: 'abcd', lowerPortBound: 10000, upperPortBound: 11000 })
 
       const result = await axios.post(`http://abcd:8000`, {
@@ -39,7 +39,7 @@ describe('dockerApi', () => {
       expect(result.status).to.eql(200)
     })
 
-    it('does not boot a second container when a container with that address is already running -- [host runtime]', async () => {
+    it('does not boot a second container when a container with that address is already running', async () => {
       await loadContainer({ executable: executable.toString(), contractAddress: 'abcd', lowerPortBound: 10000, upperPortBound: 11000 })
       await loadContainer({ executable: executable.toString(), contractAddress: 'abcd', lowerPortBound: 10000, upperPortBound: 11000 })
 

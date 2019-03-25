@@ -4,6 +4,7 @@ services:
     build:
       context: .
       target: test
+    init: true
     environment:
       - CARDANO_API_PORT=8079
       - CONTRACT_PROXY_PORT=8081

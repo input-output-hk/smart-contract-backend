@@ -4,6 +4,7 @@ services:
     build:
       context: .
       target: server
+    init: true
     environment:
       - CARDANO_API_PORT=8079
       - CONTRACT_PROXY_PORT=8081
@@ -16,6 +17,7 @@ services:
     build:
       context: .
       target: docker_execution
+    init: true
     environment:
       - DOCKER_EXECUTION_API_PORT=9000
       - CONTAINER_LOWER_PORT_BOUND=11000
