@@ -29,7 +29,7 @@ export async function buildImage (dockerfileRelativePath: string, imageName: str
   const docker = initializeDockerClient()
 
   const buildOpts: any = {
-    context: `${__dirname}/../..`,
+    context: `${__dirname}/../../..`,
     src: ['docker']
   }
 
