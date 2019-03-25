@@ -87,7 +87,7 @@ export async function createContainer ({ contractAddress, lowerPortBound, upperP
   }
 
   const targetHostConfig = RUNTIME === 'docker'
-    ? { NetworkMode: 'TODO:nameOfComposeStackNetwork', ...baseHostConfig }
+    ? { NetworkMode: 'smart-contract-backend_default', ...baseHostConfig }
     : baseHostConfig
 
   const containerOpts: any = {

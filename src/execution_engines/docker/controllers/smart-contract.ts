@@ -68,7 +68,7 @@ export class ContainerController extends Controller {
         return containerNotFoundError
       }
 
-      contractEndpoint = `http://${containerId}:8000`
+      contractEndpoint = `http://${contractAddress}:8000`
     }
 
     this.setStatus(201)

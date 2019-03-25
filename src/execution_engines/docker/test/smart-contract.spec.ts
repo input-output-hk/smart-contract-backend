@@ -19,11 +19,13 @@ describe('api', () => {
     app.close()
     const docker = initializeDockerClient()
     const containers = await docker.listContainers()
-    await Promise.all(containers.map(container => docker.getContainer(container.Id).kill()))
+    const testContainers = containers.filter(container => container.Image !== 'smart-contract-backend_smart_contract_backend_test')
+    await Promise.all(testContainers.map(container => docker.getContainer(container.Id).kill()))
   })
 
   describe('bootApi', () => {
     it('throws an error when env config is missing', () => {
+      process.env.CONTAINER_LOWER_PORT_BOUND = ''
       expect(() => bootApi()).to.throw(/Missing environment config/)
     })
   })

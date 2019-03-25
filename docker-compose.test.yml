@@ -16,3 +16,4 @@ services:
       - RUNTIME=docker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./src:/application/src
