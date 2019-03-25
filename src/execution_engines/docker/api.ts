@@ -5,7 +5,7 @@ import { RegisterRoutes } from './routes'
 import './controllers/smart-contract'
 const swaggerUiAssetPath = require('swagger-ui-dist').getAbsoluteFSPath()
 
-export function configureApi () {
+export function configureApi() {
   const app = express()
   app.use(bodyParser.json({ limit: '50mb' }))
   app.use('/documentation', express.static(swaggerUiAssetPath))
@@ -34,10 +34,10 @@ export function configureApi () {
   return app
 }
 
-export function bootApi () {
-  const { DOCKER_EXECUTION_API_PORT, CONTAINER_LOWER_PORT_BOUND, CONTAINER_UPPER_PORT_BOUND } = process.env
+export function bootApi() {
+  const { DOCKER_EXECUTION_API_PORT, CONTAINER_LOWER_PORT_BOUND, CONTAINER_UPPER_PORT_BOUND, RUNTIME } = process.env
 
-  if (!DOCKER_EXECUTION_API_PORT || !CONTAINER_LOWER_PORT_BOUND || !CONTAINER_UPPER_PORT_BOUND) {
+  if (!DOCKER_EXECUTION_API_PORT || !CONTAINER_LOWER_PORT_BOUND || !CONTAINER_UPPER_PORT_BOUND || !RUNTIME) {
     throw new Error('Missing environment config')
   }
 

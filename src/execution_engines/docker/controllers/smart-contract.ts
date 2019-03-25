@@ -3,7 +3,8 @@ import axios from 'axios'
 import {
   loadContainer,
   unloadContainer,
-  findContainerPort
+  findContainerPort,
+  findContainerId
 } from '../docker-api'
 
 interface LoadSmartContractRequest {
@@ -27,7 +28,7 @@ type SmartContractResponse = any
 export class ContainerController extends Controller {
   @SuccessResponse('204', 'No Content')
   @Post('loadSmartContract')
-  public async loadSmartContract (@Body() { contractAddress, executable }: LoadSmartContractRequest): Promise<void> {
+  public async loadSmartContract(@Body() { contractAddress, executable }: LoadSmartContractRequest): Promise<void> {
     const { CONTAINER_LOWER_PORT_BOUND, CONTAINER_UPPER_PORT_BOUND } = process.env
     this.setStatus(204)
     await loadContainer({
@@ -40,24 +41,39 @@ export class ContainerController extends Controller {
 
   @SuccessResponse('204', 'No Content')
   @Post('unloadSmartContract')
-  public async unloadSmartContract (@Body() { contractAddress }: UnloadSmartContractRequest): Promise<void> {
+  public async unloadSmartContract(@Body() { contractAddress }: UnloadSmartContractRequest): Promise<void> {
     this.setStatus(204)
     await unloadContainer(contractAddress)
   }
 
   @SuccessResponse('201', 'Created')
   @Post('execute')
-  public async execute (@Body() { contractAddress, method, methodArguments }: ExecuteContractRequest): Promise<{ data: SmartContractResponse } | { error: string }> {
-    const associatedPort = await findContainerPort(contractAddress)
+  public async execute(@Body() { contractAddress, method, methodArguments }: ExecuteContractRequest): Promise<{ data: SmartContractResponse } | { error: string }> {
+    const { RUNTIME } = process.env
 
-    if (associatedPort === 0) {
-      this.setStatus(400)
-      return { error: 'Container not initialized. Call /loadContainer and try again' }
+    let contractEndpoint: string
+    const containerNotFoundError = { error: 'Container not initialized. Call /loadContainer and try again' }
+    if (RUNTIME !== 'docker') {
+      const associatedPort = await findContainerPort(contractAddress)
+      if (associatedPort === 0) {
+        this.setStatus(400)
+        return containerNotFoundError
+      }
+
+      contractEndpoint = `http://localhost:${associatedPort}`
+    } else {
+      const { containerId } = await findContainerId(contractAddress)
+      if (!containerId) {
+        this.setStatus(400)
+        return containerNotFoundError
+      }
+
+      contractEndpoint = `http://${containerId}:8000`
     }
 
     this.setStatus(201)
 
-    const result = await axios.post(`http://localhost:${associatedPort}`, {
+    const result = await axios.post(contractEndpoint, {
       method,
       method_arguments: methodArguments
     })

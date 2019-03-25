@@ -1,0 +1,27 @@
+version: '3.7'
+services:
+  server:
+    build:
+      context: .
+      target: server
+    environment:
+      - CARDANO_API_PORT=8079
+      - CONTRACT_PROXY_PORT=8081
+      - EXECUTION_SERVICE_URI=http://docker_execution:9000
+      - CONTRACT_SERVER_LOWER_PORT_BOUND=10000
+      - CONTRACT_SERVER_UPPER_PORT_BOUND=10999
+    ports:
+      - 8079:8079
+  docker_execution:
+    build:
+      context: .
+      target: docker_execution
+    environment:
+      - DOCKER_EXECUTION_API_PORT=9000
+      - CONTAINER_LOWER_PORT_BOUND=11000
+      - CONTAINER_UPPER_PORT_BOUND=12000
+      - RUNTIME=docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 9000:9000
