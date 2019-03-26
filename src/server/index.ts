@@ -1,7 +1,7 @@
 import { bootApi } from './api'
 
 const {
-  CARDANO_API_PORT,
+  API_PORT,
   CONTRACT_PROXY_PORT,
   EXECUTION_SERVICE_URI,
   CONTRACT_SERVER_LOWER_PORT_BOUND,
@@ -9,7 +9,7 @@ const {
 } = process.env
 
 if (
-  !CARDANO_API_PORT ||
+  !API_PORT ||
   !CONTRACT_PROXY_PORT ||
   !EXECUTION_SERVICE_URI ||
   !CONTRACT_SERVER_LOWER_PORT_BOUND ||
@@ -18,4 +18,4 @@ if (
   throw new Error('Required ENVs not set')
 }
 
-bootApi(Number(CARDANO_API_PORT))
+bootApi(Number(API_PORT))

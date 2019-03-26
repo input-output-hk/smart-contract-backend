@@ -20,7 +20,7 @@ describe('Integration Suite', () => {
       .get('/')
       .reply(200, { bundle })
 
-    process.env.CARDANO_API_PORT = '5001'
+    process.env.API_PORT = '5001'
     process.env.CONTRACT_PROXY_PORT = '5002'
     process.env.EXECUTION_SERVICE_URI = ''
     process.env.CONTRACT_SERVER_LOWER_PORT_BOUND = '10000'
