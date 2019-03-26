@@ -1,11 +1,11 @@
 import * as http from 'http'
-import { contractServers } from '../../storage'
+import { contractServers } from '../../infrastructure/storage'
 const httpProxy = require('http-proxy')
 const proxy = httpProxy.createProxyServer({})
 
 export function initializeProxy () {
   const {
-    CARDANO_API_PORT,
+    API_PORT,
     CONTRACT_PROXY_PORT
   } = process.env
 
@@ -16,7 +16,7 @@ export function initializeProxy () {
     if (server) {
       proxy.web(req, res, { target: `http://localhost:${server.port}` })
     } else {
-      proxy.web(req, res, { target: `http://localhost:${CARDANO_API_PORT}` })
+      proxy.web(req, res, { target: `http://localhost:${API_PORT}` })
     }
   }).listen(CONTRACT_PROXY_PORT)
 

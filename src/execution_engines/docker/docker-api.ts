@@ -29,7 +29,7 @@ export async function buildImage (dockerfileRelativePath: string, imageName: str
   const docker = initializeDockerClient()
 
   const buildOpts: any = {
-    context: `${__dirname}/../..`,
+    context: `${__dirname}/../../..`,
     src: ['docker']
   }
 
@@ -78,16 +78,23 @@ export function writeDockerfile (executablePath: string) {
 }
 
 export async function createContainer ({ contractAddress, lowerPortBound, upperPortBound }: { contractAddress: string, lowerPortBound: number, upperPortBound: number }) {
+  const { RUNTIME } = process.env
   const docker = initializeDockerClient()
   const [freePort] = await fp(lowerPortBound, upperPortBound)
+  const baseHostConfig = {
+    AutoRemove: true,
+    PortBindings: { '8000/tcp': [{ 'HostPort': `${freePort}` }] }
+  }
+
+  const targetHostConfig = RUNTIME === 'docker'
+    ? { NetworkMode: 'smart-contract-backend_default', ...baseHostConfig }
+    : baseHostConfig
+
   const containerOpts: any = {
     Image: `i-${contractAddress}`,
     name: contractAddress,
     ExposedPorts: { [`8000/tcp`]: {} },
-    HostConfig: {
-      AutoRemove: true,
-      PortBindings: { '8000/tcp': [{ 'HostPort': `${freePort}` }] }
-    }
+    HostConfig: targetHostConfig
   }
 
   const container = await docker.createContainer(containerOpts)

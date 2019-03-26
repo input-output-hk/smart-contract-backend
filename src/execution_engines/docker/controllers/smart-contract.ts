@@ -3,7 +3,8 @@ import axios from 'axios'
 import {
   loadContainer,
   unloadContainer,
-  findContainerPort
+  findContainerPort,
+  findContainerId
 } from '../docker-api'
 
 interface LoadSmartContractRequest {
@@ -48,16 +49,31 @@ export class ContainerController extends Controller {
   @SuccessResponse('201', 'Created')
   @Post('execute')
   public async execute (@Body() { contractAddress, method, methodArguments }: ExecuteContractRequest): Promise<{ data: SmartContractResponse } | { error: string }> {
-    const associatedPort = await findContainerPort(contractAddress)
+    const { RUNTIME } = process.env
 
-    if (associatedPort === 0) {
-      this.setStatus(400)
-      return { error: 'Container not initialized. Call /loadContainer and try again' }
+    let contractEndpoint: string
+    const containerNotFoundError = { error: 'Container not initialized. Call /loadContainer and try again' }
+    if (RUNTIME !== 'docker') {
+      const associatedPort = await findContainerPort(contractAddress)
+      if (associatedPort === 0) {
+        this.setStatus(400)
+        return containerNotFoundError
+      }
+
+      contractEndpoint = `http://localhost:${associatedPort}`
+    } else {
+      const { containerId } = await findContainerId(contractAddress)
+      if (!containerId) {
+        this.setStatus(400)
+        return containerNotFoundError
+      }
+
+      contractEndpoint = `http://${contractAddress}:8000`
     }
 
     this.setStatus(201)
 
-    const result = await axios.post(`http://localhost:${associatedPort}`, {
+    const result = await axios.post(contractEndpoint, {
       method,
       method_arguments: methodArguments
     })

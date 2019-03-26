@@ -4,7 +4,7 @@ import * as request from 'supertest'
 import { Server } from 'http'
 import { readFileSync } from 'fs'
 import { loadContainer, initializeDockerClient, findContainerId } from '../docker-api'
-const executable = readFileSync(`${__dirname}/../../../test/smart_contract_server_mock/smart_contract_server_base64.txt`)
+const executable = readFileSync(`${__dirname}/../../../../test/smart_contract_server_mock/smart_contract_server_base64.txt`)
 
 describe('api', () => {
   let app: Server
@@ -19,11 +19,13 @@ describe('api', () => {
     app.close()
     const docker = initializeDockerClient()
     const containers = await docker.listContainers()
-    await Promise.all(containers.map(container => docker.getContainer(container.Id).kill()))
+    const testContainers = containers.filter(container => container.Image !== 'smart-contract-backend_smart_contract_backend_test')
+    await Promise.all(testContainers.map(container => docker.getContainer(container.Id).kill()))
   })
 
   describe('bootApi', () => {
     it('throws an error when env config is missing', () => {
+      process.env.CONTAINER_LOWER_PORT_BOUND = ''
       expect(() => bootApi()).to.throw(/Missing environment config/)
     })
   })

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { checkFolderExists, createDirectory, writeFile, removeDirectoryWithContents } from '../fs'
+import { checkFolderExists, createDirectory, writeFile, removeDirectoryWithContents } from '../../lib/fs'
 const decompress = require('decompress')
 
 export interface ContractMeta {
