@@ -1,0 +1,7 @@
+steps:
+  - name: "Docker Test %n"
+    command: npm test
+    plugins:
+      - docker-compose#v3.0.0:
+          run: smart_contract_backend_test
+          config: docker-compose.test.yml
