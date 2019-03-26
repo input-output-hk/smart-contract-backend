@@ -11,6 +11,8 @@ services:
       - EXECUTION_SERVICE_URI=http://docker_execution:9000
       - CONTRACT_SERVER_LOWER_PORT_BOUND=10000
       - CONTRACT_SERVER_UPPER_PORT_BOUND=10999
+    # volumes:
+    #   - ./dist/server:/application/server
     ports:
       - 8079:8079
   docker_execution:
@@ -25,5 +27,7 @@ services:
       - RUNTIME=docker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      # - ./dist/swagger.json:/application/dist/swagger.json
+      # - ./dist/execution_engines/docker:/application/execution_engines/docker
     ports:
       - 9000:9000

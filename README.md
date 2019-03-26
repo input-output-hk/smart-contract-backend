@@ -2,7 +2,12 @@
 
 ## Development
 
-Swagger API documentation at `/docs`
+### Docker Compose
+1. Uncomment the volumes for the service you are working on in `docker-compose.yml`
+2. docker-compose up
+3. Run a TypeScript file watcher for live reloading of development changes
+
+Swagger API documentation for docker execution engine available at `locahosthost:9000/docs`
 
 ### Testing
 Unit tests are placed inline within the `src` directory. Integration tests are located in the `test` directory for each service.
