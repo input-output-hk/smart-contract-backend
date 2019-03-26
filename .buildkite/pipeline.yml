@@ -1,6 +1,8 @@
 steps:
-  - name: "Docker Test %n"
+  - label: 'Smart Contract Backend docker-x86_64-darwin'
     command: npm test
+    agents:
+      system: x86_64-darwin
     plugins:
       - docker-compose#v3.0.0:
           run: smart_contract_backend_test
