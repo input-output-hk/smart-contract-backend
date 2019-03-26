@@ -5,3 +5,4 @@
 /src/execution_engines/docker/routes.ts
 docker/*
 !docker/README.md
+.env
