@@ -7,7 +7,7 @@
 2. docker-compose up
 3. Run a TypeScript file watcher for live reloading of development changes
 
-Swagger API documentation for docker execution engine available at `locahosthost:9000/docs`
+Swagger API documentation for docker execution engine available at `/docs`
 
 ### Testing
 Unit tests are placed inline within the `src` directory. Integration tests are located in the `test` directory for each service.
