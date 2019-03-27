@@ -89,8 +89,8 @@ describe('api', () => {
       await loadContainer({ executable: executable.toString(), contractAddress: 'abcd', lowerPortBound: 10000, upperPortBound: 11000 })
 
       return request(app)
-        .post('/execute')
-        .send({ contractAddress: 'abcd', method: 'add', methodArguments: ['1', '2'] })
+        .post('/execute/abcd/add')
+        .send(['1', '2'])
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(201)

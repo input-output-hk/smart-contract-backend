@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { checkFolderExists, createDirectory, writeFile, removeDirectoryWithContents } from '../../lib/fs'
+import { checkFolderExists, createDirectory, writeFile, removeDirectoryWithContents, readFile } from '../../lib/fs'
 const decompress = require('decompress')
 
 export interface ContractMeta {
@@ -39,6 +39,16 @@ export async function loadBundle (contractAddress: string, location: string): Pr
   const graphQlSchema = require(`${bundleDir}/graphQlSchema.js`)
   const contractMeta: ContractMeta = require(`${bundleDir}/meta.json`)
   return { graphQlSchema, engine: contractMeta.engine }
+}
+
+export async function getExecutableAsBase64 (contractAddress: string): Promise<string> {
+  const { bundleDir, exists } = await getBundleInfo(contractAddress)
+  if (!exists) {
+    throw new Error('The bundle must be loaded before requesting the executable')
+  }
+
+  const executable = await readFile(`${bundleDir}/graphQlSchema.js`)
+  return executable.toString('base64')
 }
 
 export async function unloadBundle (contractAddress: string): Promise<{}> {

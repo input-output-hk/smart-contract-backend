@@ -3,6 +3,7 @@ import axios from 'axios'
 import { getInitializedContracts, addServer } from './contract_servers'
 import { loadBundle } from '../../infrastructure/bundle_fetcher'
 import { contractServers } from '../../infrastructure/storage'
+import { initializeContractEngine } from './initialize_contract'
 
 const {
   EXECUTION_SERVICE_URI
@@ -49,6 +50,7 @@ export function buildApiServer (pubSub: PubSub) {
 
           return loadBundle(contractAddress, bundleLocation)
             .then(({ graphQlSchema, engine }) => addServer({ graphQlSchema, engine, contractAddress }))
+            .then(() => initializeContractEngine(contractAddress))
             .then(() => true)
         }
       },

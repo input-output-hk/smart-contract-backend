@@ -16,12 +16,6 @@ interface UnloadSmartContractRequest {
   contractAddress: string
 }
 
-interface ExecuteContractRequest {
-  contractAddress: string
-  method: string
-  methodArguments: string[]
-}
-
 type SmartContractResponse = any
 
 @Route('')
@@ -47,8 +41,8 @@ export class ContainerController extends Controller {
   }
 
   @SuccessResponse('201', 'Created')
-  @Post('execute')
-  public async execute (@Body() { contractAddress, method, methodArguments }: ExecuteContractRequest): Promise<{ data: SmartContractResponse } | { error: string }> {
+  @Post('execute/{contractAddress}/{method}')
+  public async execute (contractAddress: string, method: string, @Body() methodArguments: any): Promise<{ data: SmartContractResponse } | { error: string }> {
     const { RUNTIME } = process.env
 
     let contractEndpoint: string
@@ -73,11 +67,7 @@ export class ContainerController extends Controller {
 
     this.setStatus(201)
 
-    const result = await axios.post(contractEndpoint, {
-      method,
-      method_arguments: methodArguments
-    })
-
+    const result = await axios.post(`${contractEndpoint}/${method}`, methodArguments)
     return { data: result.data }
   }
 }

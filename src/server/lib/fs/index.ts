@@ -37,3 +37,12 @@ export function writeFile (path: string, payload: Buffer) {
     })
   })
 }
+
+export function readFile (path: string): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    fs.readFile(path, (err, data) => {
+      if (err) return reject(err)
+      return resolve(data)
+    })
+  })
+}
