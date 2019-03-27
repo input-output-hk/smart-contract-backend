@@ -1,6 +1,6 @@
 import * as express from 'express'
 import * as fs from 'fs'
-const targz = require('targz')
+const tar = require('tar')
 
 const { BUNDLE_SERVER_PORT } = process.env
 if (!BUNDLE_SERVER_PORT) {
@@ -39,15 +39,17 @@ app.get('/:contractAddress', async (req, res) => {
     })
 
     if (!tarGzExists) {
-      await new Promise((resolve, reject) => {
-        targz.compress({
-          src: bundleLocation,
-          dest: tarLocation
-        }, function (err: any) {
-          if (err) return reject(err)
-          resolve()
-        })
-      })
+      await tar.c(
+        {
+          gzip: true,
+          file: tarLocation
+        },
+        [
+          `${bundleLocation}/meta.json`,
+          `${bundleLocation}/graphQlSchema.js`,
+          `${bundleLocation}/executable`
+        ]
+      )
     }
 
     const file: Buffer = await new Promise((resolve, reject) => {
@@ -57,7 +59,7 @@ app.get('/:contractAddress', async (req, res) => {
       })
     })
 
-    res.status(200).send(file.toString())
+    res.status(200).send(file.toString('base64'))
   } catch (e) {
     res.status(500).json({ error: 'Failed to serve bundle' })
   }

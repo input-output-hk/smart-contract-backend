@@ -39,6 +39,7 @@ services:
     environment:
       - BUNDLE_SERVER_PORT=9001
     volumes:
+      - ./dist/bundle_server:/application/dist/bundle_server
       - ./test/bundles:/application/bundles
     ports:
       - 9001:9001

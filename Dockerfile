@@ -25,7 +25,7 @@ RUN mkdir /application
 COPY --from=builder /application/dist/bundle_server /application/dist/bundle_server
 COPY --from=production_deps /application/node_modules /application/node_modules
 WORKDIR /application
-CMD ["npx", "pm2", "--no-daemon", "start", "dist/bundle_server/index.js", "--watch"]
+CMD ["npx", "pm2", "--no-daemon", "start", "dist/bundle_server/index.js"]
 
 FROM node:10.15.3-alpine as server
 RUN mkdir /application

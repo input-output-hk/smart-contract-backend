@@ -6,3 +6,4 @@
 docker/*
 !docker/README.md
 .env
+*.tar.gz
