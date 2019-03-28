@@ -90,7 +90,7 @@ describe('api', () => {
 
       return request(app)
         .post('/execute/abcd/add')
-        .send(['1', '2'])
+        .send({ number1: 1, number2: 2 })
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(201)
@@ -99,28 +99,9 @@ describe('api', () => {
         })
     })
 
-    it('throws a 400 if contract address is missing in the request body', () => {
-      return request(app)
-        .post('/execute')
-        .send({ method: 'add', methodArguments: ['1', '2'] })
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-        .expect(400)
-    })
-
-    it('throws a 400 if method is missing in the request body', () => {
-      return request(app)
-        .post('/execute')
-        .send({ contractAddress: 'abcd', methodArguments: ['1', '2'] })
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-        .expect(400)
-    })
-
     it('throws a 400 if method arguments is missing in the request body', () => {
       return request(app)
-        .post('/execute')
-        .send({ contractAddress: 'abcd', method: 'add' })
+        .post('/execute/abcd/add')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(400)

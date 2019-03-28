@@ -19,9 +19,9 @@ describe('dockerApi', () => {
     hostSpecItFn('successfully boots a container that accepts HTTP on the returned port -- [host networking]', async () => {
       const { port } = await loadContainer({ executable: executable.toString(), contractAddress: 'abcd', lowerPortBound: 10000, upperPortBound: 11000 })
 
-      const result = await axios.post(`http://localhost:${port}`, {
-        method: 'add',
-        method_arguments: ['1', '2']
+      const result = await axios.post(`http://localhost:${port}/add`, {
+        number1: 1,
+        number2: 2
       })
 
       expect(result.status).to.eql(200)
@@ -30,9 +30,9 @@ describe('dockerApi', () => {
     dockerSpecItFn('successfully boots a container that accepts HTTP on the returned port -- [docker networking]', async () => {
       await loadContainer({ executable: executable.toString(), contractAddress: 'abcd', lowerPortBound: 10000, upperPortBound: 11000 })
 
-      const result = await axios.post(`http://abcd:8000`, {
-        method: 'add',
-        method_arguments: ['1', '2']
+      const result = await axios.post(`http://abcd:8000/add`, {
+        number1: 1,
+        number2: 2
       })
 
       expect(result.status).to.eql(200)
