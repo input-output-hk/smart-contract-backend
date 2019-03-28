@@ -98,9 +98,13 @@ export async function createContainer ({ contractAddress, lowerPortBound, upperP
   }
 
   const container = await docker.createContainer(containerOpts)
-  container.attach({ stream: true, stdout: true, stderr: true }, function (_, stream) {
-    stream.pipe(process.stdout)
-  })
+
+  if (process.env.NODE_ENV !== 'test') {
+    container.attach({ stream: true, stdout: true, stderr: true }, function (_, stream) {
+      stream.pipe(process.stdout)
+    })
+  }
+
   await container.start()
   return { port: freePort }
 }

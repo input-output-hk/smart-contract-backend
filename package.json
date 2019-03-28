@@ -10,7 +10,7 @@
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint --fix \"src/**/*.ts\"",
     "start": "npm run build && node -r dotenv/config dist/index.js",
-    "test": "npm run lint && npm run build && nyc mocha",
+    "test": "npm run lint && npm run build && NODE_ENV=test nyc mocha",
     "test:watch": "mocha -w",
     "test:coverage": "npm test && http-server coverage",
     "api-build": "tsoa swagger && tsoa routes",

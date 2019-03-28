@@ -18,7 +18,7 @@ describe('Integration Suite', () => {
   beforeEach(async () => {
     nock('http://localhost:22222')
       .get('/')
-      .reply(200, { bundle })
+      .reply(200, bundle)
 
     nock('http://localhost:5003')
       .post('/loadSmartContract')
