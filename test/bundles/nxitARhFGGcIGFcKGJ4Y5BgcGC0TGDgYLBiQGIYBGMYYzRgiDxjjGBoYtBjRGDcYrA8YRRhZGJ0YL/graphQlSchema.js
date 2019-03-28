@@ -114,7 +114,7 @@ module.exports = {
     Mutation: {
       lock(_, { secretWord, amount }) {
         const contractAddress = 'nxitARhFGGcIGFcKGJ4Y5BgcGC0TGDgYLBiQGIYBGMYYzRgiDxjjGBoYtBjRGDcYrA8YRRhZGJ0YL'
-        const executionUrl = process.env.EXECUTION_URL
+        const executionUrl = process.env.EXECUTION_SERVICE_URI
         const axios = require('axios')
         if (!executionUrl || !axios) throw new Error('Environment lacks dependencies')
 

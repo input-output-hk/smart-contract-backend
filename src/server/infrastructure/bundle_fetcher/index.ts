@@ -13,7 +13,7 @@ export async function fetchAndWriteBundle ({ bundlePath, bundleDir, location }: 
     .catch(() => { throw new Error(`Bundle not available at ${location}`) })
 
   await createDirectory(bundleDir)
-  const bundle = Buffer.from(bundleResponse.data.bundle, 'base64')
+  const bundle = Buffer.from(bundleResponse.data, 'base64')
 
   await writeFile(bundlePath, bundle)
   await decompress(bundlePath, bundleDir)

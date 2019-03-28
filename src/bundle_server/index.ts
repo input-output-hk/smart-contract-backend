@@ -42,13 +42,10 @@ app.get('/:contractAddress', async (req, res) => {
       await tar.c(
         {
           gzip: true,
-          file: tarLocation
+          file: tarLocation,
+          cwd: bundleLocation
         },
-        [
-          `${bundleLocation}/meta.json`,
-          `${bundleLocation}/graphQlSchema.js`,
-          `${bundleLocation}/executable`
-        ]
+        ['meta.json', 'graphQlSchema.js', 'executable']
       )
     }
 
@@ -61,6 +58,7 @@ app.get('/:contractAddress', async (req, res) => {
 
     res.status(200).send(file.toString('base64'))
   } catch (e) {
+    console.log(e)
     res.status(500).json({ error: 'Failed to serve bundle' })
   }
 })
