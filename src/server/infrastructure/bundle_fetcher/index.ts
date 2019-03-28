@@ -47,7 +47,7 @@ export async function getExecutableAsBase64 (contractAddress: string): Promise<s
     throw new Error('The bundle must be loaded before requesting the executable')
   }
 
-  const executable = await readFile(`${bundleDir}/graphQlSchema.js`)
+  const executable = await readFile(`${bundleDir}/executable`)
   return executable.toString('base64')
 }
 

@@ -98,11 +98,15 @@ export async function createContainer ({ contractAddress, lowerPortBound, upperP
   }
 
   const container = await docker.createContainer(containerOpts)
+  container.attach({ stream: true, stdout: true, stderr: true }, function (_, stream) {
+    stream.pipe(process.stdout)
+  })
   await container.start()
   return { port: freePort }
 }
 
 export async function loadContainer ({ executable, contractAddress, lowerPortBound, upperPortBound }: { executable: string, contractAddress: string, lowerPortBound: number, upperPortBound: number }): Promise<{ port: number }> {
+  contractAddress = contractAddress.toLowerCase()
   const containerRunning = (await findContainerId(contractAddress)).containerId
   if (containerRunning) return
 
@@ -117,6 +121,7 @@ export async function loadContainer ({ executable, contractAddress, lowerPortBou
 }
 
 export async function unloadContainer (contractAddress: string) {
+  contractAddress = contractAddress.toLowerCase()
   const { containerId } = await findContainerId(contractAddress)
   if (!containerId) return
 

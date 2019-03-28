@@ -13,7 +13,10 @@
     "test": "npm run lint && npm run build && nyc mocha",
     "test:watch": "mocha -w",
     "test:coverage": "npm test && http-server coverage",
-    "api-build": "tsoa swagger && tsoa routes"
+    "api-build": "tsoa swagger && tsoa routes",
+    "start:docker": "docker-compose up",
+    "start:docker-init": "docker-compose up --build",
+    "restart:docker": "docker-compose down && sudo rm -rf dist && npm run build && docker-compose up"
   },
   "repository": {
     "type": "git",

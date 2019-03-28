@@ -118,7 +118,7 @@ module.exports = {
         const axios = require('axios')
         if (!executionUrl || !axios) throw new Error('Environment lacks dependencies')
 
-        return axios.post(`${EXECUTION_URL}/${contractAddress}/lock`, { secretWord, amount })
+        return axios.post(`${executionUrl}/${contractAddress}/lock`, { secretWord, amount })
           .then(({ data }) => data)
       }
     }

@@ -44,6 +44,7 @@ export class ContainerController extends Controller {
   @Post('execute/{contractAddress}/{method}')
   public async execute (contractAddress: string, method: string, @Body() methodArguments: any): Promise<{ data: SmartContractResponse } | { error: string }> {
     const { RUNTIME } = process.env
+    contractAddress = contractAddress.toLowerCase()
 
     let contractEndpoint: string
     const containerNotFoundError = { error: 'Container not initialized. Call /loadContainer and try again' }

@@ -5,7 +5,7 @@ const typeDef = gql`
     stub: Boolean!
   }
   type Mutation {
-    lock(secretWord: String!, amount: Int!): String!
+    add(number1: Int!, number2: Int!): String!
   }
 `
 
