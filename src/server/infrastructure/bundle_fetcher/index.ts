@@ -4,11 +4,12 @@ const decompress = require('decompress')
 
 export interface ContractMeta {
   engine: 'solidity' | 'plutus'
-  executableType: 'x86' | 'wasm' | 'abi'
+  executableType: 'docker' | 'wasm' | 'abi'
   hash: string
+  dockerImageRepository?: string
 }
 
-export async function fetchAndWriteBundle ({ bundlePath, bundleDir, location }: { bundlePath: string, bundleDir: string, location: string }): Promise<void> {
+export async function fetchAndWriteBundle({ bundlePath, bundleDir, location }: { bundlePath: string, bundleDir: string, location: string }): Promise<void> {
   const bundleResponse = await axios.get(location)
     .catch(() => { throw new Error(`Bundle not available at ${location}`) })
 
@@ -19,14 +20,14 @@ export async function fetchAndWriteBundle ({ bundlePath, bundleDir, location }: 
   await decompress(bundlePath, bundleDir)
 }
 
-export async function getBundleInfo (contractAddress: string): Promise<{ bundlePath: string, bundleDir: string, exists: boolean }> {
+export async function getBundleInfo(contractAddress: string): Promise<{ bundlePath: string, bundleDir: string, exists: boolean }> {
   const bundleDir = `${__dirname}/${contractAddress}`
   const bundlePath = `${bundleDir}/${contractAddress}.tar.gz`
   const bundleExists = await checkFolderExists(bundleDir)
   return { bundlePath, bundleDir, exists: bundleExists }
 }
 
-export async function loadBundle (contractAddress: string, location: string): Promise<{ graphQlSchema: any, engine: 'solidity' | 'plutus' }> {
+export async function loadBundle(contractAddress: string, location: string): Promise<{ graphQlSchema: any, engine: 'solidity' | 'plutus' }> {
   const { bundlePath, bundleDir, exists } = await getBundleInfo(contractAddress)
   if (!exists) {
     await fetchAndWriteBundle({
@@ -41,17 +42,22 @@ export async function loadBundle (contractAddress: string, location: string): Pr
   return { graphQlSchema, engine: contractMeta.engine }
 }
 
-export async function getExecutableAsBase64 (contractAddress: string): Promise<string> {
+export async function getImageRepository(contractAddress: string): Promise<string> {
   const { bundleDir, exists } = await getBundleInfo(contractAddress)
   if (!exists) {
     throw new Error('The bundle must be loaded before requesting the executable')
   }
 
-  const executable = await readFile(`${bundleDir}/executable`)
-  return executable.toString('base64')
+  const meta = require(`${bundleDir}/executable.json`)
+
+  if (!meta || !meta.dockerImageRepository) {
+    throw new Error('No docker image repository provided in the contract meta')
+  }
+
+  return meta.dockerImageRepository
 }
 
-export async function unloadBundle (contractAddress: string): Promise<{}> {
+export async function unloadBundle(contractAddress: string): Promise<{}> {
   const { bundleDir, exists } = await getBundleInfo(contractAddress)
   if (!exists) return
   return removeDirectoryWithContents(bundleDir)
