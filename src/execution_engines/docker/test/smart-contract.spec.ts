@@ -19,7 +19,7 @@ describe('api', () => {
     app.close()
     const docker = initializeDockerClient()
     const containers = await docker.listContainers()
-    const testContainers = containers.filter(container => container.Image !== 'smart-contract-backend_smart_contract_backend_test')
+    const testContainers = containers.filter(container => container.Image === 'i-abcd')
     await Promise.all(testContainers.map(container => docker.getContainer(container.Id).kill()))
   })
 

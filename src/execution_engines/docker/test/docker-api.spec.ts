@@ -3,7 +3,6 @@ import { loadContainer, initializeDockerClient, unloadContainer } from '../docke
 import axios from 'axios'
 import { readFileSync } from 'fs'
 const executable = readFileSync(`${__dirname}/../../../../test/smart_contract_server_mock/smart_contract_server_base64.txt`)
-const TEST_CONTAINER_NAME = 'smart-contract-backend_smart_contract_backend_test'
 
 describe('dockerApi', () => {
   const dockerSpecItFn = process.env.RUNTIME === 'docker' ? it : it.skip
@@ -12,7 +11,7 @@ describe('dockerApi', () => {
   afterEach(async () => {
     const docker = initializeDockerClient()
     const containers = await docker.listContainers()
-    const testContainers = containers.filter(container => container.Image !== TEST_CONTAINER_NAME)
+    const testContainers = containers.filter(container => container.Image === 'i-abcd')
     await Promise.all(testContainers.map(container => docker.getContainer(container.Id).kill()))
   })
 
@@ -45,7 +44,7 @@ describe('dockerApi', () => {
 
       const docker = initializeDockerClient()
       const containers = await docker.listContainers()
-      const contractContainers = containers.filter(container => container.Image !== TEST_CONTAINER_NAME)
+      const contractContainers = containers.filter(container => container.Image === 'i-abcd')
       expect(contractContainers.length).to.eql(1)
     })
   })
@@ -57,7 +56,7 @@ describe('dockerApi', () => {
 
       const docker = initializeDockerClient()
       const containers = await docker.listContainers()
-      const contractContainers = containers.filter(container => container.Image !== TEST_CONTAINER_NAME)
+      const contractContainers = containers.filter(container => container.Image === 'i-abcd')
       expect(contractContainers.length).to.eql(0)
     })
 
@@ -66,7 +65,7 @@ describe('dockerApi', () => {
 
       const docker = initializeDockerClient()
       const containers = await docker.listContainers()
-      const contractContainers = containers.filter(container => container.Image !== TEST_CONTAINER_NAME)
+      const contractContainers = containers.filter(container => container.Image === 'i-abcd')
       expect(contractContainers.length).to.eql(0)
     })
   })
