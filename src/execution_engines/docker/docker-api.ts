@@ -1,5 +1,4 @@
 import * as Docker from 'dockerode'
-import { writeFile, unlink } from 'fs'
 const fp = require('find-free-port')
 
 export function initializeDockerClient () {
@@ -25,59 +24,7 @@ export async function findContainerPort (contractAddress: string): Promise<numbe
   return Number(portMappings[0].HostPort)
 }
 
-export async function buildImage (dockerfileRelativePath: string, imageName: string) {
-  const docker = initializeDockerClient()
-
-  const buildOpts: any = {
-    context: `${__dirname}/../../..`,
-    src: ['docker']
-  }
-
-  let stream = await docker.buildImage(buildOpts, { t: imageName, dockerfile: dockerfileRelativePath })
-
-  return new Promise((resolve, reject) => {
-    docker.modem.followProgress(stream, (err: any, res: any) => err ? reject(err) : resolve(res))
-  })
-}
-
-export function writeExecutable (executable: string, executablePath: string) {
-  const executableData = Buffer.from(executable, 'base64')
-
-  return new Promise((resolve, reject) => {
-    writeFile(executablePath, executableData, (error) => {
-      if (error) return reject(error)
-      resolve()
-    })
-  })
-}
-
-export function removeExecutable (executablePath: string) {
-  return new Promise((resolve, reject) => {
-    unlink(executablePath, (error) => {
-      if (error) return reject(error)
-      resolve()
-    })
-  })
-}
-
-export function writeDockerfile (executablePath: string) {
-  const dockerfile = `
-    FROM ubuntu:18.04
-    RUN ["mkdir", "/plutus"]
-    COPY ${executablePath} /plutus/executable
-    RUN chmod +x /plutus/executable
-    CMD /plutus/executable
-  `
-
-  return new Promise((resolve, reject) => {
-    writeFile(`${executablePath}-Dockerfile`, dockerfile, (error) => {
-      if (error) return reject(error)
-      resolve()
-    })
-  })
-}
-
-export async function createContainer ({ contractAddress, lowerPortBound, upperPortBound }: { contractAddress: string, lowerPortBound: number, upperPortBound: number }) {
+export async function createContainer ({ contractAddress, dockerImageRepository, lowerPortBound, upperPortBound }: { contractAddress: string, dockerImageRepository: string, lowerPortBound: number, upperPortBound: number }) {
   const { RUNTIME } = process.env
   const docker = initializeDockerClient()
   const [freePort] = await fp(lowerPortBound, upperPortBound)
@@ -91,32 +38,52 @@ export async function createContainer ({ contractAddress, lowerPortBound, upperP
     : baseHostConfig
 
   const containerOpts: any = {
-    Image: `i-${contractAddress}`,
+    Image: dockerImageRepository,
     name: contractAddress,
     ExposedPorts: { [`8000/tcp`]: {} },
     HostConfig: targetHostConfig
   }
 
   const container = await docker.createContainer(containerOpts)
+
+  if (process.env.NODE_ENV !== 'test') {
+    container.attach({ stream: true, stdout: true, stderr: true }, function (_, stream) {
+      stream.pipe(process.stdout)
+    })
+  }
+
   await container.start()
   return { port: freePort }
 }
 
-export async function loadContainer ({ executable, contractAddress, lowerPortBound, upperPortBound }: { executable: string, contractAddress: string, lowerPortBound: number, upperPortBound: number }): Promise<{ port: number }> {
+export function pullContainer (dockerImageRepository: string) {
+  return new Promise((resolve, reject) => {
+    const docker = initializeDockerClient()
+    docker.pull(dockerImageRepository, (err: Error, stream: any) => {
+      if (err) return reject(err)
+
+      const onFinished = (err: Error) => {
+        if (err) return reject(err)
+        resolve()
+      }
+
+      const onProgress = (): undefined => undefined
+      docker.modem.followProgress(stream, onFinished, onProgress)
+    })
+  })
+}
+
+export async function loadContainer ({ dockerImageRepository, contractAddress, lowerPortBound, upperPortBound }: { dockerImageRepository: string, contractAddress: string, lowerPortBound: number, upperPortBound: number }): Promise<{ port: number }> {
+  contractAddress = contractAddress.toLowerCase()
   const containerRunning = (await findContainerId(contractAddress)).containerId
   if (containerRunning) return
 
-  const relativeExecutablePath = `docker/${contractAddress}`
-  const relativeDockerfilePath = `${relativeExecutablePath}-Dockerfile`
-
-  await writeExecutable(executable, relativeExecutablePath)
-  await writeDockerfile(relativeExecutablePath)
-  await buildImage(relativeDockerfilePath, `i-${contractAddress}`)
-  await removeExecutable(relativeExecutablePath)
-  return createContainer({ contractAddress, lowerPortBound, upperPortBound })
+  await pullContainer(dockerImageRepository)
+  return createContainer({ contractAddress, dockerImageRepository, lowerPortBound, upperPortBound })
 }
 
 export async function unloadContainer (contractAddress: string) {
+  contractAddress = contractAddress.toLowerCase()
   const { containerId } = await findContainerId(contractAddress)
   if (!containerId) return
 

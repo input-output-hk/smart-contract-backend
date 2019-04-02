@@ -10,10 +10,13 @@
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint --fix \"src/**/*.ts\"",
     "start": "npm run build && node -r dotenv/config dist/index.js",
-    "test": "npm run lint && npm run build && nyc mocha",
+    "test": "npm run lint && npm run build && NODE_ENV=test nyc mocha",
     "test:watch": "mocha -w",
     "test:coverage": "npm test && http-server coverage",
-    "api-build": "tsoa swagger && tsoa routes"
+    "api-build": "tsoa swagger && tsoa routes",
+    "start:docker": "docker-compose up",
+    "start:docker-init": "docker-compose up --build",
+    "restart:docker": "docker-compose down && sudo rm -rf dist && npm run build && docker-compose up"
   },
   "repository": {
     "type": "git",
@@ -87,6 +90,7 @@
     "pm2": "^3.4.0",
     "rimraf": "^2.6.3",
     "swagger-ui-dist": "^3.21.0",
+    "tar": "^4.4.8",
     "tcp-port-used": "^1.0.1",
     "tsoa": "^2.3.8",
     "web3": "^1.0.0-beta.50",

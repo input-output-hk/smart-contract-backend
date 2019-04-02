@@ -11,7 +11,7 @@ describe('bundle management', () => {
   beforeEach(() => {
     nock('http://localhost:22222')
       .get('/')
-      .reply(200, { bundle })
+      .reply(200, bundle)
   })
 
   afterEach(async () => {

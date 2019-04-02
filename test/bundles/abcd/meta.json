@@ -1,0 +1,6 @@
+{
+  "engine": "plutus",
+  "executableType": "docker",
+  "hash": "nxitARhFGGcIGFcKGJ4Y5BgcGC0TGDgYLBiQGIYBGMYYzRgiDxjjGBoYtBjRGDcYrA8YRRhZGJ0YL",
+  "dockerImageRepository": "samjeston/smart_contract_server_mock"
+}

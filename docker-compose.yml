@@ -9,12 +9,14 @@ services:
       - API_PORT=8079
       - CONTRACT_PROXY_PORT=8081
       - EXECUTION_SERVICE_URI=http://docker_execution:9000
-      - CONTRACT_SERVER_LOWER_PORT_BOUND=10000
-      - CONTRACT_SERVER_UPPER_PORT_BOUND=10999
+      - CONTRACT_SERVER_LOWER_PORT_BOUND=8082
+      - CONTRACT_SERVER_UPPER_PORT_BOUND=8900
     # volumes:
-    #   - ./dist/server:/application/server
+    #   - ./dist/server:/application/dist/server
     ports:
       - 8079:8079
+      - 8081:8081
+      - 8082:8082
   docker_execution:
     build:
       context: .
@@ -28,6 +30,19 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       # - ./dist/swagger.json:/application/dist/swagger.json
-      # - ./dist/execution_engines/docker:/application/execution_engines/docker
+      # - ./dist/execution_engines/docker:/application/dist/execution_engines/docker
     ports:
       - 9000:9000
+  bundle_server:
+    build:
+      context: .
+      target: bundle_server
+    init: true
+    environment:
+      - BUNDLE_SERVER_PORT=9001
+      - BUNDLE_LOCATION=bundles
+    volumes:
+      - ./test/bundles:/application/bundles
+      # - ./dist/bundle_server:/application/dist/bundle_server
+    ports:
+      - 9001:9001

@@ -9,17 +9,11 @@ import {
 
 interface LoadSmartContractRequest {
   contractAddress: string
-  executable: string
+  dockerImageRepository: string
 }
 
 interface UnloadSmartContractRequest {
   contractAddress: string
-}
-
-interface ExecuteContractRequest {
-  contractAddress: string
-  method: string
-  methodArguments: string[]
 }
 
 type SmartContractResponse = any
@@ -28,12 +22,13 @@ type SmartContractResponse = any
 export class ContainerController extends Controller {
   @SuccessResponse('204', 'No Content')
   @Post('loadSmartContract')
-  public async loadSmartContract (@Body() { contractAddress, executable }: LoadSmartContractRequest): Promise<void> {
+  public async loadSmartContract (@Body() { contractAddress, dockerImageRepository }: LoadSmartContractRequest): Promise<void> {
     const { CONTAINER_LOWER_PORT_BOUND, CONTAINER_UPPER_PORT_BOUND } = process.env
+    contractAddress = contractAddress.toLowerCase()
     this.setStatus(204)
     await loadContainer({
       contractAddress,
-      executable,
+      dockerImageRepository,
       lowerPortBound: Number(CONTAINER_LOWER_PORT_BOUND),
       upperPortBound: Number(CONTAINER_UPPER_PORT_BOUND)
     })
@@ -43,13 +38,15 @@ export class ContainerController extends Controller {
   @Post('unloadSmartContract')
   public async unloadSmartContract (@Body() { contractAddress }: UnloadSmartContractRequest): Promise<void> {
     this.setStatus(204)
+    contractAddress = contractAddress.toLowerCase()
     await unloadContainer(contractAddress)
   }
 
   @SuccessResponse('201', 'Created')
-  @Post('execute')
-  public async execute (@Body() { contractAddress, method, methodArguments }: ExecuteContractRequest): Promise<{ data: SmartContractResponse } | { error: string }> {
+  @Post('execute/{contractAddress}/{method}')
+  public async execute (contractAddress: string, method: string, @Body() methodArguments: any): Promise<{ data: SmartContractResponse } | { error: string }> {
     const { RUNTIME } = process.env
+    contractAddress = contractAddress.toLowerCase()
 
     let contractEndpoint: string
     const containerNotFoundError = { error: 'Container not initialized. Call /loadContainer and try again' }
@@ -73,11 +70,7 @@ export class ContainerController extends Controller {
 
     this.setStatus(201)
 
-    const result = await axios.post(contractEndpoint, {
-      method,
-      method_arguments: methodArguments
-    })
-
+    const result = await axios.post(`${contractEndpoint}/${method}`, methodArguments)
     return { data: result.data }
   }
 }

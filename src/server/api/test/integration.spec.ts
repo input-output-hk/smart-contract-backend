@@ -18,11 +18,15 @@ describe('Integration Suite', () => {
   beforeEach(async () => {
     nock('http://localhost:22222')
       .get('/')
-      .reply(200, { bundle })
+      .reply(200, bundle)
+
+    nock('http://localhost:5003')
+      .post('/loadSmartContract')
+      .reply(201, { data: {} })
 
     process.env.API_PORT = '5001'
     process.env.CONTRACT_PROXY_PORT = '5002'
-    process.env.EXECUTION_SERVICE_URI = ''
+    process.env.EXECUTION_SERVICE_URI = '5003'
     process.env.CONTRACT_SERVER_LOWER_PORT_BOUND = '10000'
     process.env.CONTRACT_SERVER_UPPER_PORT_BOUND = '10100'
 

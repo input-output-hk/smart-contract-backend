@@ -28,6 +28,7 @@ export function configureApi () {
       return res.status(400).json({ error: err.fields })
     }
 
+    console.log(err)
     res.status(500).json({ error: 'Internal Server Error' })
   })
 

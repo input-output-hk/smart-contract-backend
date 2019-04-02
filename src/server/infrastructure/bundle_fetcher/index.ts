@@ -4,8 +4,9 @@ const decompress = require('decompress')
 
 export interface ContractMeta {
   engine: 'solidity' | 'plutus'
-  executableType: 'x86' | 'wasm' | 'abi'
+  executableType: 'docker' | 'wasm' | 'abi'
   hash: string
+  dockerImageRepository?: string
 }
 
 export async function fetchAndWriteBundle ({ bundlePath, bundleDir, location }: { bundlePath: string, bundleDir: string, location: string }): Promise<void> {
@@ -13,7 +14,7 @@ export async function fetchAndWriteBundle ({ bundlePath, bundleDir, location }: 
     .catch(() => { throw new Error(`Bundle not available at ${location}`) })
 
   await createDirectory(bundleDir)
-  const bundle = Buffer.from(bundleResponse.data.bundle, 'base64')
+  const bundle = Buffer.from(bundleResponse.data, 'base64')
 
   await writeFile(bundlePath, bundle)
   await decompress(bundlePath, bundleDir)
@@ -39,6 +40,21 @@ export async function loadBundle (contractAddress: string, location: string): Pr
   const graphQlSchema = require(`${bundleDir}/graphQlSchema.js`)
   const contractMeta: ContractMeta = require(`${bundleDir}/meta.json`)
   return { graphQlSchema, engine: contractMeta.engine }
+}
+
+export async function getImageRepository (contractAddress: string): Promise<string> {
+  const { bundleDir, exists } = await getBundleInfo(contractAddress)
+  if (!exists) {
+    throw new Error('The bundle must be loaded before requesting the image repository')
+  }
+
+  const meta = require(`${bundleDir}/meta.json`)
+
+  if (!meta || !meta.dockerImageRepository) {
+    throw new Error('No docker image repository provided in the contract meta')
+  }
+
+  return meta.dockerImageRepository
 }
 
 export async function unloadBundle (contractAddress: string): Promise<{}> {

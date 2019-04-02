@@ -9,4 +9,5 @@ This is a mocked interface, and it's final design is still unknown. The current 
 1. Update `src/main.rs` such that the exposed HTTP endpoints match a valid Plutus contract interface
 2. rustup target add x86_64-unknown-linux-gnu 
 3. Compile binary: `cargo build --release --target x86_64-unknown-linux-gnu`
-4. Generate the base64 output: `base64 target/release/smart_contract_server > smart_contract_server_base64.txt`
+4a. For local use, `docker build -t samjeston/smart_contract_server_mock
+4b. Sam needs to push the updated mock for CI usage until its in a shared location
