@@ -1,9 +1,25 @@
 steps:
-  - label: 'Smart Contract Backend docker-x86_64-darwin'
-    command: npm test
-    agents:
-      system: x86_64-darwin
+  - label: 'Smart Contract Backend Test Suite'
+    name: ":node:"
+    command:
+      - "npm install"
+      - "npm test"
     plugins:
-      - docker-compose#v3.0.0:
-          run: smart_contract_backend_test
-          config: docker-compose.test.yml
+      - docker#v3.0.1:
+          image: "node:10"
+          mounts:
+          - /var/run/docker.sock:/var/run/docker.sock
+          environment:
+          - API_PORT=8079
+          - CONTRACT_PROXY_PORT=8081
+          - EXECUTION_SERVICE_URI=http://docker_execution:9000
+          - CONTRACT_SERVER_LOWER_PORT_BOUND=10000
+          - CONTRACT_SERVER_UPPER_PORT_BOUND=10999
+          - DOCKER_EXECUTION_API_PORT=9000
+          - CONTAINER_LOWER_PORT_BOUND=11000
+          - CONTAINER_UPPER_PORT_BOUND=12000
+          - RUNTIME=docker
+          network: "smart-contract-backend_default"
+    agents:
+      docker: "true"
+      node: "true"
