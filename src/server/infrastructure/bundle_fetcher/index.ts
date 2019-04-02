@@ -48,7 +48,7 @@ export async function getImageRepository (contractAddress: string): Promise<stri
     throw new Error('The bundle must be loaded before requesting the image repository')
   }
 
-  const meta = require(`${bundleDir}/executable.json`)
+  const meta = require(`${bundleDir}/meta.json`)
 
   if (!meta || !meta.dockerImageRepository) {
     throw new Error('No docker image repository provided in the contract meta')
