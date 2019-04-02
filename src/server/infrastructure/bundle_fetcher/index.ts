@@ -45,7 +45,7 @@ export async function loadBundle (contractAddress: string, location: string): Pr
 export async function getImageRepository (contractAddress: string): Promise<string> {
   const { bundleDir, exists } = await getBundleInfo(contractAddress)
   if (!exists) {
-    throw new Error('The bundle must be loaded before requesting the executable')
+    throw new Error('The bundle must be loaded before requesting the image repository')
   }
 
   const meta = require(`${bundleDir}/executable.json`)
