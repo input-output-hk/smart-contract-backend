@@ -40,6 +40,7 @@ services:
     init: true
     environment:
       - BUNDLE_SERVER_PORT=9001
+      - BUNDLE_LOCATION=bundles
     volumes:
       - ./test/bundles:/application/bundles
       # - ./dist/bundle_server:/application/dist/bundle_server

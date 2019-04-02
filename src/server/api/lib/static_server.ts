@@ -52,7 +52,6 @@ export function buildApiServer (pubSub: PubSub) {
             .then(({ graphQlSchema, engine }) => addServer({ graphQlSchema, engine, contractAddress }))
             .then(() => initializeContractEngine(contractAddress))
             .then(() => true)
-            .catch(e => console.log(e))
         }
       },
       Subscription: {
