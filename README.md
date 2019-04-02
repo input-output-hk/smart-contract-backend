@@ -16,6 +16,8 @@ Run the test suit with `npm test`
 
 A running Docker daemon is required for the tests to run.
 
+Depending on network speed, you may need to run `docker pull samjeston/smart_contract_server_mock` prior to running the test suite to avoid timeouts.
+
 ### Services
 #### Server
 ##### API

@@ -1,11 +1,11 @@
 import * as Docker from 'dockerode'
 const fp = require('find-free-port')
 
-export function initializeDockerClient() {
+export function initializeDockerClient () {
   return new Docker({ socketPath: '/var/run/docker.sock' })
 }
 
-export async function findContainerId(contractAddress: string): Promise<{ containerId: string }> {
+export async function findContainerId (contractAddress: string): Promise<{ containerId: string }> {
   const docker = initializeDockerClient()
   const containers = await docker.listContainers()
   const targetContainer = containers.find((container) => container.Names[0] === `/${contractAddress}`)
@@ -13,7 +13,7 @@ export async function findContainerId(contractAddress: string): Promise<{ contai
   return { containerId: targetContainer.Id }
 }
 
-export async function findContainerPort(contractAddress: string): Promise<number> {
+export async function findContainerPort (contractAddress: string): Promise<number> {
   const { containerId } = await findContainerId(contractAddress)
   if (!containerId) return 0
 
@@ -24,7 +24,7 @@ export async function findContainerPort(contractAddress: string): Promise<number
   return Number(portMappings[0].HostPort)
 }
 
-export async function createContainer({ contractAddress, dockerImageRepository, lowerPortBound, upperPortBound }: { contractAddress: string, dockerImageRepository: string, lowerPortBound: number, upperPortBound: number }) {
+export async function createContainer ({ contractAddress, dockerImageRepository, lowerPortBound, upperPortBound }: { contractAddress: string, dockerImageRepository: string, lowerPortBound: number, upperPortBound: number }) {
   const { RUNTIME } = process.env
   const docker = initializeDockerClient()
   const [freePort] = await fp(lowerPortBound, upperPortBound)
@@ -56,15 +56,33 @@ export async function createContainer({ contractAddress, dockerImageRepository, 
   return { port: freePort }
 }
 
-export async function loadContainer({ dockerImageRepository, contractAddress, lowerPortBound, upperPortBound }: { executable: string, contractAddress: string, lowerPortBound: number, upperPortBound: number }): Promise<{ port: number }> {
+export function pullContainer (dockerImageRepository: string) {
+  return new Promise((resolve, reject) => {
+    const docker = initializeDockerClient()
+    docker.pull(dockerImageRepository, (err: Error, stream: any) => {
+      if (err) return reject(err)
+
+      const onFinished = (err: Error) => {
+        if (err) return reject(err)
+        resolve()
+      }
+
+      const onProgress = (): undefined => undefined
+      docker.modem.followProgress(stream, onFinished, onProgress)
+    })
+  })
+}
+
+export async function loadContainer ({ dockerImageRepository, contractAddress, lowerPortBound, upperPortBound }: { dockerImageRepository: string, contractAddress: string, lowerPortBound: number, upperPortBound: number }): Promise<{ port: number }> {
   contractAddress = contractAddress.toLowerCase()
   const containerRunning = (await findContainerId(contractAddress)).containerId
   if (containerRunning) return
 
+  await pullContainer(dockerImageRepository)
   return createContainer({ contractAddress, dockerImageRepository, lowerPortBound, upperPortBound })
 }
 
-export async function unloadContainer(contractAddress: string) {
+export async function unloadContainer (contractAddress: string) {
   contractAddress = contractAddress.toLowerCase()
   const { containerId } = await findContainerId(contractAddress)
   if (!containerId) return

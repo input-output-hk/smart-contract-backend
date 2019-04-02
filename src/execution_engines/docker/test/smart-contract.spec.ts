@@ -2,9 +2,8 @@ import { expect } from 'chai'
 import { configureApi, bootApi } from '../api'
 import * as request from 'supertest'
 import { Server } from 'http'
-import { readFileSync } from 'fs'
 import { loadContainer, initializeDockerClient, findContainerId } from '../docker-api'
-const executable = readFileSync(`${__dirname}/../../../../test/smart_contract_server_mock/smart_contract_server_base64.txt`)
+const MOCK_IMAGE = 'samjeston/smart_contract_server_mock'
 
 describe('api', () => {
   let app: Server
@@ -19,7 +18,7 @@ describe('api', () => {
     app.close()
     const docker = initializeDockerClient()
     const containers = await docker.listContainers()
-    const testContainers = containers.filter(container => container.Image === 'i-abcd')
+    const testContainers = containers.filter(container => container.Image === MOCK_IMAGE)
     await Promise.all(testContainers.map(container => docker.getContainer(container.Id).kill()))
   })
 
@@ -34,7 +33,7 @@ describe('api', () => {
     it('creates a contract container with the correct name', () => {
       return request(app)
         .post('/loadSmartContract')
-        .send({ contractAddress: 'abcd', executable: executable.toString() })
+        .send({ contractAddress: 'abcd', dockerImageRepository: MOCK_IMAGE })
         .set('Accept', 'application/json')
         .expect(204)
         .then(async () => {
@@ -46,7 +45,7 @@ describe('api', () => {
     it('throws a 400 if contract address is missing in the request body', () => {
       return request(app)
         .post('/loadSmartContract')
-        .send({ executable: executable.toString() })
+        .send({ dockerImageRepository: MOCK_IMAGE })
         .set('Accept', 'application/json')
         .expect(400)
     })
@@ -62,7 +61,7 @@ describe('api', () => {
 
   describe('/unloadSmartContract', () => {
     it('removes a contract container with the corresponding name', async () => {
-      await loadContainer({ executable: executable.toString(), contractAddress: 'abcd', lowerPortBound: 10000, upperPortBound: 11000 })
+      await loadContainer({ dockerImageRepository: MOCK_IMAGE, contractAddress: 'abcd', lowerPortBound: 10000, upperPortBound: 11000 })
 
       return request(app)
         .post('/unloadSmartContract')
@@ -86,7 +85,7 @@ describe('api', () => {
 
   describe('/execute', () => {
     it('successfully executes a method against a running contract', async () => {
-      await loadContainer({ executable: executable.toString(), contractAddress: 'abcd', lowerPortBound: 10000, upperPortBound: 11000 })
+      await loadContainer({ dockerImageRepository: MOCK_IMAGE, contractAddress: 'abcd', lowerPortBound: 10000, upperPortBound: 11000 })
 
       return request(app)
         .post('/execute/abcd/add')
