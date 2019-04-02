@@ -22,8 +22,9 @@ type SmartContractResponse = any
 export class ContainerController extends Controller {
   @SuccessResponse('204', 'No Content')
   @Post('loadSmartContract')
-  public async loadSmartContract (@Body() { contractAddress, dockerImageRepository }: LoadSmartContractRequest): Promise<void> {
+  public async loadSmartContract(@Body() { contractAddress, dockerImageRepository }: LoadSmartContractRequest): Promise<void> {
     const { CONTAINER_LOWER_PORT_BOUND, CONTAINER_UPPER_PORT_BOUND } = process.env
+    contractAddress = contractAddress.toLowerCase()
     this.setStatus(204)
     await loadContainer({
       contractAddress,
@@ -35,14 +36,15 @@ export class ContainerController extends Controller {
 
   @SuccessResponse('204', 'No Content')
   @Post('unloadSmartContract')
-  public async unloadSmartContract (@Body() { contractAddress }: UnloadSmartContractRequest): Promise<void> {
+  public async unloadSmartContract(@Body() { contractAddress }: UnloadSmartContractRequest): Promise<void> {
     this.setStatus(204)
+    contractAddress = contractAddress.toLowerCase()
     await unloadContainer(contractAddress)
   }
 
   @SuccessResponse('201', 'Created')
   @Post('execute/{contractAddress}/{method}')
-  public async execute (contractAddress: string, method: string, @Body() methodArguments: any): Promise<{ data: SmartContractResponse } | { error: string }> {
+  public async execute(contractAddress: string, method: string, @Body() methodArguments: any): Promise<{ data: SmartContractResponse } | { error: string }> {
     const { RUNTIME } = process.env
     contractAddress = contractAddress.toLowerCase()
 
