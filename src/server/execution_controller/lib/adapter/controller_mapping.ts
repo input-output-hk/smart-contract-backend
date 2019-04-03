@@ -23,7 +23,7 @@ export async function executeContract (payload: ContractExecutionInstruction, op
       await requestSignature({ publicKey: payload.originatorPk, transaction: transactionS }, opts.cardanoClientProxiUri)
       return transactionS
     case SmartContractEngine.plutus:
-      const transactionP = await solidityExecutionController.execute(payload, opts.plutus.executionEndpoint)
+      const transactionP = await plutusExecutionController.execute(payload, opts.plutus.executionEndpoint)
       await requestSignature({ publicKey: payload.originatorPk, transaction: transactionP }, opts.cardanoClientProxiUri)
       return transactionP
     default:
