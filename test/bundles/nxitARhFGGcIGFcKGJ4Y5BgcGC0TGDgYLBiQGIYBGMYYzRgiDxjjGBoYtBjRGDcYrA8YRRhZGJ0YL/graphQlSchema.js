@@ -1,125 +1,149 @@
-module.exports = {
-  typeDefs: {
-    "kind": "Document",
-    "definitions": [
-      {
-        "kind": "ObjectTypeDefinition",
-        "name": {
-          "kind": "Name",
-          "value": "Query"
-        },
-        "interfaces": [],
-        "directives": [],
-        "fields": [
-          {
-            "kind": "FieldDefinition",
-            "name": {
-              "kind": "Name",
-              "value": "stub"
-            },
-            "arguments": [],
-            "type": {
-              "kind": "NonNullType",
-              "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "Boolean"
-                }
-              }
-            },
-            "directives": []
-          }
-        ]
-      },
-      {
-        "kind": "ObjectTypeDefinition",
-        "name": {
-          "kind": "Name",
-          "value": "Mutation"
-        },
-        "interfaces": [],
-        "directives": [],
-        "fields": [
-          {
-            "kind": "FieldDefinition",
-            "name": {
-              "kind": "Name",
-              "value": "lock"
-            },
-            "arguments": [
-              {
-                "kind": "InputValueDefinition",
-                "name": {
-                  "kind": "Name",
-                  "value": "secretWord"
-                },
-                "type": {
-                  "kind": "NonNullType",
-                  "type": {
-                    "kind": "NamedType",
-                    "name": {
-                      "kind": "Name",
-                      "value": "String"
-                    }
-                  }
-                },
-                "directives": []
+module.exports = function (executionControler) {
+  return {
+    typeDefs: {
+      "kind": "Document",
+      "definitions": [
+        {
+          "kind": "ObjectTypeDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "Query"
+          },
+          "interfaces": [],
+          "directives": [],
+          "fields": [
+            {
+              "kind": "FieldDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "stub"
               },
-              {
-                "kind": "InputValueDefinition",
-                "name": {
-                  "kind": "Name",
-                  "value": "amount"
-                },
-                "type": {
-                  "kind": "NonNullType",
-                  "type": {
-                    "kind": "NamedType",
-                    "name": {
-                      "kind": "Name",
-                      "value": "Int"
-                    }
-                  }
-                },
-                "directives": []
-              }
-            ],
-            "type": {
-              "kind": "NonNullType",
+              "arguments": [],
               "type": {
-                "kind": "NamedType",
-                "name": {
-                  "kind": "Name",
-                  "value": "String"
+                "kind": "NonNullType",
+                "type": {
+                  "kind": "NamedType",
+                  "name": {
+                    "kind": "Name",
+                    "value": "Boolean"
+                  }
                 }
-              }
-            },
-            "directives": []
-          }
-        ]
-      }
-    ],
-    "loc": {
-      "start": 0,
-      "end": 114
-    }
-  },
-  resolvers: {
-    Query: {
-      stub() {
-        return true
+              },
+              "directives": []
+            }
+          ]
+        },
+        {
+          "kind": "ObjectTypeDefinition",
+          "name": {
+            "kind": "Name",
+            "value": "Mutation"
+          },
+          "interfaces": [],
+          "directives": [],
+          "fields": [
+            {
+              "kind": "FieldDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "lock"
+              },
+              "arguments": [
+                {
+                  "kind": "InputValueDefinition",
+                  "name": {
+                    "kind": "Name",
+                    "value": "secretWord"
+                  },
+                  "type": {
+                    "kind": "NonNullType",
+                    "type": {
+                      "kind": "NamedType",
+                      "name": {
+                        "kind": "Name",
+                        "value": "String"
+                      }
+                    }
+                  },
+                  "directives": []
+                },
+                {
+                  "kind": "InputValueDefinition",
+                  "name": {
+                    "kind": "Name",
+                    "value": "amount"
+                  },
+                  "type": {
+                    "kind": "NonNullType",
+                    "type": {
+                      "kind": "NamedType",
+                      "name": {
+                        "kind": "Name",
+                        "value": "Int"
+                      }
+                    }
+                  },
+                  "directives": []
+                },
+                {
+                  "kind": "InputValueDefinition",
+                  "name": {
+                    "kind": "Name",
+                    "value": "originatorPk"
+                  },
+                  "type": {
+                    "kind": "NonNullType",
+                    "type": {
+                      "kind": "NamedType",
+                      "name": {
+                        "kind": "Name",
+                        "value": "String"
+                      }
+                    }
+                  },
+                  "directives": []
+                }
+              ],
+              "type": {
+                "kind": "NonNullType",
+                "type": {
+                  "kind": "NamedType",
+                  "name": {
+                    "kind": "Name",
+                    "value": "String"
+                  }
+                }
+              },
+              "directives": []
+            }
+          ]
+        }
+      ],
+      "loc": {
+        "start": 0,
+        "end": 114
       }
     },
-    Mutation: {
-      lock(_, { secretWord, amount }) {
-        const contractAddress = 'nxitARhFGGcIGFcKGJ4Y5BgcGC0TGDgYLBiQGIYBGMYYzRgiDxjjGBoYtBjRGDcYrA8YRRhZGJ0YL'
-        const executionUrl = process.env.EXECUTION_SERVICE_URI
-        const axios = require('axios')
-        if (!executionUrl || !axios) throw new Error('Environment lacks dependencies')
+    resolvers: {
+      Query: {
+        stub() {
+          return true
+        }
+      },
+      Mutation: {
+        lock(_, { secretWord, amount }) {
+          const { secretWord, amount } = args
+          const instruction = {
+            engine: 'plutus',
+            method: 'add',
+            contractAddress: 'nxitARhFGGcIGFcKGJ4Y5BgcGC0TGDgYLBiQGIYBGMYYzRgiDxjjGBoYtBjRGDcYrA8YRRhZGJ0YL',
+            methodArguments: { secretWord, amount },
+            originatorPk: args.originatorPk
+          }
 
-        return axios.post(`${executionUrl}/${contractAddress}/lock`, { secretWord, amount })
-          .then(({ data }) => data)
+          // Submit to execution controller
+          executionController.executeContract(instruction)
+        }
       }
     }
   }

@@ -1,9 +1,9 @@
 import { expect, use } from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
-
 import { getInitializedContracts, closeAndRemoveServer, addServer } from './contract_servers'
 import { contractServers, ContractServer, availablePorts } from '../../infrastructure/storage'
 import { ServerInfo, gql } from 'apollo-server'
+import { SmartContractEngine } from '../../execution_controller/lib/adapter'
 use(chaiAsPromised)
 
 describe('contracts', () => {
@@ -13,7 +13,7 @@ describe('contracts', () => {
 
       const server: ContractServer = {
         contractAddress: '0xAB',
-        engine: 'solidity',
+        engine: SmartContractEngine.solidity,
         port: 100,
         graphQlInstance: undefined,
         graphQlSchema: {}
@@ -33,7 +33,7 @@ describe('contracts', () => {
 
       const server: ContractServer = {
         contractAddress: '0xAB',
-        engine: 'solidity',
+        engine: SmartContractEngine.solidity,
         port: 100,
         graphQlInstance: {
           server: {
@@ -51,16 +51,18 @@ describe('contracts', () => {
   })
 
   describe('addServer', () => {
-    const helloWorldSchema = {
-      typeDefs: gql`
+    const helloWorldSchema = function () {
+      return {
+        typeDefs: gql`
           type Query {
             hello: String!
           }
         `,
-      resolvers: {
-        Query: {
-          hello () {
-            return 'world'
+        resolvers: {
+          Query: {
+            hello () {
+              return 'world'
+            }
           }
         }
       }
@@ -87,7 +89,7 @@ describe('contracts', () => {
 
       const contractInfo: Partial<ContractServer> = {
         contractAddress: '0xAB',
-        engine: 'solidity',
+        engine: SmartContractEngine.solidity,
         graphQlSchema: helloWorldSchema
       }
 
@@ -98,7 +100,7 @@ describe('contracts', () => {
     it('successfully creates a server and adds its reference to contractServers', async () => {
       const contractInfo: Partial<ContractServer> = {
         contractAddress: '0xAB',
-        engine: 'solidity',
+        engine: SmartContractEngine.solidity,
         graphQlSchema: helloWorldSchema
       }
 
