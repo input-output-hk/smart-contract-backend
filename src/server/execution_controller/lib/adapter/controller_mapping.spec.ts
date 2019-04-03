@@ -15,7 +15,6 @@ describe('controllerMapping', () => {
     sandbox = sinon.createSandbox()
     sandbox.stub(externalActions, 'initializeWeb3Instance').returns(web3Mock)
     requestSignatureStub = sandbox.stub(externalActions, 'requestSignature').returns(Promise.resolve({}))
-    sandbox.stub(externalActions, 'publishNewContract').returns(Promise.resolve({}))
   })
 
   afterEach(() => sandbox.restore())
@@ -97,7 +96,7 @@ describe('controllerMapping', () => {
         originatorPk: '0x54'
       }
 
-      const opts = { web3Provider: 'local', cardanoClientProxiUri: 'remote' }
+      const opts = { web3Provider: 'local', clientProxiUri: 'remote' }
 
       await contractExecutionAdapter.executeContract(executeContractArguments, opts)
       expect(executeStub.callCount).to.eql(1)
@@ -126,7 +125,7 @@ describe('controllerMapping', () => {
           walletEndpoint: 'http://wallet',
           executionEndpoint: 'http://execution'
         },
-        cardanoClientProxiUri: 'remote'
+        clientProxiUri: 'remote'
       }
 
       await contractExecutionAdapter.executeContract(executeContractArguments, opts)

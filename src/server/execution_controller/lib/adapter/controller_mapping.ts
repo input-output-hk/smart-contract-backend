@@ -20,11 +20,11 @@ export async function executeContract (payload: ContractExecutionInstruction, op
     case SmartContractEngine.solidity:
       const web3Instance = initializeWeb3Instance(opts.web3Provider)
       const transactionS = await solidityExecutionController.execute(payload, web3Instance)
-      await requestSignature({ publicKey: payload.originatorPk, transaction: transactionS }, opts.cardanoClientProxiUri)
+      await requestSignature({ publicKey: payload.originatorPk, transaction: transactionS }, opts.clientProxiUri)
       return transactionS
     case SmartContractEngine.plutus:
       const transactionP = await plutusExecutionController.execute(payload, opts.plutus.executionEndpoint)
-      await requestSignature({ publicKey: payload.originatorPk, transaction: transactionP }, opts.cardanoClientProxiUri)
+      await requestSignature({ publicKey: payload.originatorPk, transaction: transactionP }, opts.clientProxiUri)
       return transactionP
     default:
       throw new Error('Engine unsupported')

@@ -114,12 +114,15 @@ module.exports = {
     Mutation: {
       add(_, args) {
         const contractAddress = 'abcd'
-        const executionUrl = process.env.EXECUTION_SERVICE_URI
-        const axios = require('axios')
-        if (!executionUrl || !axios) throw new Error('Environment lacks dependencies')
+        const executionEndpoint = process.env.EXECUTION_SERVICE_URI
+        const walletEndpoint = process.env.WALLET_SERVICE_URI
+        const clientEndpoint = process.env.WALLET_SERVICE_URI
 
-        return axios.post(`${executionUrl}/execute/${contractAddress}/add`, args)
-          .then(({ data }) => JSON.stringify(data))
+        if (!executionEndpoint || !walletEndpoint || !clientEndpoint) throw new Error('Environment lacks dependencies')
+
+        // Craft execution instruction
+
+        // submit with controller
       }
     }
   }
