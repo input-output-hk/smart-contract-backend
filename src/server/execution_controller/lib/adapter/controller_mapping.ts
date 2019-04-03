@@ -1,4 +1,4 @@
-import { solidityExecutionController } from '../controllers'
+import { solidityExecutionController, plutusExecutionController } from '../controllers'
 import { SmartContractEngine, ContractExecutionInstruction } from '.'
 import { ContractExecutionOptions } from '../..'
 import { requestSignature, initializeWeb3Instance } from './external'
@@ -8,6 +8,8 @@ export function readContract (payload: ContractExecutionInstruction, opts: Contr
     case SmartContractEngine.solidity:
       const web3Instance = initializeWeb3Instance(opts.web3Provider)
       return solidityExecutionController.call(payload, web3Instance)
+    case SmartContractEngine.plutus:
+      return plutusExecutionController.call(payload, opts.plutus.executionEndpoint)
     default:
       throw new Error('Engine unsupported')
   }
@@ -20,6 +22,10 @@ export async function executeContract (payload: ContractExecutionInstruction, op
       const transactionS = await solidityExecutionController.execute(payload, web3Instance)
       await requestSignature({ publicKey: payload.originatorPk, transaction: transactionS }, opts.cardanoClientProxiUri)
       return transactionS
+    case SmartContractEngine.plutus:
+      const transactionP = await solidityExecutionController.execute(payload, opts.plutus.executionEndpoint)
+      await requestSignature({ publicKey: payload.originatorPk, transaction: transactionP }, opts.cardanoClientProxiUri)
+      return transactionP
     default:
       throw new Error('Engine unsupported')
   }
@@ -30,6 +36,8 @@ export function submitSignedTransaction ({ signedTransaction, engine }: { signed
     case SmartContractEngine.solidity:
       const web3Instance = initializeWeb3Instance(opts.web3Provider)
       return solidityExecutionController.submit(signedTransaction, web3Instance)
+    case SmartContractEngine.plutus:
+      return plutusExecutionController.submit(signedTransaction, opts.plutus.walletEndpoint)
     default:
       throw new Error('Engine unsupported')
   }

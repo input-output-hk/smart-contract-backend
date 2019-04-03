@@ -7,3 +7,4 @@ export interface ExecutionController<C, E, S> {
 }
 
 export { solidityExecutionController } from './solidity'
+export { plutusExecutionController } from './plutus'

@@ -2,7 +2,10 @@ import { contractExecutionAdapter, SmartContractEngine, ContractExecutionInstruc
 
 export interface ContractExecutionOptions {
   web3Provider?: string
-  plutusProvider?: string
+  plutus?: {
+    executionEndpoint: string
+    walletEndpoint: string
+  }
   cardanoClientProxiUri?: string
 }
 

@@ -3,7 +3,8 @@ import { readContract, executeContract, submitSignedTransaction } from './contro
 import { publishNewContract } from './external'
 
 export enum SmartContractEngine {
-  solidity = 'solidity'
+  solidity = 'solidity',
+  plutus = 'plutus'
 }
 
 export interface ContractExecutionInstruction {
@@ -11,8 +12,8 @@ export interface ContractExecutionInstruction {
   originatorPk?: string
   method: string
   contractAddress: string
-  contractCode: string
-  methodArguments?: any[]
+  contractCode?: string
+  methodArguments?: any
 }
 
 export interface ContractExecutionAdapter {
