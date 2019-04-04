@@ -32,7 +32,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       # - ./dist/swagger.json:/application/dist/swagger.json
-      - ./dist/execution_engines/docker:/application/dist/execution_engines/docker
+      # - ./dist/execution_engines/docker:/application/dist/execution_engines/docker
     ports:
       - 9000:9000
   bundle_server:
