@@ -9,6 +9,7 @@ services:
       - API_PORT=8079
       - CONTRACT_PROXY_PORT=8081
       - STATIC_API_URI=http://localhost:8079
+      - WALLET_SERVICE_URI=http://wallet:0000
       - EXECUTION_SERVICE_URI=http://docker_execution:9000
       - CONTRACT_SERVER_LOWER_PORT_BOUND=8082
       - CONTRACT_SERVER_UPPER_PORT_BOUND=8900
@@ -31,7 +32,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       # - ./dist/swagger.json:/application/dist/swagger.json
-      # - ./dist/execution_engines/docker:/application/dist/execution_engines/docker
+      - ./dist/execution_engines/docker:/application/dist/execution_engines/docker
     ports:
       - 9000:9000
   bundle_server:

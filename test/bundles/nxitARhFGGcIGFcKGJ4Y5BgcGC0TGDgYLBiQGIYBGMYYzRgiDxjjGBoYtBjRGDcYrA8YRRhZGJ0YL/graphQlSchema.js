@@ -1,4 +1,4 @@
-module.exports = function (executionControler) {
+module.exports = function (executionController) {
   return {
     typeDefs: {
       "kind": "Document",
@@ -203,7 +203,7 @@ module.exports = function (executionControler) {
         startGame() {
           const instruction = {
             engine: 'plutus',
-            method: 'startGame',
+            method: 'initialise',
             contractAddress: 'nxitARhFGGcIGFcKGJ4Y5BgcGC0TGDgYLBiQGIYBGMYYzRgiDxjjGBoYtBjRGDcYrA8YRRhZGJ0YL',
           }
 
