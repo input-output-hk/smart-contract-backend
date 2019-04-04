@@ -204,22 +204,24 @@ module.exports = function (executionController) {
           const instruction = {
             engine: 'plutus',
             method: 'initialise',
-            contractAddress: 'nxitARhFGGcIGFcKGJ4Y5BgcGC0TGDgYLBiQGIYBGMYYzRgiDxjjGBoYtBjRGDcYrA8YRRhZGJ0YL',
+            contractAddress: 'plutusGuessingGame',
           }
 
-          executionController.executeContract(instruction)
+          return executionController.executeContract(instruction)
+            .then(res => JSON.stringify(res))
         },
         lock(_, { secretWord, amount }) {
           const { secretWord, amount } = args
           const instruction = {
             engine: 'plutus',
             method: 'lock',
-            contractAddress: 'nxitARhFGGcIGFcKGJ4Y5BgcGC0TGDgYLBiQGIYBGMYYzRgiDxjjGBoYtBjRGDcYrA8YRRhZGJ0YL',
+            contractAddress: 'plutusGuessingGame',
             methodArguments: { secretWord, amount },
             originatorPk: args.originatorPk
           }
 
-          executionController.executeContract(instruction)
+          return executionController.executeContract(instruction)
+            .then(res => JSON.stringify(res))
         }
       }
     }
