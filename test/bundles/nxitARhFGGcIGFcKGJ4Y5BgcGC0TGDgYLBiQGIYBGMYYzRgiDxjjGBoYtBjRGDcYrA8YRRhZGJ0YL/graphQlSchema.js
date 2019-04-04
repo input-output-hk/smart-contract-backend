@@ -46,27 +46,28 @@ module.exports = function (executionControler) {
               "kind": "FieldDefinition",
               "name": {
                 "kind": "Name",
+                "value": "startGame"
+              },
+              "arguments": [],
+              "type": {
+                "kind": "NonNullType",
+                "type": {
+                  "kind": "NamedType",
+                  "name": {
+                    "kind": "Name",
+                    "value": "String"
+                  }
+                }
+              },
+              "directives": []
+            },
+            {
+              "kind": "FieldDefinition",
+              "name": {
+                "kind": "Name",
                 "value": "lock"
               },
               "arguments": [
-                {
-                  "kind": "InputValueDefinition",
-                  "name": {
-                    "kind": "Name",
-                    "value": "secretWord"
-                  },
-                  "type": {
-                    "kind": "NonNullType",
-                    "type": {
-                      "kind": "NamedType",
-                      "name": {
-                        "kind": "Name",
-                        "value": "String"
-                      }
-                    }
-                  },
-                  "directives": []
-                },
                 {
                   "kind": "InputValueDefinition",
                   "name": {
@@ -89,7 +90,7 @@ module.exports = function (executionControler) {
                   "kind": "InputValueDefinition",
                   "name": {
                     "kind": "Name",
-                    "value": "originatorPk"
+                    "value": "secretWord"
                   },
                   "type": {
                     "kind": "NonNullType",
@@ -99,6 +100,74 @@ module.exports = function (executionControler) {
                         "kind": "Name",
                         "value": "String"
                       }
+                    }
+                  },
+                  "directives": []
+                },
+                {
+                  "kind": "InputValueDefinition",
+                  "name": {
+                    "kind": "Name",
+                    "value": "originatorPk"
+                  },
+                  "type": {
+                    "kind": "NamedType",
+                    "name": {
+                      "kind": "Name",
+                      "value": "String"
+                    }
+                  },
+                  "directives": []
+                }
+              ],
+              "type": {
+                "kind": "NonNullType",
+                "type": {
+                  "kind": "NamedType",
+                  "name": {
+                    "kind": "Name",
+                    "value": "String"
+                  }
+                }
+              },
+              "directives": []
+            },
+            {
+              "kind": "FieldDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "guess"
+              },
+              "arguments": [
+                {
+                  "kind": "InputValueDefinition",
+                  "name": {
+                    "kind": "Name",
+                    "value": "word"
+                  },
+                  "type": {
+                    "kind": "NonNullType",
+                    "type": {
+                      "kind": "NamedType",
+                      "name": {
+                        "kind": "Name",
+                        "value": "String"
+                      }
+                    }
+                  },
+                  "directives": []
+                },
+                {
+                  "kind": "InputValueDefinition",
+                  "name": {
+                    "kind": "Name",
+                    "value": "orgininatorPk"
+                  },
+                  "type": {
+                    "kind": "NamedType",
+                    "name": {
+                      "kind": "Name",
+                      "value": "String"
                     }
                   },
                   "directives": []
@@ -121,7 +190,7 @@ module.exports = function (executionControler) {
       ],
       "loc": {
         "start": 0,
-        "end": 114
+        "end": 210
       }
     },
     resolvers: {
@@ -131,17 +200,25 @@ module.exports = function (executionControler) {
         }
       },
       Mutation: {
+        startGame() {
+          const instruction = {
+            engine: 'plutus',
+            method: 'startGame',
+            contractAddress: 'nxitARhFGGcIGFcKGJ4Y5BgcGC0TGDgYLBiQGIYBGMYYzRgiDxjjGBoYtBjRGDcYrA8YRRhZGJ0YL',
+          }
+
+          executionController.executeContract(instruction)
+        },
         lock(_, { secretWord, amount }) {
           const { secretWord, amount } = args
           const instruction = {
             engine: 'plutus',
-            method: 'add',
+            method: 'lock',
             contractAddress: 'nxitARhFGGcIGFcKGJ4Y5BgcGC0TGDgYLBiQGIYBGMYYzRgiDxjjGBoYtBjRGDcYrA8YRRhZGJ0YL',
             methodArguments: { secretWord, amount },
             originatorPk: args.originatorPk
           }
 
-          // Submit to execution controller
           executionController.executeContract(instruction)
         }
       }

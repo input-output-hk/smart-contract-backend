@@ -5,7 +5,9 @@ const typeDef = gql`
     stub: Boolean!
   }
   type Mutation {
-    add(number1: Int!, number2: Int!): String!
+    startGame: String!
+    lock(amount: Int!, word: String!, originatorPk: String): String!
+    guess(word: String!, orgininatorPk: String): String!
   }
 `
 

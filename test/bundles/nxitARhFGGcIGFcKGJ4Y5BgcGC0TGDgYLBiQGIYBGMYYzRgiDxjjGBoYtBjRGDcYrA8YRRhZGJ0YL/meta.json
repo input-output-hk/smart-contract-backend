@@ -1,5 +1,6 @@
 {
   "engine": "plutus",
   "executableType": "x86",
-  "hash": "nxitARhFGGcIGFcKGJ4Y5BgcGC0TGDgYLBiQGIYBGMYYzRgiDxjjGBoYtBjRGDcYrA8YRRhZGJ0YL"
+  "hash": "nxitARhFGGcIGFcKGJ4Y5BgcGC0TGDgYLBiQGIYBGMYYzRgiDxjjGBoYtBjRGDcYrA8YRRhZGJ0YL",
+  "dockerImageRepository": "jannmueller/plutus-contract-exe"
 }
