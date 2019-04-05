@@ -142,7 +142,8 @@ module.exports = function (executionController) {
           }
 
           // Submit to execution controller
-          executionController.executeContract(instruction)
+          return executionController.executeContract(instruction)
+            .then(res => JSON.stringify(res))
         }
       }
     }
