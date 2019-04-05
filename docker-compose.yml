@@ -13,6 +13,8 @@ services:
       - EXECUTION_SERVICE_URI=http://docker_execution:9000
       - CONTRACT_SERVER_LOWER_PORT_BOUND=8082
       - CONTRACT_SERVER_UPPER_PORT_BOUND=8900
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     # volumes:
     #   - ./dist/server:/application/dist/server
     ports:
