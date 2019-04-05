@@ -29,7 +29,7 @@ describe('dockerApi', () => {
     dockerSpecItFn('successfully boots a container that accepts HTTP on the returned port -- [docker networking]', async () => {
       await loadContainer({ dockerImageRepository: MOCK_IMAGE, contractAddress: 'abcd', lowerPortBound: 10000, upperPortBound: 11000 })
 
-      const result = await axios.post(`http://abcd:8000/add`, {
+      const result = await axios.post(`http://abcd:8080/add`, {
         number1: 1,
         number2: 2
       })

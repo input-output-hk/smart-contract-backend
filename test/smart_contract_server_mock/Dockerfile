@@ -1,8 +1,12 @@
-FROM rust:1.33-slim
+FROM rust:1.33-slim as builder
 RUN mkdir /application
 WORKDIR /application
 COPY . .
 RUN rustup update nightly
 RUN rustup default nightly
 RUN cargo build --release
-CMD "/application/target/release/smart_contract_server"
+
+FROM ubuntu:xenial
+COPY --from=builder /application/target/release/smart_contract_server .
+COPY --from=builder /application/Rocket.toml .
+CMD "/smart_contract_server"

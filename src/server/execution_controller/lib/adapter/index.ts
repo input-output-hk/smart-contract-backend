@@ -1,9 +1,9 @@
 import { ContractExecutionOptions } from '../..'
 import { readContract, executeContract, submitSignedTransaction } from './controller_mapping'
-import { publishNewContract } from './external'
 
 export enum SmartContractEngine {
-  solidity = 'solidity'
+  solidity = 'solidity',
+  plutus = 'plutus'
 }
 
 export interface ContractExecutionInstruction {
@@ -11,15 +11,11 @@ export interface ContractExecutionInstruction {
   originatorPk?: string
   method: string
   contractAddress: string
-  contractCode: string
-  methodArguments?: any[]
+  contractCode?: string
+  methodArguments?: any
 }
 
 export interface ContractExecutionAdapter {
-  publishNewContract(
-    args: { engine: SmartContractEngine, address: string, name: string, contractCode: string },
-    proxyUri: string
-  ): Promise<any>
   readContract(payload: ContractExecutionInstruction, executionOptions: ContractExecutionOptions): any
   executeContract(payload: ContractExecutionInstruction, executionOptions: ContractExecutionOptions): Promise<any>
   submitSignedTransaction(
@@ -33,7 +29,6 @@ export interface ContractExecutionAdapter {
 
 export const contractExecutionAdapter: ContractExecutionAdapter = {
   executeContract,
-  publishNewContract,
   readContract,
   submitSignedTransaction
 }

@@ -1,10 +1,11 @@
 // In-memory implementation of ContractServer references for MVP
 import { ServerInfo } from 'apollo-server'
+import { SmartContractEngine } from '../../../execution_controller/lib/adapter'
 
 export interface ContractServer {
   port: number
   contractAddress: string
-  engine: 'plutus' | 'solidity'
+  engine: SmartContractEngine
   graphQlSchema: any
   graphQlInstance: ServerInfo
 }

@@ -1,6 +1,7 @@
 import { ApolloServer, makeExecutableSchema } from 'apollo-server'
 import { ContractServer, availablePorts, contractServers } from '../../infrastructure/storage'
 import { unloadBundle } from '../../infrastructure/bundle_fetcher'
+import { initializeContractExecutionController } from './initialize_execution_controller'
 const tcpPortUsed = require('tcp-port-used')
 
 export async function addServer (contractInfo: Partial<ContractServer>): Promise<void> {
@@ -18,8 +19,10 @@ export async function addServer (contractInfo: Partial<ContractServer>): Promise
     return addServer(contractInfo)
   }
 
+  const executionController = initializeContractExecutionController(contractInfo.engine)
+
   const graphQlInstance = await new ApolloServer({
-    schema: makeExecutableSchema(contractInfo.graphQlSchema),
+    schema: makeExecutableSchema(contractInfo.graphQlSchema(executionController)),
     introspection: true
   }).listen({ port })
 

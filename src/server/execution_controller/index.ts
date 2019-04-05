@@ -2,8 +2,11 @@ import { contractExecutionAdapter, SmartContractEngine, ContractExecutionInstruc
 
 export interface ContractExecutionOptions {
   web3Provider?: string
-  plutusProvider?: string
-  cardanoClientProxiUri?: string
+  plutus?: {
+    executionEndpoint: string
+    walletEndpoint: string
+  }
+  clientProxiUri?: string
 }
 
 export class ContractExecution {
@@ -11,12 +14,6 @@ export class ContractExecution {
 
   constructor (opts: ContractExecutionOptions) {
     this.executionOptions = opts
-  }
-
-  public publishNewContract (
-    args: { engine: SmartContractEngine, address: string, name: string, contractCode: string }
-  ): Promise<any> {
-    return contractExecutionAdapter.publishNewContract(args, this.executionOptions.cardanoClientProxiUri)
   }
 
   public readContract (payload: ContractExecutionInstruction): any {

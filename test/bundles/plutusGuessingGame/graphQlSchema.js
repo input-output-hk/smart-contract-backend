@@ -46,14 +46,33 @@ module.exports = function (executionController) {
               "kind": "FieldDefinition",
               "name": {
                 "kind": "Name",
-                "value": "add"
+                "value": "startGame"
+              },
+              "arguments": [],
+              "type": {
+                "kind": "NonNullType",
+                "type": {
+                  "kind": "NamedType",
+                  "name": {
+                    "kind": "Name",
+                    "value": "String"
+                  }
+                }
+              },
+              "directives": []
+            },
+            {
+              "kind": "FieldDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "lock"
               },
               "arguments": [
                 {
                   "kind": "InputValueDefinition",
                   "name": {
                     "kind": "Name",
-                    "value": "number1"
+                    "value": "amount"
                   },
                   "type": {
                     "kind": "NonNullType",
@@ -71,7 +90,7 @@ module.exports = function (executionController) {
                   "kind": "InputValueDefinition",
                   "name": {
                     "kind": "Name",
-                    "value": "number2"
+                    "value": "secretWord"
                   },
                   "type": {
                     "kind": "NonNullType",
@@ -79,7 +98,7 @@ module.exports = function (executionController) {
                       "kind": "NamedType",
                       "name": {
                         "kind": "Name",
-                        "value": "Int"
+                        "value": "String"
                       }
                     }
                   },
@@ -92,6 +111,41 @@ module.exports = function (executionController) {
                     "value": "originatorPk"
                   },
                   "type": {
+                    "kind": "NamedType",
+                    "name": {
+                      "kind": "Name",
+                      "value": "String"
+                    }
+                  },
+                  "directives": []
+                }
+              ],
+              "type": {
+                "kind": "NonNullType",
+                "type": {
+                  "kind": "NamedType",
+                  "name": {
+                    "kind": "Name",
+                    "value": "String"
+                  }
+                }
+              },
+              "directives": []
+            },
+            {
+              "kind": "FieldDefinition",
+              "name": {
+                "kind": "Name",
+                "value": "guess"
+              },
+              "arguments": [
+                {
+                  "kind": "InputValueDefinition",
+                  "name": {
+                    "kind": "Name",
+                    "value": "word"
+                  },
+                  "type": {
                     "kind": "NonNullType",
                     "type": {
                       "kind": "NamedType",
@@ -99,6 +153,21 @@ module.exports = function (executionController) {
                         "kind": "Name",
                         "value": "String"
                       }
+                    }
+                  },
+                  "directives": []
+                },
+                {
+                  "kind": "InputValueDefinition",
+                  "name": {
+                    "kind": "Name",
+                    "value": "orgininatorPk"
+                  },
+                  "type": {
+                    "kind": "NamedType",
+                    "name": {
+                      "kind": "Name",
+                      "value": "String"
                     }
                   },
                   "directives": []
@@ -121,7 +190,7 @@ module.exports = function (executionController) {
       ],
       "loc": {
         "start": 0,
-        "end": 108
+        "end": 210
       }
     },
     resolvers: {
@@ -131,18 +200,28 @@ module.exports = function (executionController) {
         }
       },
       Mutation: {
-        add(_, args) {
-          const { number1, number2 } = args
+        startGame() {
           const instruction = {
             engine: 'plutus',
-            method: 'add',
-            contractAddress: 'abcd',
-            methodArguments: { number1, number2 },
+            method: 'initialise',
+            contractAddress: 'plutusGuessingGame',
+          }
+
+          return executionController.executeContract(instruction)
+            .then(res => JSON.stringify(res))
+        },
+        lock(_, { secretWord, amount }) {
+          const { secretWord, amount } = args
+          const instruction = {
+            engine: 'plutus',
+            method: 'lock',
+            contractAddress: 'plutusGuessingGame',
+            methodArguments: { secretWord, amount },
             originatorPk: args.originatorPk
           }
 
-          // Submit to execution controller
-          executionController.executeContract(instruction)
+          return executionController.executeContract(instruction)
+            .then(res => JSON.stringify(res))
         }
       }
     }

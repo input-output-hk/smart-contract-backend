@@ -1,9 +1,10 @@
 import axios from 'axios'
 import { checkFolderExists, createDirectory, writeFile, removeDirectoryWithContents } from '../../lib/fs'
+import { SmartContractEngine } from '../../execution_controller/lib/adapter'
 const decompress = require('decompress')
 
 export interface ContractMeta {
-  engine: 'solidity' | 'plutus'
+  engine: SmartContractEngine
   executableType: 'docker' | 'wasm' | 'abi'
   hash: string
   dockerImageRepository?: string
@@ -27,7 +28,7 @@ export async function getBundleInfo (contractAddress: string): Promise<{ bundleP
   return { bundlePath, bundleDir, exists: bundleExists }
 }
 
-export async function loadBundle (contractAddress: string, location: string): Promise<{ graphQlSchema: any, engine: 'solidity' | 'plutus' }> {
+export async function loadBundle (contractAddress: string, location: string): Promise<{ graphQlSchema: any, engine: SmartContractEngine }> {
   const { bundlePath, bundleDir, exists } = await getBundleInfo(contractAddress)
   if (!exists) {
     await fetchAndWriteBundle({

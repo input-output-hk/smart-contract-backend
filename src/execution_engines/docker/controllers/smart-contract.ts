@@ -65,12 +65,18 @@ export class ContainerController extends Controller {
         return containerNotFoundError
       }
 
-      contractEndpoint = `http://${contractAddress}:8000`
+      contractEndpoint = `http://${contractAddress}:8080`
     }
 
     this.setStatus(201)
 
-    const result = await axios.post(`${contractEndpoint}/${method}`, methodArguments)
+    let result
+    if (method === 'initialise') {
+      result = await axios.get(`${contractEndpoint}/${method}`)
+    } else {
+      result = await axios.post(`${contractEndpoint}/${method}`, methodArguments)
+    }
+
     return { data: result.data }
   }
 }

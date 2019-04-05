@@ -3,19 +3,18 @@ import * as chaiAsPromised from 'chai-as-promised'
 import * as sinon from 'sinon'
 import { contractExecutionAdapter, SmartContractEngine } from './index'
 import * as externalActions from './external'
-import { solidityExecutionController } from '../controllers'
+import { solidityExecutionController, plutusExecutionController } from '../controllers'
 use(chaiAsPromised)
 
 describe('controllerMapping', () => {
   let sandbox: sinon.SinonSandbox
-  let requestSignatureStub: sinon.SinonStub
+  // let requestSignatureStub: sinon.SinonStub
   const web3Mock = { mock: true }
 
   beforeEach(() => {
     sandbox = sinon.createSandbox()
     sandbox.stub(externalActions, 'initializeWeb3Instance').returns(web3Mock)
-    requestSignatureStub = sandbox.stub(externalActions, 'requestSignature').returns(Promise.resolve({}))
-    sandbox.stub(externalActions, 'publishNewContract').returns(Promise.resolve({}))
+    // requestSignatureStub = sandbox.stub(externalActions, 'requestSignature').returns(Promise.resolve({}))
   })
 
   afterEach(() => sandbox.restore())
@@ -37,6 +36,28 @@ describe('controllerMapping', () => {
       await contractExecutionAdapter.readContract(readContractArguments, opts)
       expect(callStub.callCount).to.eql(1)
       expect(callStub.calledWithExactly(readContractArguments, web3Mock)).to.eql(true)
+    })
+
+    it('passes the correct arguments to the ExecutionController for Plutus', async () => {
+      const callStub = sandbox.stub(plutusExecutionController, 'call')
+
+      const readContractArguments = {
+        engine: SmartContractEngine.plutus,
+        method: 'callContract',
+        contractAddress: 'abcd',
+        methodArguments: {}
+      }
+
+      const opts = {
+        plutus: {
+          walletEndpoint: 'http://wallet',
+          executionEndpoint: 'http://execution'
+        }
+      }
+
+      await contractExecutionAdapter.readContract(readContractArguments, opts)
+      expect(callStub.callCount).to.eql(1)
+      expect(callStub.calledWithExactly(readContractArguments, opts.plutus.executionEndpoint)).to.eql(true)
     })
 
     it('throws an error if the language is not supported', async () => {
@@ -75,13 +96,47 @@ describe('controllerMapping', () => {
         originatorPk: '0x54'
       }
 
-      const opts = { web3Provider: 'local', cardanoClientProxiUri: 'remote' }
+      const opts = { web3Provider: 'local', clientProxiUri: 'remote' }
 
       await contractExecutionAdapter.executeContract(executeContractArguments, opts)
       expect(executeStub.callCount).to.eql(1)
-      expect(requestSignatureStub.callCount).to.eql(1)
       expect(executeStub.calledWithExactly(executeContractArguments, web3Mock)).to.eql(true)
-      expect(requestSignatureStub.calledWithExactly({ publicKey: '0x54', transaction: executionReturnMock }, 'remote')).to.eql(true)
+
+      // Re-instate with: https://github.com/input-output-hk/smart-contract-backend/issues/26
+      // expect(requestSignatureStub.callCount).to.eql(1)
+      // expect(requestSignatureStub.calledWithExactly({ publicKey: '0x54', transaction: executionReturnMock }, 'remote')).to.eql(true)
+    })
+
+    it('passes the correct arguments to the ExecutionController for Plutus', async () => {
+      const executionReturnMock = {
+        txOut: ['x']
+      }
+
+      const executeStub = sandbox.stub(plutusExecutionController, 'execute').returns(Promise.resolve(executionReturnMock))
+
+      const executeContractArguments = {
+        engine: SmartContractEngine.plutus,
+        method: 'guess',
+        contractAddress: 'abcd',
+        methodArguments: { word: 'cake' },
+        originatorPk: '0x54'
+      }
+
+      const opts = {
+        plutus: {
+          walletEndpoint: 'http://wallet',
+          executionEndpoint: 'http://execution'
+        },
+        clientProxiUri: 'remote'
+      }
+
+      await contractExecutionAdapter.executeContract(executeContractArguments, opts)
+      expect(executeStub.callCount).to.eql(1)
+      expect(executeStub.calledWithExactly(executeContractArguments, opts.plutus.executionEndpoint)).to.eql(true)
+
+      // Re-instate with: https://github.com/input-output-hk/smart-contract-backend/issues/26
+      // expect(requestSignatureStub.callCount).to.eql(1)
+      // expect(requestSignatureStub.calledWithExactly({ publicKey: '0x54', transaction: executionReturnMock }, 'remote')).to.eql(true)
     })
 
     it('throws an error if the language is not supported', async () => {
@@ -101,7 +156,7 @@ describe('controllerMapping', () => {
 
   describe('submitSignedTransaction', () => {
     it('passes the correct arguments to the ExecutionController for Solidity', async () => {
-      const submitStub = sandbox.stub(solidityExecutionController, 'submit')
+      const submitStub = sandbox.stub(solidityExecutionController, 'submitSignedTransaction')
 
       const submitArgs = {
         signedTransaction: 'signature',
@@ -113,6 +168,26 @@ describe('controllerMapping', () => {
       await contractExecutionAdapter.submitSignedTransaction(submitArgs, opts)
       expect(submitStub.callCount).to.eql(1)
       expect(submitStub.calledWithExactly('signature', web3Mock)).to.eql(true)
+    })
+
+    it('passes the correct arguments to the ExecutionController for Plutus', async () => {
+      const submitStub = sandbox.stub(plutusExecutionController, 'submitSignedTransaction')
+
+      const submitArgs = {
+        signedTransaction: 'signature',
+        engine: SmartContractEngine.plutus
+      }
+
+      const opts = {
+        plutus: {
+          walletEndpoint: 'http://wallet',
+          executionEndpoint: 'http://execution'
+        }
+      }
+
+      await contractExecutionAdapter.submitSignedTransaction(submitArgs, opts)
+      expect(submitStub.callCount).to.eql(1)
+      expect(submitStub.calledWithExactly('signature', opts.plutus.walletEndpoint)).to.eql(true)
     })
 
     it('throws an error if the language is not supported', async () => {

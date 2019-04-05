@@ -30,7 +30,7 @@ export async function createContainer ({ contractAddress, dockerImageRepository,
   const [freePort] = await fp(lowerPortBound, upperPortBound)
   const baseHostConfig = {
     AutoRemove: true,
-    PortBindings: { '8000/tcp': [{ 'HostPort': `${freePort}` }] }
+    PortBindings: { '8080/tcp': [{ 'HostPort': `${freePort}` }] }
   }
 
   const targetHostConfig = RUNTIME === 'docker'
@@ -40,7 +40,7 @@ export async function createContainer ({ contractAddress, dockerImageRepository,
   const containerOpts: any = {
     Image: dockerImageRepository,
     name: contractAddress,
-    ExposedPorts: { [`8000/tcp`]: {} },
+    ExposedPorts: { [`8080/tcp`]: {} },
     HostConfig: targetHostConfig
   }
 

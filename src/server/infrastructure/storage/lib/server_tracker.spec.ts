@@ -1,5 +1,6 @@
 import { expect } from 'chai'
 import { ContractServer, contractServers } from '..'
+import { SmartContractEngine } from '../../../execution_controller/lib/adapter'
 
 describe('contractServers', () => {
   beforeEach(() => {
@@ -16,7 +17,7 @@ describe('contractServers', () => {
     it('creates a server and adds it to the list', () => {
       const server: ContractServer = {
         contractAddress: '0xAB',
-        engine: 'solidity',
+        engine: SmartContractEngine.solidity,
         port: 100,
         graphQlInstance: undefined,
         graphQlSchema: {}
@@ -31,7 +32,7 @@ describe('contractServers', () => {
     it('can find a server by contract address', () => {
       const server: ContractServer = {
         contractAddress: '0xAB',
-        engine: 'solidity',
+        engine: SmartContractEngine.solidity,
         port: 100,
         graphQlInstance: undefined,
         graphQlSchema: {}
@@ -50,7 +51,7 @@ describe('contractServers', () => {
     it('removes an existing contractServer from the server list', () => {
       const server: ContractServer = {
         contractAddress: '0xAB',
-        engine: 'solidity',
+        engine: SmartContractEngine.solidity,
         port: 100,
         graphQlInstance: undefined,
         graphQlSchema: {}
