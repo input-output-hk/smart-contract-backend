@@ -1,22 +1,14 @@
-import fetch from 'cross-fetch'
-import { execute, makePromise, GraphQLRequest } from 'apollo-link'
-import { HttpLink } from 'apollo-link-http'
-import gql from 'graphql-tag'
+import { getPubSubClient, PubSubTopics } from '../../../infrastructure/pubsub'
 const Web3 = require('web3')
 
 export function requestSignature (
-  { transaction, publicKey }: { transaction: any, publicKey: string },
-  proxyUri: string
+  { transaction, publicKey }: { transaction: any, publicKey: string }
 ) {
-  const link = new HttpLink({ uri: proxyUri, fetch })
-
-  const operation: GraphQLRequest = {
-    query: gql`mutation {
-      requestSignature(transaction: "${escape(JSON.stringify(transaction))}", publicKey: "${publicKey}" )
-    }`
-  }
-
-  return makePromise(execute(link, operation))
+  const pubSubClient = getPubSubClient()
+  return pubSubClient.publish(
+    `${PubSubTopics.SIGNATURE_REQUIRED}.${publicKey}`,
+    { transaction }
+  )
 }
 
 export function initializeWeb3Instance (web3Provider: string) {
