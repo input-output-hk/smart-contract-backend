@@ -48,3 +48,7 @@ services:
       # - ./dist/bundle_server:/application/dist/bundle_server
     ports:
       - 9001:9001
+  redis:
+    image: redis:5.0.4
+    ports:
+     - 6379:6380
