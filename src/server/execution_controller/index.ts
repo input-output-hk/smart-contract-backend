@@ -6,7 +6,6 @@ export interface ContractExecutionOptions {
     executionEndpoint: string
     walletEndpoint: string
   }
-  clientProxiUri?: string
 }
 
 export class ContractExecution {

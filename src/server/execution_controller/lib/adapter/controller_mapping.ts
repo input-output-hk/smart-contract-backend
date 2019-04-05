@@ -1,7 +1,7 @@
 import { solidityExecutionController, plutusExecutionController } from '../controllers'
 import { SmartContractEngine, ContractExecutionInstruction } from '.'
 import { ContractExecutionOptions } from '../..'
-import { initializeWeb3Instance } from './external'
+import { initializeWeb3Instance, requestSignature } from './external'
 
 export function readContract (payload: ContractExecutionInstruction, opts: ContractExecutionOptions): any {
   switch (payload.engine) {
@@ -20,17 +20,11 @@ export async function executeContract (payload: ContractExecutionInstruction, op
     case SmartContractEngine.solidity:
       const web3Instance = initializeWeb3Instance(opts.web3Provider)
       const transactionS = await solidityExecutionController.execute(payload, web3Instance)
-
-      // Currently failing call. Will be resolved by: https://github.com/input-output-hk/smart-contract-backend/issues/26
-      // await requestSignature({ publicKey: payload.originatorPk, transaction: transactionS }, opts.clientProxiUri)
-
+      await requestSignature({ publicKey: payload.originatorPk, transaction: transactionS })
       return transactionS
     case SmartContractEngine.plutus:
       const transactionP = await plutusExecutionController.execute(payload, opts.plutus.executionEndpoint)
-
-      // Currently failing call. Will be resolved by: https://github.com/input-output-hk/smart-contract-backend/issues/26
-      // await requestSignature({ publicKey: payload.originatorPk, transaction: transactionP }, opts.clientProxiUri)
-
+      await requestSignature({ publicKey: payload.originatorPk, transaction: transactionP })
       return transactionP
     default:
       throw new Error('Engine unsupported')

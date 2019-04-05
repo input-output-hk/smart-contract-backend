@@ -1,15 +1,18 @@
-import { ApolloServer, gql, PubSub } from 'apollo-server'
+import { ApolloServer, gql } from 'apollo-server'
 import axios from 'axios'
 import { getInitializedContracts, addServer } from './contract_servers'
 import { loadBundle } from '../../infrastructure/bundle_fetcher'
 import { contractServers } from '../../infrastructure/storage'
 import { initializeContractEngine } from './initialize_contract'
+import { getPubSubClient, PubSubTopics } from '../../infrastructure/pubsub'
 
 const {
   EXECUTION_SERVICE_URI
 } = process.env
 
-export function buildApiServer (pubSub: PubSub) {
+export function buildApiServer () {
+  const pubSubClient = getPubSubClient()
+
   return new ApolloServer({
     typeDefs: gql`
       type SigningRequest {
@@ -56,7 +59,7 @@ export function buildApiServer (pubSub: PubSub) {
       },
       Subscription: {
         transactionSigningRequest: {
-          subscribe: (_: any, { publicKey }: { publicKey: string }) => pubSub.asyncIterator(publicKey)
+          subscribe: (_: any, { publicKey }: { publicKey: string }) => pubSubClient.asyncIterator(`${PubSubTopics.SIGNATURE_REQUIRED}.${publicKey}`)
         }
       }
     },

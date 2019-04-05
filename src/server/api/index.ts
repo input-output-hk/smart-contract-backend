@@ -1,4 +1,3 @@
-import { PubSub } from 'apollo-server'
 import { buildApiServer } from './lib/static_server'
 import { contractServers, availablePorts } from '../infrastructure/storage'
 import { initializeProxy } from './lib/proxy'
@@ -9,7 +8,7 @@ export async function bootApi (apiPort: number): Promise<{ staticApi: ApolloServ
   contractServers.initialize()
   availablePorts.initialize()
 
-  const staticApi = await buildApiServer(new PubSub())
+  const staticApi = await buildApiServer()
   await staticApi.listen({ port: apiPort })
   const proxy = initializeProxy()
 
