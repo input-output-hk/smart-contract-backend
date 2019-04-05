@@ -6,7 +6,7 @@ const nock = require('nock')
 
 use(chaiAsPromised)
 
-describe('plutusEngineExecutor', () => {
+describe('plutusExecutionController', () => {
   const walletEndpoint = 'http://walletEndpoint'
   const executionEndpoint = 'http://executionEndpoint'
 
@@ -35,7 +35,7 @@ describe('plutusEngineExecutor', () => {
   })
 
   describe('execute', () => {
-    it('forwards execution to the engine', async () => {
+    it('forwards an execution instruction to the engine', async () => {
       const executionResult = await engine.plutusExecutionController.execute({
         contractAddress: 'abcd',
         engine: SmartContractEngine.plutus,
@@ -47,9 +47,9 @@ describe('plutusEngineExecutor', () => {
     })
   })
 
-  describe('submit', () => {
-    it('forwards submission to the wallet API', async () => {
-      const submitResult = await engine.plutusExecutionController.submit('signedTxData', walletEndpoint)
+  describe('submitTransaction', () => {
+    it('forwards a signed transaction to the wallet API', async () => {
+      const submitResult = await engine.plutusExecutionController.submitSignedTransaction('signedTxData', walletEndpoint)
       expect(submitResult.submit).to.eql(true)
     })
   })

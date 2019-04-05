@@ -156,7 +156,7 @@ describe('controllerMapping', () => {
 
   describe('submitSignedTransaction', () => {
     it('passes the correct arguments to the ExecutionController for Solidity', async () => {
-      const submitStub = sandbox.stub(solidityExecutionController, 'submit')
+      const submitStub = sandbox.stub(solidityExecutionController, 'submitSignedTransaction')
 
       const submitArgs = {
         signedTransaction: 'signature',
@@ -171,7 +171,7 @@ describe('controllerMapping', () => {
     })
 
     it('passes the correct arguments to the ExecutionController for Plutus', async () => {
-      const submitStub = sandbox.stub(plutusExecutionController, 'submit')
+      const submitStub = sandbox.stub(plutusExecutionController, 'submitSignedTransaction')
 
       const submitArgs = {
         signedTransaction: 'signature',

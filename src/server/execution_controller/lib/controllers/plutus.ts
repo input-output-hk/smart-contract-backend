@@ -5,7 +5,7 @@ import axios from 'axios'
 export const plutusExecutionController: ExecutionController<any, any, any> = {
   call: callPlutusEngine,
   execute: executePlutusEngine,
-  submit: submitPlutusTransaction
+  submitSignedTransaction: submitPlutusTransaction
 }
 
 async function callPlutusEngine () {

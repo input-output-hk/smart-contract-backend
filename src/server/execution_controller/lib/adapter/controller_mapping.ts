@@ -41,9 +41,9 @@ export function submitSignedTransaction ({ signedTransaction, engine }: { signed
   switch (engine) {
     case SmartContractEngine.solidity:
       const web3Instance = initializeWeb3Instance(opts.web3Provider)
-      return solidityExecutionController.submit(signedTransaction, web3Instance)
+      return solidityExecutionController.submitSignedTransaction(signedTransaction, web3Instance)
     case SmartContractEngine.plutus:
-      return plutusExecutionController.submit(signedTransaction, opts.plutus.walletEndpoint)
+      return plutusExecutionController.submitSignedTransaction(signedTransaction, opts.plutus.walletEndpoint)
     default:
       throw new Error('Engine unsupported')
   }

@@ -4,7 +4,7 @@ import { ExecutionController } from '.'
 export const solidityExecutionController: ExecutionController<any, RawEthereumTransaction, void> = {
   call: callSolidityEngine,
   execute: generateSolidityTransaction,
-  submit: submitSolidityTransaction
+  submitSignedTransaction: submitSolidityTransaction
 }
 
 function submitSolidityTransaction (signedTransaction: string, web3Instance: any) {
