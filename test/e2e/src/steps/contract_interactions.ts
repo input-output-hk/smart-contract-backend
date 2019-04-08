@@ -1,8 +1,9 @@
 import { When, Then } from 'cucumber'
+import { World } from '../support/world'
 
-When('I load a contract by address {string}', function (address: string) {
-  console.log(address)
-  return 'skipped'
+When('I load a contract by address {string}', { timeout: 30000 }, function (address: string) {
+  const world = this as World
+  return world.initializeContract(address)
 })
 
 When('I subscribe by public key {string}', function (publicKey: string) {

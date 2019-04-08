@@ -7,9 +7,9 @@ import * as WebSocket from 'ws'
 import gql from 'graphql-tag'
 import { Subscription } from 'apollo-client/util/Observable'
 
-class CustomWorld {
-  public apolloClient: ApolloClient<any>
-  public keySubscription: Subscription
+export class World {
+  private apolloClient: ApolloClient<any>
+  private keySubscription: Subscription
 
   constructor() {
     const { APPLICATION_URI, WS_URI } = process.env
@@ -55,11 +55,21 @@ class CustomWorld {
     })
   }
 
-  unsubscribeKey() {
+  unsubscribeFromPublicKey() {
     if (this.keySubscription && typeof this.keySubscription.unsubscribe === 'function') {
       this.keySubscription.unsubscribe()
     }
   }
+
+  initializeContract(address: string) {
+    return this.apolloClient.mutate({
+      mutation: gql`
+        mutation {
+          initializeContract(contractAddress: "${address}", bundleLocation: "http://bundle_server:9001/${address}")
+        }
+      `
+    })
+  }
 }
 
-setWorldConstructor(CustomWorld)
+setWorldConstructor(World)

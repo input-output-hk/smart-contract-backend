@@ -1,4 +1,5 @@
 import { Before, After } from 'cucumber'
+import { World } from '../support/world'
 import axios from 'axios'
 
 Before({ timeout: 40000 }, async function () {
@@ -28,5 +29,6 @@ Before({ timeout: 40000 }, async function () {
 })
 
 After(function () {
-  this.unsubscribeKey()
+  const world = this as World
+  world.unsubscribeFromPublicKey()
 })
