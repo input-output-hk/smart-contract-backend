@@ -4,7 +4,6 @@ Feature: Contract Execution
   I want to execute contract endpoints
 
   Scenario Outline: execution with signature requests
-    Given the application platform is healthy
     When I load a contract by address <address>
     And I subscribe by public key <pk>
     And I execute against contract <address> with the method <method> and arguments <methodArguments>
