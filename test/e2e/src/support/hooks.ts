@@ -1,9 +1,9 @@
-import { Before } from 'cucumber'
+import { Before, After } from 'cucumber'
 import axios from 'axios'
 
 Before({ timeout: 40000 }, async function () {
-  const { APPLICATION_ENDPOINT } = process.env
-  if (!APPLICATION_ENDPOINT) throw new Error('Missing environment')
+  const { APPLICATION_URI, WS_URI } = process.env
+  if (!APPLICATION_URI || !WS_URI) throw new Error('Missing environment')
 
   let health = true
   const healthTimeout = setTimeout(() => {
@@ -13,7 +13,7 @@ Before({ timeout: 40000 }, async function () {
 
   async function healthCheck(): Promise<any> {
     try {
-      await axios.get(`${APPLICATION_ENDPOINT}/.well-known/apollo/server-health`)
+      await axios.get(`${APPLICATION_URI}/.well-known/apollo/server-health`)
       clearTimeout(healthTimeout)
     } catch (e) {
       console.log(e)
@@ -25,4 +25,8 @@ Before({ timeout: 40000 }, async function () {
   }
 
   await healthCheck()
+})
+
+After(function () {
+  this.unsubscribeKey()
 })
