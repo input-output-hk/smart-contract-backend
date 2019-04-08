@@ -1,20 +1,10 @@
 version: '3.7'
 services:
-  smart_contract_backend_test:
+  smart_contract_backend_e2e_test:
     build:
       context: .
       target: test
     init: true
     environment:
-      - API_PORT=8079
-      - CONTRACT_PROXY_PORT=8081
-      - EXECUTION_SERVICE_URI=http://docker_execution:9000
-      - CONTRACT_SERVER_LOWER_PORT_BOUND=10000
-      - CONTRACT_SERVER_UPPER_PORT_BOUND=10999
-      - DOCKER_EXECUTION_API_PORT=9000
-      - CONTAINER_LOWER_PORT_BOUND=11000
-      - CONTAINER_UPPER_PORT_BOUND=12000
-      - RUNTIME=docker
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      # - ./src:/application/src
+      - APPLICATION_URI=http://server:8081
+      - WS_URI=ws://server:8079/graphql
