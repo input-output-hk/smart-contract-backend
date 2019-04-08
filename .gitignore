@@ -3,6 +3,7 @@
 /.nyc_output
 /coverage
 /src/execution_engines/docker/routes.ts
+/test/e2e/dist
 docker/*
 !docker/README.md
 .env

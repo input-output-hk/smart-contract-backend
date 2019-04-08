@@ -16,7 +16,10 @@
     "api-build": "tsoa swagger && tsoa routes",
     "start:docker": "docker-compose up",
     "start:docker-init": "docker-compose up --build",
-    "restart:docker": "docker-compose down && sudo rm -rf dist && npm run build && docker-compose up"
+    "restart:docker": "docker-compose down && sudo rm -rf dist && npm run build && docker-compose up",
+    "e2e:build": "rm -rf test/e2e/dist && tsc --project test/e2e",
+    "e2e:run": "cucumber-js --require 'test/e2e/dist/**/*.js' --format node_modules/cucumber-pretty test/e2e/features/**/*.feature",
+    "e2e": "npm run e2e:build && npm run e2e:run"
   },
   "repository": {
     "type": "git",
@@ -42,6 +45,7 @@
     "@types/body-parser": "^1.17.0",
     "@types/chai": "^4.1.7",
     "@types/chai-as-promised": "^7.1.0",
+    "@types/cucumber": "^4.0.5",
     "@types/dockerode": "^2.5.12",
     "@types/expect": "^1.20.4",
     "@types/express": "^4.16.1",
@@ -55,6 +59,8 @@
     "@typescript-eslint/eslint-plugin": "^1.4.2",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
+    "cucumber": "^5.1.0",
+    "cucumber-pretty": "^1.5.0",
     "eslint": "^5.15.1",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.16.0",
