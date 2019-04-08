@@ -1,5 +1,6 @@
 import { When, Then } from 'cucumber'
 import { World } from '../support/world'
+import { expect } from 'chai'
 
 When('I load a contract by address {string}', { timeout: 30000 }, function (address: string) {
   const world = this as World
@@ -16,7 +17,8 @@ When('I execute against contract {string} with the method {string} and arguments
   return world.executeContract(contractAddress, method, JSON.parse(methodArguments))
 })
 
-Then('I should receive a signing request against {string}', function (publicKey: string) {
+Then('I should receive a signing request against {string}', async function (publicKey: string) {
   const world = this as World
-  return world.validateTxReceived(publicKey)
+  const transactionReceived = await world.validateTransactionReceived(publicKey, 1)
+  expect(transactionReceived).to.eql(true)
 })

@@ -15,8 +15,8 @@ services:
       - CONTRACT_SERVER_UPPER_PORT_BOUND=8900
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-    # volumes:
-    #   - ./dist/server:/application/dist/server
+    volumes:
+      - ./dist/server:/application/dist/server
     ports:
       - 8079:8079
       - 8081:8081

@@ -20,7 +20,7 @@
     "e2e:build": "rm -rf test/e2e/dist && tsc --project test/e2e",
     "e2e:run": "cucumber-js --require 'test/e2e/dist/**/*.js' --format node_modules/cucumber-pretty --exit test/e2e/features/**/*.feature",
     "e2e": "npm run e2e:build && npm run e2e:run",
-    "e2e:local": "APPLICATION_URI=http://127.0.0.1:8081 WS_URI=ws://127.0.0.1:8081 npm run e2e"
+    "e2e:local": "APPLICATION_URI=http://127.0.0.1:8081 WS_URI=ws://localhost:8079/graphql npm run e2e"
   },
   "repository": {
     "type": "git",

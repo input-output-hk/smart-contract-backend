@@ -10,6 +10,7 @@ import { Subscription } from 'apollo-client/util/Observable'
 export class World {
   private apolloClient: ApolloClient<any>
   private keySubscription: Subscription
+  public receivedTransactions: { [publicKey: string]: string[] } = {}
 
   constructor() {
     const { APPLICATION_URI, WS_URI } = process.env
@@ -40,24 +41,31 @@ export class World {
   }
 
   subscribeToPublicKey(pk: string) {
+    const ctx = this
+
     this.keySubscription = this.apolloClient.subscribe({
-      query: gql`subscription onTxSigningRequest($publicKey: String!) {
-          transactionSigningRequest(publicKey: $publicKey) {
-            transaction
-          }
-      }`,
-      variables: { publicKey: pk },
+      query: gql`subscription {
+        transactionSigningRequest(publicKey: "${pk}") {
+          transaction
+        }
+      }`
     }).subscribe({
-      next({ data: { transactionSigningRequest: { transaction } } }) {
-        console.log(transaction)
+      next(data) {
+        let accessor = ctx.receivedTransactions[pk]
+        if (accessor) {
+          accessor.push(data)
+        } else {
+          ctx.receivedTransactions[pk] = [data]
+        }
       },
-      error(err) { console.error(err) },
+      error(err) { console.log(err) },
     })
   }
 
   unsubscribeFromPublicKey() {
     if (this.keySubscription && typeof this.keySubscription.unsubscribe === 'function') {
       this.keySubscription.unsubscribe()
+      this.keySubscription = undefined
     }
   }
 
@@ -98,6 +106,22 @@ export class World {
         }
       `
     })
+  }
+
+  async validateTransactionReceived(publicKey: string, attempts: number): Promise<boolean> {
+    const accessor = this.receivedTransactions[publicKey]
+    if (!accessor && attempts > 3) {
+      if (attempts > 3) {
+        return false
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 500))
+      return this.validateTransactionReceived(publicKey, attempts++)
+    }
+
+    if (accessor.length) {
+      return true
+    }
   }
 }
 
