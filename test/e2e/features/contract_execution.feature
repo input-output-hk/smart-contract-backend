@@ -10,5 +10,5 @@ Feature: Contract Execution
     Then I should receive a signing request against <pk>
 
     Examples:
-      | address | method | methodArguments                    | pk             |
-      | "abcd"  | "add"  | "{\"number1\": 1, \"number2\": 2}" | "originatorPk" |
+      | address | method | methodArguments                                                       | pk            |
+      | "abcd"  | "add"  | "{\"number1\": 1, \"number2\": 2, \"originatorPk\": \"myPublicKey\"}" | "myPublicKey" |

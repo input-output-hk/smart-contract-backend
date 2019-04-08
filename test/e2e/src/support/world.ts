@@ -70,6 +70,35 @@ export class World {
       `
     })
   }
+
+  executeContract(address: string, method: string, methodArguments: any) {
+    const { APPLICATION_URI } = process.env
+
+    const httpLink = new HttpLink({
+      uri: `${APPLICATION_URI}/${address}`,
+      fetch
+    })
+
+    const contractClient = new ApolloClient({ link: httpLink, cache: new InMemoryCache() })
+    const argString = Object.entries(methodArguments)
+      .reduce((accumulator: string, [key, value]) => {
+        const valueString = typeof value === 'string' ? `"${value}"` : `${value}`
+        const appendArgs = `${key}: ${valueString}`
+        if (!accumulator) {
+          return appendArgs
+        } else {
+          return `${accumulator}, ${appendArgs}`
+        }
+      }, '')
+
+    return contractClient.mutate({
+      mutation: gql`
+        mutation {
+          ${method}(${argString})
+        }
+      `
+    })
+  }
 }
 
 setWorldConstructor(World)

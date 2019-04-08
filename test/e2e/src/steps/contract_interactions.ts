@@ -7,16 +7,16 @@ When('I load a contract by address {string}', { timeout: 30000 }, function (addr
 })
 
 When('I subscribe by public key {string}', function (publicKey: string) {
-  console.log(publicKey)
-  return 'skipped';
+  const world = this as World
+  return world.subscribeToPublicKey(publicKey)
 })
 
 When('I execute against contract {string} with the method {string} and arguments {string}', function (contractAddress: string, method: string, methodArguments: string) {
-  console.log(contractAddress, method, methodArguments)
-  return 'skipped';
+  const world = this as World
+  return world.executeContract(contractAddress, method, JSON.parse(methodArguments))
 })
 
 Then('I should receive a signing request against {string}', function (publicKey: string) {
-  console.log(publicKey)
-  return 'skipped';
+  const world = this as World
+  return world.validateTxReceived(publicKey)
 })
