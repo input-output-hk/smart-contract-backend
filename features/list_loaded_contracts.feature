@@ -1,6 +1,6 @@
 Feature: List Loaded Contracts
   As a client of the platform
-  I want to be able to list loaded contracts
+  I want to be able to list loaded contracts to understand what I can already interact with
 
   Scenario Outline: a loaded contract is available in the contract list
 

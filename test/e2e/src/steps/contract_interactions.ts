@@ -1,4 +1,4 @@
-import { When, Then } from 'cucumber'
+import { When, Then, Given } from 'cucumber'
 import { World } from '../support/world'
 import { expect } from 'chai'
 
@@ -12,7 +12,7 @@ When('I call the contract {string} with the method {string} and arguments {strin
   return world.executeContract(contractAddress, method, JSON.parse(methodArguments))
 })
 
-When('I call the contract {string} with the method {string} and arguments {string} knowing the contract is not initialized', async function (contractAddress: string, method: string, methodArgs: string) {
+Given('the contract is not loaded, calling contract {string} with the method {string} and arguments {string} throws an error', async function (contractAddress: string, method: string, methodArgs: string) {
   const world = this as World
   try {
     await world.executeContract(contractAddress, method, JSON.parse(methodArgs))
