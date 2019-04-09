@@ -1,5 +1,5 @@
 Feature: Contract Interaction
-  To interact with initialized Smart Contracts
+  To interact with loaded Smart Contracts
   As a client of the platform
   I want to call the endpoints to access expressed behaviour
 
