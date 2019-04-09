@@ -79,6 +79,19 @@ export class World {
     })
   }
 
+  listContracts() {
+    return this.apolloClient.query({
+      query: gql`
+        query {
+          contracts {
+            engine,
+            contractAddress
+          }
+        }
+      `
+    })
+  }
+
   executeContract(address: string, method: string, methodArguments: any) {
     const { APPLICATION_URI } = process.env
 
@@ -110,13 +123,13 @@ export class World {
 
   async validateTransactionReceived(publicKey: string, attempts: number): Promise<boolean> {
     const accessor = this.receivedTransactions[publicKey]
-    if (!accessor && attempts > 3) {
+    if (!accessor) {
       if (attempts > 3) {
         return false
       }
 
-      await new Promise(resolve => setTimeout(resolve, 500))
-      return this.validateTransactionReceived(publicKey, attempts++)
+      await new Promise(resolve => setTimeout(resolve, 200))
+      return this.validateTransactionReceived(publicKey, ++attempts)
     }
 
     if (accessor.length) {
