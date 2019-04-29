@@ -21,10 +21,10 @@ Feature: Contract Loading
       | address |
       | "abcd"  |
 
-# Scenario Outline: multiple contracts can be loaded
-#   When I load a contract by address <address1>
-#   Then I load a contract by address <address2>
+  Scenario Outline: multiple contracts can be loaded
+    When I load a contract by address <address1>
+    Then I load a contract by address <address2>
 
-#   Examples:
-#     | address1 | address2             |
-#     | "abcd"   | "plutusGuessingGame" |
+    Examples:
+      | address1 | address2             |
+      | "abcd"   | "plutusGuessingGame" |

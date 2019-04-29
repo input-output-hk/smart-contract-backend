@@ -27,7 +27,7 @@ export async function findContainerPort (contractAddress: string): Promise<numbe
 export async function createContainer ({ contractAddress, dockerImageRepository, lowerPortBound, upperPortBound }: { contractAddress: string, dockerImageRepository: string, lowerPortBound: number, upperPortBound: number }) {
   const { RUNTIME } = process.env
   const docker = initializeDockerClient()
-  const [freePort] = await fp(lowerPortBound, upperPortBound)
+  const [freePort] = await fp(lowerPortBound, upperPortBound, '0.0.0.0')
   const baseHostConfig = {
     AutoRemove: true,
     PortBindings: { '8080/tcp': [{ 'HostPort': `${freePort}` }] }
