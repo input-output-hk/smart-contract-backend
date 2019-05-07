@@ -8,12 +8,12 @@ export function InMemoryRepository<T extends Entity > (): Repository<T> {
     async add (entity: T) {
       collection.set(entity.id, entity)
     },
-    async find(id: T['id']) {
+    async find (id: T['id']) {
       if (!await this.has(id)) return null
       return collection.get(id)
     },
     async findAll () {
-      return await [...collection.values()]
+      return [...collection.values()]
     },
     async getLast () {
       if (await this.size() === 0) return null
@@ -26,7 +26,7 @@ export function InMemoryRepository<T extends Entity > (): Repository<T> {
       if (!await this.has(id)) throw new UnknownEntity(String(id))
       return collection.delete(id)
     },
-    async size() {
+    async size () {
       return collection.size
     },
     async update (id: T['id'], entity: T) {

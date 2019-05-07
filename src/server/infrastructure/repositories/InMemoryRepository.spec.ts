@@ -40,10 +40,10 @@ describe('In-memory repository', () => {
     beforeEach(async () => {
       await repository.add(someEntity1)
     })
-    it('returns the entity by ID',  async () => {
+    it('returns the entity by ID', async () => {
       expect(await repository.find(someEntity1.id)).to.eq(someEntity1)
     })
-    it('returns null if the entity is not in the repository',async () => {
+    it('returns null if the entity is not in the repository', async () => {
       expect(await repository.find('someUnknownEntityId')).to.eq(null)
     })
   })
