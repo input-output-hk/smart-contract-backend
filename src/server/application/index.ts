@@ -14,3 +14,5 @@ export async function bootApi (apiPort: number): Promise<{ staticApi: ApolloServ
 
   return { staticApi, proxy }
 }
+
+export { BundleFetcher } from './BundleFetcher'

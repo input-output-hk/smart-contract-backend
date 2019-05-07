@@ -63,3 +63,5 @@ export async function unloadBundle (contractAddress: string): Promise<{}> {
   if (!exists) return
   return removeDirectoryWithContents(bundleDir)
 }
+
+export { HttpTarGzBundleFetcher } from './HttpTarGzBundleFetcher'
