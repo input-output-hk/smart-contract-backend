@@ -42,7 +42,6 @@
   },
   "homepage": "https://github.com/input-output-hk/smart-contract-backend#readme",
   "devDependencies": {
-    "@types/axios": "^0.14.0",
     "@types/body-parser": "^1.17.0",
     "@types/chai": "^4.1.7",
     "@types/chai-as-promised": "^7.1.0",
