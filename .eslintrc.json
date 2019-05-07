@@ -7,7 +7,8 @@
     "standard"
   ],
   "plugins": [
-    "@typescript-eslint"
+    "@typescript-eslint",
+    "chai-friendly"
   ],
   "globals": {
     "it": "readonly",
@@ -16,6 +17,8 @@
     "afterEach": "readonly"
   },
   "rules": {
-    "no-unused-vars": 0
+    "no-unused-vars": 0,
+    "no-unused-expressions": 0,
+    "chai-friendly/no-unused-expressions": 2
   }
 }
