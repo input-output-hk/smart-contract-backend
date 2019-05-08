@@ -107,7 +107,7 @@ describe('In-memory repository', () => {
       }
       await repository.add(someEntity1)
       expect(await repository.size()).to.eq(1)
-      await repository.update(someEntity1.id, someEntity1Updated)
+      await repository.update(someEntity1Updated)
       expect(await repository.size()).to.eq(1)
       expect(await repository.find(someEntity1.id)).to.eq(someEntity1Updated)
     })

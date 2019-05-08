@@ -29,8 +29,8 @@ export function InMemoryRepository<T extends Entity > (): Repository<T> {
     async size () {
       return collection.size
     },
-    async update (id: T['id'], entity: T) {
-      await this.remove(id)
+    async update (entity: T) {
+      await this.remove(entity.id)
       this.add(entity)
     }
   }

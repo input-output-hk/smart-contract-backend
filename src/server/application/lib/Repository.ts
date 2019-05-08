@@ -8,5 +8,5 @@ export interface Repository<T extends Entity> {
   has(id: T['id']): Promise<boolean>
   remove(id: T['id']): Promise<boolean>
   size(): Promise<number>
-  update(id: T['id'], entity: T): Promise<void>
+  update(entity: T): Promise<void>
 }
