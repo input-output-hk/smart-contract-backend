@@ -33,4 +33,26 @@ describe('Port Manager', () => {
       await expect(portManager.getAvailablePort()).to.eventually.be.rejectedWith(AllPortsAllocated)
     })
   })
+
+  describe('isAvailable', () => {
+    it('Returns true if the port is available', async () => {
+      expect(await portManager.isAvailable(8082)).to.be.true
+    })
+    it('Returns false if the port has been allocated', async () => {
+      const allocation1 = await portManager.getAvailablePort()
+      expect(allocation1.portNumber).to.eq(8082)
+      expect(await portManager.isAvailable(8082)).to.be.false
+    })
+  })
+
+  describe('releasePort', () => {
+    it('Makes the port available to assign again', async () => {
+      const allocation1 = await portManager.getAvailablePort()
+      expect(allocation1.portNumber).to.eq(8082)
+      expect(await portManager.isAvailable(8082)).to.be.false
+      const release = await portManager.releasePort(8082)
+      expect(release).to.be.true
+      expect(await portManager.isAvailable(8082)).to.be.true
+    })
+  })
 })
