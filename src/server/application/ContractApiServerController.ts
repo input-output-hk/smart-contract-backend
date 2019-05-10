@@ -22,8 +22,8 @@ export function ContractApiServerController (portManager: ReturnType<typeof Port
   return {
     servers,
     async deploy (contractAddress: Contract['address'], graphQlSchema: IExecutableSchemaDefinition): Promise<boolean> {
-      const allocation = await portManager.getAvailablePort()
       if (servers.has(contractAddress)) return true
+      const allocation = await portManager.getAvailablePort()
       const serverInfo = await new ApolloServer({
         schema: makeExecutableSchema(graphQlSchema),
         introspection: true
