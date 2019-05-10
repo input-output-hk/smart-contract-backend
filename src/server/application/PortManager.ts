@@ -17,16 +17,12 @@ export function PortManager ({ repository, range }: Config) {
     getAvailablePort: async (): Promise<PortAllocation> => {
       const size = await repository.size()
       if (size === startingPoolQty) throw new AllPortsAllocated(range)
-      let nextPortNumber
-      if (size === 0) {
-        nextPortNumber = range.lower
-      } else {
-        const last = await repository.getLast()
-        nextPortNumber = last.portNumber + 1
-      }
+      const portNumber = size === 0
+        ? range.lower
+        : (await repository.getLast()).portNumber + 1
       const portAllocation = {
-        id: nextPortNumber.toString(),
-        portNumber: nextPortNumber
+        id: portNumber.toString(),
+        portNumber
       }
       await repository.add(portAllocation)
       return portAllocation
