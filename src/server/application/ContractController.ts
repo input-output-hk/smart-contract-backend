@@ -1,14 +1,17 @@
-import { Contract } from '../core'
+import { Contract, Engine, EngineClient } from '../core'
 import { ContractRepository } from './lib/ContractRepository'
-import { BundleFetcher } from './'
+import { BundleFetcher, ContractApiServerController } from './'
+const requireFromString = require('require-from-string')
 
 type Config = {
+  apiServerController: ReturnType<typeof ContractApiServerController>
   contractRepository: ContractRepository
   bundleFetcher: BundleFetcher
+  engineClients: Map<Engine, EngineClient>
 }
 
 export function ContractController (config: Config) {
-  const { contractRepository, bundleFetcher } = config
+  const { apiServerController, bundleFetcher, contractRepository, engineClients } = config
   return {
     async load (contractAddress: Contract['address'], bundleUri: string): Promise<boolean> {
       let contract = await contractRepository.find(contractAddress)
@@ -21,19 +24,21 @@ export function ContractController (config: Config) {
         }
         await contractRepository.add(contract)
       }
-      // Todo:
-      //  Select engine client as defined in bundle meta
+      const { bundle: { graphQlSchema, meta }, address } = contract
+      const engineClient = engineClients.get(meta.engine)
+      //  Next _________________________________________
       //  Load executable into the engine via the client
-      //  Load and call the GraphQl schema generating module, passing the engine client
-      //  Deploy GraphQL server
+      // _______________________________________________
+      await apiServerController.deploy(address, requireFromString(graphQlSchema)(engineClient))
       return true
     },
     async unload (contractAddress: Contract['address']): Promise<boolean> {
       let contract = await contractRepository.find(contractAddress)
       if (!contract) return false
-      // Todo:
-      //  Tear down API server
+      await apiServerController.tearDown(contractAddress)
+      //  Next _____________
       //  Unload executable
+      // ___________________
       return contractRepository.remove(contract.address)
     }
   }
