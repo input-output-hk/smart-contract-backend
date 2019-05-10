@@ -4,7 +4,7 @@ import { NumberRange } from '../lib'
 export class AllPortsAllocated extends CustomError {
   constructor (range: NumberRange) {
     super()
-    this.message = `All ports in the range ${rangeString(range)} have all been allocated`
+    this.message = `All ports in the range ${rangeString(range)} have been allocated`
     this.name = 'AllPortsAllocated'
   }
 }
