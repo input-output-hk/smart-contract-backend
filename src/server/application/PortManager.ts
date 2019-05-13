@@ -1,3 +1,4 @@
+import { createServer, Server } from 'net'
 import { PortAllocation } from '../core'
 import { NumberRange } from '../core/lib'
 import { AllPortsAllocated } from '../core/errors'
@@ -17,9 +18,13 @@ export function PortManager ({ repository, range }: Config) {
     getAvailablePort: async (): Promise<PortAllocation> => {
       const size = await repository.size()
       if (size === startingPoolQty) throw new AllPortsAllocated(range)
-      const portNumber = size === 0
+      let portNumber = size === 0
         ? range.lower
         : (await repository.getLast()).portNumber + 1
+      while (!(await isAvailableOnHost(portNumber))) {
+        if (portNumber === range.upper) throw new AllPortsAllocated(range)
+        portNumber++
+      }
       const portAllocation = {
         id: portNumber.toString(),
         portNumber
@@ -32,4 +37,13 @@ export function PortManager ({ repository, range }: Config) {
       return repository.remove(port.toString())
     }
   }
+}
+
+function isAvailableOnHost (port: PortAllocation['portNumber']) {
+  return new Promise<boolean>((resolve, reject) => {
+    const tester: Server = createServer()
+      .once('error', (error: NodeJS.ErrnoException) => (error.code === 'EADDRINUSE' ? resolve(false) : reject(error)))
+      .once('listening', () => tester.once('close', () => resolve(true)).close())
+      .listen(port)
+  })
 }
