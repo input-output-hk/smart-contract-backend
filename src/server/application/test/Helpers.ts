@@ -5,10 +5,9 @@ export function RogueService () {
   return {
     async listen (port: number) {
       return new Promise((resolve, reject) => {
-        server
+        server.listen(port)
           .once('listening', () => resolve(true))
           .on('error', (error) => reject(error))
-          .listen(port)
       })
     },
     close () {
