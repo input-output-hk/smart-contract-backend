@@ -8,7 +8,7 @@ export function RogueService () {
         server
           .once('listening', () => resolve(true))
           .on('error', (error) => reject(error))
-        server.listen(port)
+          .listen(port)
       })
     },
     close () {
