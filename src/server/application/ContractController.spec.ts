@@ -1,19 +1,24 @@
-import { expect } from 'chai'
+import { expect, use } from 'chai'
+import { spy } from 'sinon'
+import * as sinonChai from 'sinon-chai'
 import axios from 'axios'
 import { ContractController } from './ContractController'
-import { Contract, Engine, PortAllocation } from '../core'
+import { Contract, Engine, EngineClient, PortAllocation } from '../core'
 import { InMemoryRepository } from '../infrastructure/repositories'
 import { HttpTarGzBundleFetcher } from '../infrastructure/bundle_fetcher'
 import { StubEngineClient } from '../infrastructure/engine_clients'
 import { ContractRepository } from './lib/ContractRepository'
 import { testContract } from './test'
-import { PortManager, ContractApiServerController, BundleFetcher } from './'
+import { BundleFetcher, ContractApiServerController, PortManager } from './'
+
 const nock = require('nock')
+use(sinonChai)
 
 describe('Contract Controller @focus', () => {
   let apiServerController: ReturnType<typeof ContractApiServerController>
   let bundleFetcher: BundleFetcher
   let repository: ContractRepository
+  let engineClients: Map<Engine, EngineClient>
   let controller: ReturnType<typeof ContractController>
 
   const networkInterface = axios.create()
@@ -29,14 +34,15 @@ describe('Contract Controller @focus', () => {
     apiServerController = ContractApiServerController(portManager)
     repository = InMemoryRepository<Contract>()
     bundleFetcher = HttpTarGzBundleFetcher(networkInterface)
+    engineClients = new Map([[
+      Engine.stub,
+      StubEngineClient()
+    ]])
     controller = ContractController({
       apiServerController,
       contractRepository: repository,
       bundleFetcher,
-      engineClients: new Map([[
-        Engine.stub,
-        StubEngineClient()
-      ]])
+      engineClients
     })
 
     nock(testContract.location)
@@ -50,12 +56,15 @@ describe('Contract Controller @focus', () => {
   })
 
   describe('load', () => {
+    let loadExecutable: ReturnType<typeof spy>
     beforeEach(async () => {
+      loadExecutable = spy(engineClients.get(Engine.stub), 'loadExecutable')
       expect(await repository.has(testContract.address)).to.eq(false)
     })
-    it('fetches the bundle, adds the contract to the repository, then deploys the API server', async () => {
+    it('fetches the bundle, adds the contract to the repository, loads the executable, then deploys the API server', async () => {
       const load = await controller.load(testContract.address, testContract.location)
       expect(load).to.be.true
+      expect(loadExecutable).to.have.been.calledOnce
       expect(apiServerController.servers.has(testContract.address)).to.be.true
       expect(await repository.has(testContract.address)).to.eq(true)
     })
@@ -69,16 +78,27 @@ describe('Contract Controller @focus', () => {
   })
 
   describe('unload', () => {
-    beforeEach(async () => {
-      expect(await apiServerController.servers.has(testContract.address)).to.eq(false)
-      await controller.load(testContract.address, testContract.location)
-      expect(await repository.has(testContract.address)).to.eq(true)
+    describe('with loaded contracts', () => {
+      let unloadExecutable: ReturnType<typeof spy>
+      beforeEach(async () => {
+        unloadExecutable = spy(engineClients.get(Engine.stub), 'unloadExecutable')
+        expect(await apiServerController.servers.has(testContract.address)).to.eq(false)
+        await controller.load(testContract.address, testContract.location)
+        expect(await repository.has(testContract.address)).to.eq(true)
+      })
+      it('tears down the API serve, unloads the executable, then removes the contract from the repository', async () => {
+        const unload = await controller.unload(testContract.address)
+        expect(unload).to.be.true
+        expect(unloadExecutable).to.have.been.calledOnce
+        expect(apiServerController.servers.has(testContract.address)).to.be.false
+        expect(await repository.has(testContract.address)).to.eq(false)
+      })
     })
-    it('tears down the API serve then removes the contract from the repository', async () => {
-      const unload = await controller.unload(testContract.address)
-      expect(unload).to.be.true
-      expect(apiServerController.servers.has(testContract.address)).to.be.false
-      expect(await repository.has(testContract.address)).to.eq(false)
+    describe('without loaded contracts', () => {
+      it('returns false if the contract is not loaded', async () => {
+        const unload = await controller.unload(testContract.address)
+        expect(unload).to.be.false
+      })
     })
   })
 })
