@@ -33,10 +33,9 @@ export function ContractController (config: Config) {
     async unload (contractAddress: Contract['address']): Promise<boolean> {
       let contract = await contractRepository.find(contractAddress)
       if (!contract) return false
+      const engineClient = engineClients.get(contract.bundle.meta.engine)
       await apiServerController.tearDown(contractAddress)
-      //  Next _____________
-      //  Unload executable
-      // ___________________
+      await engineClient.unloadExecutable(contractAddress)
       return contractRepository.remove(contract.address)
     }
   }

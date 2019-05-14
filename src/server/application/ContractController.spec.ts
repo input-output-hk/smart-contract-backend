@@ -78,16 +78,25 @@ describe('Contract Controller @focus', () => {
   })
 
   describe('unload', () => {
+    let unloadExecutable: ReturnType<typeof spy>
     beforeEach(async () => {
+      unloadExecutable = spy(engineClients.get(Engine.stub), 'unloadExecutable')
       expect(await apiServerController.servers.has(testContract.address)).to.eq(false)
       await controller.load(testContract.address, testContract.location)
       expect(await repository.has(testContract.address)).to.eq(true)
     })
-    it('tears down the API serve then removes the contract from the repository', async () => {
+    it('tears down the API serve, unloads the executable, then removes the contract from the repository', async () => {
       const unload = await controller.unload(testContract.address)
       expect(unload).to.be.true
+      expect(unloadExecutable).to.have.been.calledOnce
       expect(apiServerController.servers.has(testContract.address)).to.be.false
       expect(await repository.has(testContract.address)).to.eq(false)
+    })
+    it('returns false if the contract is not loaded', async () => {
+      const unload = await controller.unload(testContract.address)
+      expect(unload).to.be.true
+      const unloadAgain = await controller.unload(testContract.address)
+      expect(unloadAgain).to.be.false
     })
   })
 })
