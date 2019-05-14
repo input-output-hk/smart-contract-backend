@@ -24,11 +24,9 @@ export function ContractController (config: Config) {
         }
         await contractRepository.add(contract)
       }
-      const { bundle: { graphQlSchema, meta }, address } = contract
+      const { bundle: { executable, graphQlSchema, meta }, address } = contract
       const engineClient = engineClients.get(meta.engine)
-      //  Next _________________________________________
-      //  Load executable into the engine via the client
-      // _______________________________________________
+      await engineClient.loadExecutable(contractAddress, executable)
       await apiServerController.deploy(address, requireFromString(graphQlSchema)(engineClient))
       return true
     },
