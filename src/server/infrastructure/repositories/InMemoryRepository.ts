@@ -1,6 +1,6 @@
 import { Repository } from '../../application/lib/Repository'
 import { Entity } from '../../core/lib'
-import { UnknownEntity } from '../../core/errors/UnknownEntity'
+import { UnknownEntity } from '../../core/errors'
 
 export function InMemoryRepository<T extends Entity > (): Repository<T> {
   const collection = new Map<T['id'], T>()

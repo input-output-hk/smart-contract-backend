@@ -2,7 +2,7 @@ import { buildApiServer } from './lib/static_server'
 import { contractServers, availablePorts } from '../infrastructure/storage'
 import { initializeProxy } from './lib/proxy'
 import { Server } from 'http'
-import { ApolloServer } from 'apollo-server-express'
+import { ApolloServer } from 'apollo-server'
 
 export async function bootApi (apiPort: number): Promise<{ staticApi: ApolloServer, proxy: Server }> {
   contractServers.initialize()
@@ -16,3 +16,5 @@ export async function bootApi (apiPort: number): Promise<{ staticApi: ApolloServ
 }
 
 export { BundleFetcher } from './BundleFetcher'
+export { ContractApiServerController } from './ContractApiServerController'
+export { PortManager } from './PortManager'

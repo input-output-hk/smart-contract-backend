@@ -3,7 +3,7 @@ import * as chaiAsPromised from 'chai-as-promised'
 import axios from 'axios'
 import { HttpTarGzBundleFetcher } from './'
 import { BundleFetcher } from '../../application'
-import { BundleNotFound } from '../../core/errors/BundleNotFound'
+import { BundleNotFound } from '../../core/errors'
 use(chaiAsPromised)
 const nock = require('nock')
 
