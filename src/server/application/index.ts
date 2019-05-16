@@ -18,3 +18,4 @@ export async function bootApi (apiPort: number): Promise<{ staticApi: ApolloServ
 export { BundleFetcher } from './BundleFetcher'
 export { ContractApiServerController } from './ContractApiServerController'
 export { PortManager } from './PortManager'
+export { ContractController } from './ContractController'
