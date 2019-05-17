@@ -1,5 +1,6 @@
 import { expect } from 'chai'
 import * as http from 'http'
+import { listen, close } from '../lib/http'
 import { InMemoryRepository } from '../infrastructure/repositories'
 import { PortAllocation } from '../core'
 import axios from 'axios'
@@ -8,23 +9,7 @@ import { ContractApiServerController } from './ContractApiServerController'
 import { PortManager } from './PortManager'
 const nock = require('nock')
 
-async function listen (server: http.Server, port: number): Promise<http.Server> {
-  return new Promise((resolve, reject) => {
-    server.listen({ port })
-      .on('listening', () => resolve(server))
-      .on('error', (error) => reject(error))
-  })
-}
-
-async function close (server: http.Server): Promise<void> {
-  return new Promise((resolve, reject) => {
-    server.close()
-      .on('close', () => resolve())
-      .on('error', (error) => reject(error))
-  })
-}
-
-describe('ContractProxy @focus', () => {
+describe('ContractProxy', () => {
   let contractProxy: ReturnType<typeof ContractProxy>
   let server: http.Server
   const catchAllUri = 'http://localhost:8079'
