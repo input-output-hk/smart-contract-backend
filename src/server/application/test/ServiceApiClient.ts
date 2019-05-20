@@ -30,7 +30,7 @@ export function ServiceApiClient (port: number) {
     },
     async contracts () {
       return (await request({
-        query: gql`query { contracts { contractAddress }}`
+        query: gql`query { contracts { contractAddress, engine }}`
       })).data.contracts
     },
     async loadContract (contract: { address: string, location: string }) {
