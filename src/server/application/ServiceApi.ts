@@ -1,4 +1,7 @@
-import { ApolloServer, gql } from 'apollo-server'
+import * as express from 'express'
+import { ApolloServer } from 'apollo-server-express'
+import { gql } from 'apollo-server'
+import { Contract, Bundle } from '../core'
 import { ContractController } from './ContractController'
 import { ContractRepository } from './lib/ContractRepository'
 
@@ -8,7 +11,8 @@ export type Config = {
 }
 
 export function ServiceApi ({ contractController, contractRepository }: Config) {
-  return new ApolloServer({
+  const app = express()
+  const apolloServer = new ApolloServer({
     typeDefs: gql`
       type Contract {
         engine: String
@@ -23,8 +27,11 @@ export function ServiceApi ({ contractController, contractRepository }: Config) 
     `,
     resolvers: {
       Query: {
-        contracts () {
-          return contractRepository.findAll()
+        async contracts () {
+          const contracts = await contractRepository.findAll()
+          return contracts.map(({ address, bundle }: { address: Contract['address'], bundle: Bundle }) => {
+            return { contractAddress: address, engine: bundle.meta.engine }
+          })
         }
       },
       Mutation: {
@@ -35,4 +42,6 @@ export function ServiceApi ({ contractController, contractRepository }: Config) 
     },
     introspection: true
   })
+  apolloServer.applyMiddleware({ app })
+  return app
 }
