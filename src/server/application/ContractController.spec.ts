@@ -14,7 +14,7 @@ import { BundleFetcher, ContractApiServerController, PortManager } from './'
 const nock = require('nock')
 use(sinonChai)
 
-describe('Contract Controller @focus', () => {
+describe('Contract Controller', () => {
   let apiServerController: ReturnType<typeof ContractApiServerController>
   let bundleFetcher: BundleFetcher
   let repository: ContractRepository
