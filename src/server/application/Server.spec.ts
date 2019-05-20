@@ -61,16 +61,16 @@ describe('Server', () => {
       const proxyResponse = await axios.get(`http://localhost:${CONTRACT_PROXY_PORT}/.well-known/apollo/server-health`)
       expect(proxyResponse.statusText).to.eq('OK')
       expect((await apiClient.schema()).__schema).to.exist
-      expect(await apiClient.contractsCount()).to.eq(0)
+      expect((await apiClient.contracts()).length).to.eq(0)
     })
   })
 
   describe('Shutdown', () => {
     beforeEach(async () => {
       await server.boot()
-      expect(await apiClient.contractsCount()).to.eq(0)
+      expect((await apiClient.contracts()).length).to.eq(0)
       await apiClient.loadContract(testContract)
-      expect(await apiClient.contractsCount()).to.eq(1)
+      expect((await apiClient.contracts()).length).to.eq(1)
     })
 
     it('Closes the service API, contract proxy, and loaded contract servers', async () => {

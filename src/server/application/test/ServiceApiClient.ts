@@ -28,10 +28,10 @@ export function ServiceApiClient (port: number) {
         query: gql`query { __schema { types { name } } }`
       })).data
     },
-    async contractsCount () {
+    async contracts () {
       return (await request({
         query: gql`query { contracts { contractAddress }}`
-      })).data.contracts.length
+      })).data.contracts
     },
     async loadContract (contract: { address: string, location: string }) {
       return (await request({
