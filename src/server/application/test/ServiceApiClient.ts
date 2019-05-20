@@ -1,11 +1,11 @@
 import { execute, makePromise } from 'apollo-link'
-import { createHttpLink } from 'apollo-link-http'
+import { HttpLink } from 'apollo-link-http'
 import { onError } from 'apollo-link-error'
 import gql from 'graphql-tag'
-import * as fetch from 'cross-fetch'
+import fetch from 'cross-fetch'
 
 export function ServiceApiClient (port: number) {
-  const httpLink = createHttpLink({ uri: `http://localhost:${port}/graphql`, fetch })
+  const httpLink = new HttpLink({ uri: `http://localhost:${port}/graphql`, fetch })
   const errorLink = onError(({ graphQLErrors, networkError }) => {
     if (graphQLErrors) {
       graphQLErrors.map(({ message, locations, path }) =>
