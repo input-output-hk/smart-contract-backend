@@ -3,6 +3,7 @@ import { configureApi, bootApi } from '../../api'
 import * as request from 'supertest'
 import { Server } from 'http'
 import { loadContainer, initializeDockerClient, findContainerId } from '../docker-api'
+import { Engines } from '../../Engine'
 const MOCK_IMAGE = 'samjeston/smart_contract_server_mock'
 
 describe('api', () => {
@@ -11,6 +12,7 @@ describe('api', () => {
   beforeEach(async () => {
     process.env.CONTAINER_LOWER_PORT_BOUND = '4200'
     process.env.CONTAINER_UPPER_PORT_BOUND = '4300'
+    process.env.ENGINE = Engines.docker
     app = await configureApi().listen(4100)
   })
 
@@ -33,7 +35,7 @@ describe('api', () => {
     it('creates a contract container with the correct name', () => {
       return request(app)
         .post('/loadSmartContract')
-        .send({ contractAddress: 'abcd', dockerImageRepository: MOCK_IMAGE })
+        .send({ contractAddress: 'abcd', executable: MOCK_IMAGE })
         .set('Accept', 'application/json')
         .expect(204)
         .then(async () => {
@@ -45,7 +47,7 @@ describe('api', () => {
     it('throws a 400 if contract address is missing in the request body', () => {
       return request(app)
         .post('/loadSmartContract')
-        .send({ dockerImageRepository: MOCK_IMAGE })
+        .send({ executable: MOCK_IMAGE })
         .set('Accept', 'application/json')
         .expect(400)
     })
