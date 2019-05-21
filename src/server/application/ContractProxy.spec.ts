@@ -13,7 +13,7 @@ describe('ContractProxy', () => {
   let contractProxy: ReturnType<typeof ContractProxy>
   let server: http.Server
   const catchAllUri = 'http://localhost:8079'
-  const CONTRACT_PROXY_PORT = 8081
+  const API_PORT = 8081
 
   beforeEach(async () => {
     const apiServerController = ContractApiServerController(
@@ -29,7 +29,7 @@ describe('ContractProxy', () => {
       apiServerController,
       catchAllUri
     })
-    await listen(contractProxy, CONTRACT_PROXY_PORT)
+    await listen(contractProxy, API_PORT)
     nock(catchAllUri)
       .get('/.well-known/apollo/server-health')
       .reply(200, { id: 'catchAll' })
@@ -45,13 +45,13 @@ describe('ContractProxy', () => {
   })
 
   it('Routes requests to the contract API server', async () => {
-    const proxyResponse = await axios.get(`http://localhost:${CONTRACT_PROXY_PORT}/abcd`)
+    const proxyResponse = await axios.get(`http://localhost:${API_PORT}/abcd`)
     expect(proxyResponse.status).to.eq(200)
     expect(proxyResponse.data).to.eql({ id: 'abcd' })
   })
 
   it('Routes to a catchall address if no contract is found', async () => {
-    const proxyResponse = await axios.get(`http://localhost:${CONTRACT_PROXY_PORT}/.well-known/apollo/server-health`)
+    const proxyResponse = await axios.get(`http://localhost:${API_PORT}/.well-known/apollo/server-health`)
     expect(proxyResponse.status).to.eq(200)
     expect(proxyResponse.data).to.eql({ id: 'catchAll' })
   })

@@ -19,16 +19,16 @@ describe('Server', () => {
   let portAllocationRepository: Repository<PortAllocation>
   const networkInterface = axios.create()
   const executionEndpoint = 'http://execution'
-  const API_PORT = 8079
-  const CONTRACT_PROXY_PORT = 8081
+  const SERVICE_API_PORT = 8079
+  const API_PORT = 8081
   let apiClient: ReturnType<typeof ServiceApiClient>
 
   beforeEach(() => {
     portAllocationRepository = InMemoryRepository<PortAllocation>()
     const pubSubClient = new PubSub()
     server = Server({
-      serviceApi: { port: API_PORT },
-      contractProxy: { port: CONTRACT_PROXY_PORT },
+      serviceApi: { port: SERVICE_API_PORT },
+      contractProxy: { port: API_PORT },
       contractRepository: InMemoryRepository<Contract>(),
       portManagerConfig: {
         repository: portAllocationRepository,
@@ -44,7 +44,7 @@ describe('Server', () => {
       bundleFetcher: HttpTarGzBundleFetcher(networkInterface),
       pubSubClient
     })
-    apiClient = ServiceApiClient(API_PORT)
+    apiClient = ServiceApiClient(SERVICE_API_PORT)
     nock(executionEndpoint)
       .post()
       .reply(200, { data: {} })
@@ -61,7 +61,7 @@ describe('Server', () => {
     afterEach(async () => server.shutdown())
 
     it('Exposes the service API and contract proxy', async () => {
-      const proxyResponse = await axios.get(`http://localhost:${CONTRACT_PROXY_PORT}/.well-known/apollo/server-health`)
+      const proxyResponse = await axios.get(`http://localhost:${API_PORT}/.well-known/apollo/server-health`)
       expect(proxyResponse.statusText).to.eq('OK')
       expect((await apiClient.schema()).__schema).to.exist
       expect((await apiClient.contracts()).length).to.eq(0)
@@ -80,7 +80,7 @@ describe('Server', () => {
       const contractPort = (await portAllocationRepository.getLast()).portNumber
       await server.shutdown()
       await expect(axios.get(`http://localhost:${contractPort}`)).to.be.rejected
-      await expect(axios.get(`http://localhost:${CONTRACT_PROXY_PORT}/.well-known/apollo/server-health`)).to.be.rejected
+      await expect(axios.get(`http://localhost:${API_PORT}/.well-known/apollo/server-health`)).to.be.rejected
       await expect(apiClient.schema()).to.rejected
     })
   })
