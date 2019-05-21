@@ -2,7 +2,7 @@
 /dist
 /.nyc_output
 /coverage
-/src/execution_engines/docker/routes.ts
+/src/execution_engines/routes.ts
 /test/e2e/dist
 docker/*
 !docker/README.md
