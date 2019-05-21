@@ -1,12 +1,11 @@
 import { expect } from 'chai'
 import * as http from 'http'
-import { listen, close } from '../lib/http'
-import { InMemoryRepository } from '../infrastructure'
-import { PortAllocation } from '../core'
 import axios from 'axios'
-import { ContractProxy } from './ContractProxy'
-import { ContractApiServerController } from './ContractApiServerController'
-import { PortManager } from './PortManager'
+import { PortAllocation } from '../core'
+import { InMemoryRepository } from '../infrastructure'
+import { ContractApiServerController, ContractProxy, PortManager } from '.'
+import { listen, close } from '../lib/http'
+
 const nock = require('nock')
 
 describe('ContractProxy', () => {

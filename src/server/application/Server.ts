@@ -1,16 +1,17 @@
 import http from 'http'
 import { PubSubEngine } from 'apollo-server'
-import { listen, close } from '../lib/http'
 import { Engine, EngineClient } from '../core'
-import { ContractController } from './ContractController'
 import {
-  PortManagerConfig, PortManager,
+  BundleFetcher,
   ContractApiServerController,
-  ServiceApi,
-  ContractProxy
+  ContractController,
+  ContractProxy,
+  PortManager,
+  PortManagerConfig,
+  ServiceApi
 } from '.'
 import { ContractRepository } from './lib/ContractRepository'
-import { BundleFetcher } from './BundleFetcher'
+import { listen, close } from '../lib/http'
 
 export type Config = {
   serviceApi: { port: number }

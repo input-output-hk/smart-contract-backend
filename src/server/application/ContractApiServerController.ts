@@ -3,8 +3,8 @@ import * as express from 'express'
 import { AddressInfo } from 'net'
 import { ApolloServer } from 'apollo-server-express'
 import { makeExecutableSchema, IExecutableSchemaDefinition } from 'apollo-server'
-import { PortManager } from '.'
 import { Contract } from '../core'
+import { PortManager } from '.'
 
 export function ContractApiServerController (portManager: ReturnType<typeof PortManager>) {
   const servers = new Map<Contract['address'], http.Server>()

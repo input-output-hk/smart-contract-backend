@@ -2,12 +2,11 @@ import { expect, use } from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import axios from 'axios'
 import { PubSub } from 'apollo-server'
-import { Server } from './Server'
-import { InMemoryRepository, HttpTarGzBundleFetcher, StubEngineClient } from '../infrastructure'
 import { Contract, Engine, PortAllocation } from '../core'
-import { testContract } from './test'
+import { Server } from '.'
 import { Repository } from './lib/Repository'
-import { ServiceApiClient } from './test/ServiceApiClient'
+import { InMemoryRepository, HttpTarGzBundleFetcher, StubEngineClient } from '../infrastructure'
+import { testContract, ServiceApiClient } from './test'
 const nock = require('nock')
 
 use(chaiAsPromised)

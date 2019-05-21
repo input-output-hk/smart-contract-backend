@@ -3,12 +3,11 @@ import { spy } from 'sinon'
 import * as sinonChai from 'sinon-chai'
 import axios from 'axios'
 import { PubSub } from 'apollo-server'
-import { ContractController } from './ContractController'
 import { Contract, Engine, EngineClient, PortAllocation } from '../core'
-import { InMemoryRepository, HttpTarGzBundleFetcher, StubEngineClient } from '../infrastructure'
+import { BundleFetcher, ContractApiServerController, ContractController, PortManager } from '.'
 import { ContractRepository } from './lib/ContractRepository'
+import { InMemoryRepository, HttpTarGzBundleFetcher, StubEngineClient } from '../infrastructure'
 import { testContract } from './test'
-import { BundleFetcher, ContractApiServerController, PortManager } from './'
 
 const nock = require('nock')
 use(sinonChai)
