@@ -2,6 +2,7 @@ import { expect, use } from 'chai'
 import { spy } from 'sinon'
 import * as sinonChai from 'sinon-chai'
 import axios from 'axios'
+import { PubSub } from 'apollo-server'
 import { ContractController } from './ContractController'
 import { Contract, Engine, EngineClient, PortAllocation } from '../core'
 import { InMemoryRepository } from '../infrastructure/repositories'
@@ -36,7 +37,7 @@ describe('Contract Controller', () => {
     bundleFetcher = HttpTarGzBundleFetcher(networkInterface)
     engineClients = new Map([[
       Engine.stub,
-      StubEngineClient()
+      StubEngineClient(new PubSub())
     ]])
     controller = ContractController({
       apiServerController,
