@@ -3,7 +3,7 @@ import * as chaiAsPromised from 'chai-as-promised'
 import { PortManager } from '.'
 import { PortAllocation } from '../core'
 import { AllPortsAllocated } from '../core/errors'
-import { InMemoryRepository } from '../infrastructure/repositories'
+import { InMemoryRepository } from '../infrastructure'
 import { RogueService } from './test/Helpers'
 
 use(chaiAsPromised)

@@ -1,7 +1,7 @@
 import { expect } from 'chai'
 import * as http from 'http'
 import { listen, close } from '../lib/http'
-import { InMemoryRepository } from '../infrastructure/repositories'
+import { InMemoryRepository } from '../infrastructure'
 import { PortAllocation } from '../core'
 import axios from 'axios'
 import { ContractProxy } from './ContractProxy'
