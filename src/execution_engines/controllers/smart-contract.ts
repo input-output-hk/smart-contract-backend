@@ -2,8 +2,7 @@ import { Post, Route, Body, SuccessResponse, Controller } from 'tsoa'
 import DockerEngine from '../docker'
 import { LoadContractIntoEngine, Engine, UnloadContractFromEngine, SmartContractResponse, Engines } from '../Engine'
 
-
-function getEngine(): Engine {
+function getEngine (): Engine {
   const { ENGINE } = process.env
 
   return ENGINE === Engines.docker
@@ -15,7 +14,7 @@ function getEngine(): Engine {
 export class ContainerController extends Controller {
   @SuccessResponse('204', 'No Content')
   @Post('loadSmartContract')
-  public async loadSmartContract(@Body() { contractAddress, executable }: LoadContractIntoEngine): Promise<void> {
+  public async loadSmartContract (@Body() { contractAddress, executable }: LoadContractIntoEngine): Promise<void> {
     const engine = getEngine()
     contractAddress = contractAddress.toLowerCase()
     this.setStatus(204)
@@ -25,7 +24,7 @@ export class ContainerController extends Controller {
 
   @SuccessResponse('204', 'No Content')
   @Post('unloadSmartContract')
-  public async unloadSmartContract(@Body() { contractAddress }: UnloadContractFromEngine): Promise<void> {
+  public async unloadSmartContract (@Body() { contractAddress }: UnloadContractFromEngine): Promise<void> {
     const engine = getEngine()
     contractAddress = contractAddress.toLowerCase()
     this.setStatus(204)
@@ -35,7 +34,7 @@ export class ContainerController extends Controller {
 
   @SuccessResponse('201', 'Created')
   @Post('execute/{contractAddress}/{method}')
-  public async execute(contractAddress: string, method: string, @Body() methodArguments: any): Promise<{ data: SmartContractResponse } | { error: string }> {
+  public async execute (contractAddress: string, method: string, @Body() methodArguments: any): Promise<{ data: SmartContractResponse } | { error: string }> {
     const engine = getEngine()
     contractAddress = contractAddress.toLowerCase()
 

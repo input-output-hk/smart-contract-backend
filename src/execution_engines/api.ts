@@ -6,7 +6,7 @@ import './controllers/smart-contract'
 import { Engines } from './Engine'
 const swaggerUiAssetPath = require('swagger-ui-dist').getAbsoluteFSPath()
 
-export function configureApi() {
+export function configureApi () {
   const app = express()
   app.use(bodyParser.json({ limit: '50mb' }))
   app.use('/documentation', express.static(swaggerUiAssetPath))
@@ -36,7 +36,7 @@ export function configureApi() {
   return app
 }
 
-export function bootApi() {
+export function bootApi () {
   const { ENGINE } = process.env
 
   const enginePort = ENGINE === Engines.docker
@@ -56,7 +56,7 @@ export function bootApi() {
   console.log(`API Documentation at ${address}:${port}/docs`)
 }
 
-function checkDockerEngineEnv() {
+function checkDockerEngineEnv () {
   const { EXECUTION_API_PORT, CONTAINER_LOWER_PORT_BOUND, CONTAINER_UPPER_PORT_BOUND, RUNTIME } = process.env
   if (!EXECUTION_API_PORT || !CONTAINER_LOWER_PORT_BOUND || !CONTAINER_UPPER_PORT_BOUND || !RUNTIME) {
     throw new Error('Missing environment config')
@@ -65,7 +65,7 @@ function checkDockerEngineEnv() {
   return Number(EXECUTION_API_PORT)
 }
 
-function checkNodeEngineEnv() {
+function checkNodeEngineEnv () {
   const { EXECUTION_API_PORT } = process.env
   if (!EXECUTION_API_PORT) {
     throw new Error('Missing environment config')
