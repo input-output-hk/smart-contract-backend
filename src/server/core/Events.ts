@@ -1,0 +1,4 @@
+
+export enum Events {
+  SIGNATURE_REQUIRED = 'SIGNATURE_REQUIRED'
+}

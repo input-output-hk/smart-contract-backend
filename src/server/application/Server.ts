@@ -1,4 +1,5 @@
 import http from 'http'
+import { PubSubEngine } from 'apollo-server'
 import { listen, close } from '../lib/http'
 import { Engine, EngineClient } from '../core'
 import { ContractController } from './ContractController'
@@ -18,6 +19,7 @@ export type Config = {
   portManagerConfig: PortManagerConfig
   engineClients: Map<Engine, EngineClient>
   bundleFetcher: BundleFetcher
+  pubSubClient: PubSubEngine
 }
 
 export function Server (config: Config) {
@@ -32,7 +34,8 @@ export function Server (config: Config) {
   })
   let serviceApi = ServiceApi({
     contractController,
-    contractRepository
+    contractRepository,
+    pubSubClient: config.pubSubClient
   })
   let serviceApiHttpServer: http.Server
   let contractProxy = ContractProxy({

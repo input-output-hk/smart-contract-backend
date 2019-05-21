@@ -24,6 +24,7 @@ describe('Server', () => {
 
   beforeEach(() => {
     portAllocationRepository = InMemoryRepository<PortAllocation>()
+    const pubSubClient = new PubSub()
     server = Server({
       serviceApi: { port: API_PORT },
       contractProxy: { port: CONTRACT_PROXY_PORT },
@@ -37,7 +38,7 @@ describe('Server', () => {
       },
       engineClients: new Map([[
         Engine.stub,
-        StubEngineClient()
+        StubEngineClient(pubSubClient)
       ]]),
       bundleFetcher: HttpTarGzBundleFetcher(networkInterface)
     })

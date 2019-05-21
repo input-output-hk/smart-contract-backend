@@ -1,28 +1,35 @@
 import * as express from 'express'
 import { ApolloServer } from 'apollo-server-express'
-import { gql } from 'apollo-server'
-import { Contract, Bundle } from '../core'
+import { gql, PubSubEngine } from 'apollo-server'
+import { Bundle, Contract, Events } from '../core'
 import { ContractController } from './ContractController'
 import { ContractRepository } from './lib/ContractRepository'
 
 export type Config = {
   contractController: ReturnType<typeof ContractController>
   contractRepository: ContractRepository
+  pubSubClient: PubSubEngine
 }
 
-export function ServiceApi ({ contractController, contractRepository }: Config) {
+export function ServiceApi ({ contractController, contractRepository, pubSubClient }: Config) {
   const app = express()
   const apolloServer = new ApolloServer({
     typeDefs: gql`
+      type SigningRequest {
+        transaction: String!
+      }
       type Contract {
-        engine: String
-        contractAddress: String
+        engine: String!
+        contractAddress: String!
       }
       type Query {
         contracts: [Contract]!
       }
       type Mutation {
         loadContract(contractAddress: String!, bundleLocation: String!): Boolean
+      }
+      type Subscription {
+        transactionSigningRequest(publicKey: String!): SigningRequest
       }
     `,
     resolvers: {
@@ -37,6 +44,11 @@ export function ServiceApi ({ contractController, contractRepository }: Config) 
       Mutation: {
         loadContract (_: any, { contractAddress, bundleLocation }: { contractAddress: string, bundleLocation: string }) {
           return contractController.load(contractAddress, bundleLocation)
+        }
+      },
+      Subscription: {
+        transactionSigningRequest: {
+          subscribe: (_: any, { publicKey }: { publicKey: string }) => pubSubClient.asyncIterator(`${Events.SIGNATURE_REQUIRED}.${publicKey}`)
         }
       }
     },
