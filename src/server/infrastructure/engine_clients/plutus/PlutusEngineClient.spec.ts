@@ -2,7 +2,7 @@ import { expect, use } from 'chai'
 import axios from 'axios'
 import * as chaiAsPromised from 'chai-as-promised'
 import { PlutusEngineClient } from './PlutusEngineClient'
-import { testContracts } from '../../test'
+import { testContracts } from '../../../test'
 const nock = require('nock')
 
 use(chaiAsPromised)

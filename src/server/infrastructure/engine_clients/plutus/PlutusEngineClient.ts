@@ -1,5 +1,5 @@
-import { Bundle, Contract, ContractExecutionInstruction, EngineClient } from '../../core'
-import { NetworkInterface } from '../../application/lib/NetworkInterface'
+import { Bundle, Contract, ContractExecutionInstruction, EngineClient } from '../../../core'
+import { NetworkInterface } from '../../../application/lib/NetworkInterface'
 
 type Config = {
   executionEndpoint: string,
