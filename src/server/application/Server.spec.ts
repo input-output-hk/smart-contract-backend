@@ -1,6 +1,7 @@
 import { expect, use } from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import axios from 'axios'
+import { PubSub } from 'apollo-server'
 import { Server } from './Server'
 import { InMemoryRepository } from '../infrastructure/repositories'
 import { HttpTarGzBundleFetcher } from '../infrastructure/bundle_fetcher'
@@ -40,7 +41,8 @@ describe('Server', () => {
         Engine.stub,
         StubEngineClient(pubSubClient)
       ]]),
-      bundleFetcher: HttpTarGzBundleFetcher(networkInterface)
+      bundleFetcher: HttpTarGzBundleFetcher(networkInterface),
+      pubSubClient
     })
     apiClient = ServiceApiClient(API_PORT)
     nock(executionEndpoint)
