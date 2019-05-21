@@ -7,12 +7,13 @@ import { AllPortsAllocated } from '../core/errors'
 import { ContractApiServerController, PortManager, PortManagerConfig } from '.'
 import { Repository } from './lib/Repository'
 import { InMemoryRepository, StubEngineClient } from '../infrastructure'
-import { testContract } from './test'
+import testContracts from '../test/contract_references'
 import { RogueService } from './test/Helpers'
 
 use(chaiAsPromised)
 
 describe('ContractApiServerController', () => {
+  const testContract = testContracts[0]
   describe('Full TCP port range available', () => {
     let controller: ReturnType<typeof ContractApiServerController>
     let engineClient: ReturnType<typeof StubEngineClient>

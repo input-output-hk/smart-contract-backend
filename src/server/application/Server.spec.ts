@@ -6,7 +6,8 @@ import { Contract, Engine, PortAllocation } from '../core'
 import { Server } from '.'
 import { Repository } from './lib/Repository'
 import { InMemoryRepository, HttpTarGzBundleFetcher, StubEngineClient } from '../infrastructure'
-import { testContract, ServiceApiClient } from './test'
+import testContracts from '../test/contract_references'
+import { ServiceApiClient } from './test'
 const nock = require('nock')
 
 use(chaiAsPromised)
@@ -19,6 +20,7 @@ describe('Server', () => {
   const SERVICE_API_PORT = 8079
   const API_PORT = 8081
   let apiClient: ReturnType<typeof ServiceApiClient>
+  const testContract = testContracts[0]
 
   beforeEach(() => {
     portAllocationRepository = InMemoryRepository<PortAllocation>()
