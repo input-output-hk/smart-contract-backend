@@ -1,3 +1,4 @@
+export { ServiceApiClient } from './ServiceApiClient'
 export const testContract = {
   address: 'testContract',
   graphQLSchema: require('../../../../test/bundles/testContract/graphQlSchema.js'),

@@ -1,6 +1,6 @@
 import { Contract, Engine, EngineClient } from '../core'
+import { BundleFetcher, ContractApiServerController } from '.'
 import { ContractRepository } from './lib/ContractRepository'
-import { BundleFetcher, ContractApiServerController } from './'
 const requireFromString = require('require-from-string')
 
 type Config = {

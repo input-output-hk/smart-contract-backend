@@ -2,19 +2,17 @@ import { expect, use } from 'chai'
 import { spy } from 'sinon'
 import * as sinonChai from 'sinon-chai'
 import axios from 'axios'
-import { ContractController } from './ContractController'
+import { PubSub } from 'apollo-server'
 import { Contract, Engine, EngineClient, PortAllocation } from '../core'
-import { InMemoryRepository } from '../infrastructure/repositories'
-import { HttpTarGzBundleFetcher } from '../infrastructure/bundle_fetcher'
-import { StubEngineClient } from '../infrastructure/engine_clients'
+import { BundleFetcher, ContractApiServerController, ContractController, PortManager } from '.'
 import { ContractRepository } from './lib/ContractRepository'
+import { InMemoryRepository, HttpTarGzBundleFetcher, StubEngineClient } from '../infrastructure'
 import { testContract } from './test'
-import { BundleFetcher, ContractApiServerController, PortManager } from './'
 
 const nock = require('nock')
 use(sinonChai)
 
-describe('Contract Controller @focus', () => {
+describe('Contract Controller', () => {
   let apiServerController: ReturnType<typeof ContractApiServerController>
   let bundleFetcher: BundleFetcher
   let repository: ContractRepository
@@ -36,7 +34,7 @@ describe('Contract Controller @focus', () => {
     bundleFetcher = HttpTarGzBundleFetcher(networkInterface)
     engineClients = new Map([[
       Engine.stub,
-      StubEngineClient()
+      StubEngineClient(new PubSub())
     ]])
     controller = ContractController({
       apiServerController,

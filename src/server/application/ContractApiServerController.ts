@@ -3,8 +3,8 @@ import * as express from 'express'
 import { AddressInfo } from 'net'
 import { ApolloServer } from 'apollo-server-express'
 import { makeExecutableSchema, IExecutableSchemaDefinition } from 'apollo-server'
-import { PortManager } from '.'
 import { Contract } from '../core'
+import { PortManager } from '.'
 
 export function ContractApiServerController (portManager: ReturnType<typeof PortManager>) {
   const servers = new Map<Contract['address'], http.Server>()
@@ -26,6 +26,8 @@ export function ContractApiServerController (portManager: ReturnType<typeof Port
     async deploy (contractAddress: Contract['address'], graphQlSchema: IExecutableSchemaDefinition): Promise<boolean> {
       if (servers.has(contractAddress)) return true
       const allocation = await portManager.getAvailablePort()
+      // Handling the express app is necessary since ApolloServer does not reject the 'listen' promise
+      // when a connection error occurs
       const app = express()
       const apolloServer = new ApolloServer({
         schema: makeExecutableSchema(graphQlSchema),
