@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { configureApi, bootApi } from '../api'
+import { configureApi, bootApi } from '../../api'
 import * as request from 'supertest'
 import { Server } from 'http'
 import { loadContainer, initializeDockerClient, findContainerId } from '../docker-api'
