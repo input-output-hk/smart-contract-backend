@@ -12,6 +12,8 @@ export type Config = {
 }
 
 export function ServiceApi ({ contractController, contractRepository, pubSubClient }: Config) {
+  // Handling the express app is necessary since ApolloServer does not reject the 'listen' promise
+  // when a connection error occurs
   const app = express()
   const apolloServer = new ApolloServer({
     typeDefs: gql`
