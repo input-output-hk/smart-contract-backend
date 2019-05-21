@@ -20,3 +20,8 @@ export interface Engine {
   execute: (args: ExecuteContract) => Promise<{ data: SmartContractResponse } | { error: string }>
   unload: (args: UnloadContractFromEngine) => Promise<boolean>
 }
+
+export enum Engines {
+  docker = 'docker',
+  nodejs = 'nodejs'
+}
