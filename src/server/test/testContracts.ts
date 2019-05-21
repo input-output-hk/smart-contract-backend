@@ -1,4 +1,14 @@
-export default [{
+import { Contract } from '../core'
+
+type ContractReference = {
+  address: Contract['address']
+  graphQLSchema: Contract['bundle']['graphQlSchema']
+  executable: Contract['bundle']['executable']
+  location: string
+  bundle: string
+}
+
+export const testContracts: ContractReference[] = [{
   address: 'testContract',
   graphQLSchema: require('../../../test/bundles/testContract/graphQlSchema'),
   executable: 'samjeston/smart_contract_server_mock',

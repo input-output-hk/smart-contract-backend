@@ -6,8 +6,7 @@ import { Contract, Engine, PortAllocation } from '../core'
 import { Server } from '.'
 import { Repository } from './lib/Repository'
 import { InMemoryRepository, HttpTarGzBundleFetcher, StubEngineClient } from '../infrastructure'
-import testContracts from '../test/contract_references'
-import { ServiceApiClient } from './test'
+import { ServiceApiClient, testContracts } from '../test'
 const nock = require('nock')
 
 use(chaiAsPromised)

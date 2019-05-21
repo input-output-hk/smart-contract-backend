@@ -1,4 +1,4 @@
-import { GraphQLSchema } from 'graphql'
+import { IExecutableSchemaDefinition } from 'apollo-server'
 import { Engine, EngineClient } from '.'
 
 enum ExecutableType {
@@ -8,7 +8,7 @@ enum ExecutableType {
 
 export type Bundle = {
   executable: string
-  graphQlSchema: (engineClient: EngineClient) => GraphQLSchema
+  graphQlSchema: (engineClient: EngineClient) => IExecutableSchemaDefinition
   meta: {
     engine: Engine
     executableType: ExecutableType

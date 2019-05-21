@@ -7,8 +7,7 @@ import { AllPortsAllocated } from '../core/errors'
 import { ContractApiServerController, PortManager, PortManagerConfig } from '.'
 import { Repository } from './lib/Repository'
 import { InMemoryRepository, StubEngineClient } from '../infrastructure'
-import testContracts from '../test/contract_references'
-import { RogueService } from './test/Helpers'
+import { RogueService, testContracts } from '../test/'
 
 use(chaiAsPromised)
 

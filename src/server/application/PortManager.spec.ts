@@ -4,7 +4,7 @@ import { PortAllocation } from '../core'
 import { AllPortsAllocated } from '../core/errors'
 import { PortManager } from '.'
 import { InMemoryRepository } from '../infrastructure'
-import { RogueService } from './test/Helpers'
+import { RogueService } from '../test'
 
 use(chaiAsPromised)
 

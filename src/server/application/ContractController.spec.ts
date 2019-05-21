@@ -7,7 +7,7 @@ import { Contract, Engine, EngineClient, PortAllocation } from '../core'
 import { BundleFetcher, ContractApiServerController, ContractController, PortManager } from '.'
 import { ContractRepository } from './lib/ContractRepository'
 import { InMemoryRepository, HttpTarGzBundleFetcher, StubEngineClient } from '../infrastructure'
-import testContracts from '../test/contract_references'
+import { testContracts } from '../test'
 
 const nock = require('nock')
 use(sinonChai)
