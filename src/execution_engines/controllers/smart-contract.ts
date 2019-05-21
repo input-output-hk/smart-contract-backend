@@ -1,5 +1,6 @@
 import { Post, Route, Body, SuccessResponse, Controller } from 'tsoa'
 import DockerEngine from '../docker'
+import NodeEngine from '../node_js'
 import { LoadContractIntoEngine, Engine, UnloadContractFromEngine, SmartContractResponse, Engines } from '../Engine'
 
 function getEngine (): Engine {
@@ -7,7 +8,7 @@ function getEngine (): Engine {
 
   return ENGINE === Engines.docker
     ? DockerEngine
-    : {} as any
+    : NodeEngine
 }
 
 @Route('')
