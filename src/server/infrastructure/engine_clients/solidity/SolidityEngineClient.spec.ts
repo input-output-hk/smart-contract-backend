@@ -53,24 +53,24 @@ describe('SolidityEngineClient', () => {
     })
   })
   describe('unloadExecutable', () => {
-      let spy: sinon.SinonSpy
-      beforeEach(async () => {
-        spy = sandbox.spy(web3Mock.eth, 'Contract')
-        await engine.loadExecutable({ contractAddress, executable })
-        expect(spy.callCount).to.eql(1)
-      })
-      it('removes the contract from the cache', async () => {
-        await engine.unloadExecutable(contractAddress)
-        await engine.loadExecutable({ contractAddress, executable })
-        expect(spy.callCount).to.eql(2)
-      })
-      it('is idempotent', async () => {
-        await engine.unloadExecutable(contractAddress)
-        await engine.unloadExecutable(contractAddress)
-        await engine.loadExecutable({ contractAddress, executable })
-        expect(spy.callCount).to.eql(2)
-      })
+    let spy: sinon.SinonSpy
+    beforeEach(async () => {
+      spy = sandbox.spy(web3Mock.eth, 'Contract')
+      await engine.loadExecutable({ contractAddress, executable })
+      expect(spy.callCount).to.eql(1)
     })
+    it('removes the contract from the cache', async () => {
+      await engine.unloadExecutable(contractAddress)
+      await engine.loadExecutable({ contractAddress, executable })
+      expect(spy.callCount).to.eql(2)
+    })
+    it('is idempotent', async () => {
+      await engine.unloadExecutable(contractAddress)
+      await engine.unloadExecutable(contractAddress)
+      await engine.loadExecutable({ contractAddress, executable })
+      expect(spy.callCount).to.eql(2)
+    })
+  })
   describe('call', () => {
     let spy: sinon.SinonSpy
     beforeEach(async () => {

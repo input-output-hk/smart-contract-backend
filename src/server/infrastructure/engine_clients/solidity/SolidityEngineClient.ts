@@ -21,15 +21,15 @@ export function SolidityEngineClient (
     },
     call ({ contractAddress, method, methodArguments }: ContractExecutionInstruction) {
       const contract = contracts.get(contractAddress)
-      return methodArguments && methodArguments.length ?
-        contract.methods[method](methodArguments).call() :
-        contract.methods[method]().call()
+      return methodArguments && methodArguments.length
+        ? contract.methods[method](methodArguments).call()
+        : contract.methods[method]().call()
     },
     async execute ({ contractAddress, method, methodArguments, originatorPk }: ContractExecutionInstruction): Promise<RawEthereumTransaction> {
       const contract = contracts.get(contractAddress)
-      const data = methodArguments && methodArguments.length ?
-        contract.methods[method](methodArguments) :
-        contract.methods[method]()
+      const data = methodArguments && methodArguments.length
+        ? contract.methods[method](methodArguments)
+        : contract.methods[method]()
       return {
         to: contractAddress,
         data: data.encodeABI(),
