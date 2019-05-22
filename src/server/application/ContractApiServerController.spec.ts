@@ -1,7 +1,7 @@
 import { expect, use } from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import axios from 'axios'
-import { IExecutableSchemaDefinition, PubSub } from 'apollo-server'
+import { IExecutableSchemaDefinition } from 'apollo-server'
 import { PortAllocation } from '../core'
 import { AllPortsAllocated } from '../core/errors'
 import { ContractApiServerController, PortManager, PortManagerConfig } from '.'
@@ -20,7 +20,7 @@ describe('ContractApiServerController', () => {
     let schema: IExecutableSchemaDefinition
     beforeEach(() => {
       portAllocationRepository = InMemoryRepository<PortAllocation>()
-      engineClient = StubEngineClient(new PubSub())
+      engineClient = StubEngineClient()
       schema = testContract.graphQLSchema(engineClient)
       controller = ContractApiServerController(
         PortManager({
@@ -82,7 +82,7 @@ describe('ContractApiServerController', () => {
     let schema: IExecutableSchemaDefinition
     beforeEach(() => {
       portAllocationRepository = InMemoryRepository<PortAllocation>()
-      engineClient = StubEngineClient(new PubSub())
+      engineClient = StubEngineClient()
       schema = testContract.graphQLSchema(engineClient)
       controller = ContractApiServerController(
         CollidablePortManager({

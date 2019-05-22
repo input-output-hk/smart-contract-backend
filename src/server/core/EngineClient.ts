@@ -2,11 +2,12 @@ import { Bundle, Contract, ContractExecutionInstruction } from '.'
 
 export interface EngineClient {
   name: string
-  loadExecutable: (
+  loadExecutable: (params: {
     contractAddress: Contract['address'],
     executable: Bundle['executable']
-  ) => Promise<any>
+  }) => Promise<any>
   unloadExecutable: (contractAddress: Contract['address']) => Promise<any>
   call: (executionInstruction: ContractExecutionInstruction) => any
   execute: (executionInstruction: ContractExecutionInstruction) => any
+  submitSignedTransaction: (transaction: string) => Promise<any>
 }

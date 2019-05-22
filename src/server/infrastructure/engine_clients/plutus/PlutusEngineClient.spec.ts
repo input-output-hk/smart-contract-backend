@@ -37,7 +37,8 @@ describe('PlutusEngineClient', () => {
 
   describe('loadExecutable', () => {
     it('calls the execution service HTTP API with the executable', async () => {
-      const load = await engine.loadExecutable(testContract.address, testContract.executable)
+      const { address: contractAddress, executable } = testContract
+      const load = await engine.loadExecutable({ contractAddress, executable })
       expect(load.status).to.eq(204)
     })
   })

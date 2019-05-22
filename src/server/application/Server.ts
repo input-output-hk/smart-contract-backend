@@ -24,14 +24,15 @@ export type Config = {
 }
 
 export function Server (config: Config) {
-  const { contractRepository, portManagerConfig, engineClients, bundleFetcher } = config
+  const { contractRepository, portManagerConfig, engineClients, bundleFetcher, pubSubClient } = config
   const portManager = PortManager(portManagerConfig)
   const apiServerController = ContractApiServerController(portManager)
   const contractController = ContractController({
     contractRepository,
     bundleFetcher,
     apiServerController,
-    engineClients
+    engineClients,
+    pubSubClient
   })
   let serviceApi = ServiceApi({
     contractController,

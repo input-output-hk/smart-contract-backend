@@ -34,13 +34,14 @@ describe('Contract Controller', () => {
     bundleFetcher = HttpTarGzBundleFetcher(networkInterface)
     engineClients = new Map([[
       Engine.stub,
-      StubEngineClient(new PubSub())
+      StubEngineClient()
     ]])
     controller = ContractController({
       apiServerController,
       contractRepository: repository,
       bundleFetcher,
-      engineClients
+      engineClients,
+      pubSubClient: new PubSub()
     })
 
     nock(testContract.location)
