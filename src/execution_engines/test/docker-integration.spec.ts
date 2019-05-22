@@ -1,9 +1,9 @@
 import { expect } from 'chai'
-import { configureApi, bootApi } from '../../api'
+import { configureApi, bootApi } from '../api'
 import * as request from 'supertest'
 import { Server } from 'http'
-import { loadContainer, initializeDockerClient, findContainerId } from '../docker-api'
-import { Engines } from '../../Engine'
+import { loadContainer, initializeDockerClient, findContainerId } from '../docker/docker-api'
+import { Engines } from '../Engine'
 const MOCK_IMAGE = 'samjeston/smart_contract_server_mock'
 
 describe('api', () => {

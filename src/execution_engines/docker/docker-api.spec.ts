@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { loadContainer, initializeDockerClient, unloadContainer } from '../docker-api'
+import { loadContainer, initializeDockerClient, unloadContainer } from './docker-api'
 import axios from 'axios'
 const MOCK_IMAGE = 'samjeston/smart_contract_server_mock'
 
