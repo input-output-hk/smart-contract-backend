@@ -131,7 +131,7 @@ module.exports = function (controller) {
         }
       },
       Mutation: {
-        add(_, args) {
+        add (_, args) {
           const { number1, number2 } = args
           const instruction = {
             engine: 'testEngine',

@@ -1,4 +1,4 @@
-module.exports = function (executionController) {
+module.exports = function (controller) {
   return {
     typeDefs: {
       "kind": "Document",
@@ -195,22 +195,22 @@ module.exports = function (executionController) {
     },
     resolvers: {
       Query: {
-        stub() {
+        stub () {
           return true
         }
       },
       Mutation: {
-        startGame() {
+        startGame () {
           const instruction = {
             engine: 'plutus',
             method: 'initialise',
             contractAddress: 'plutusGuessingGame',
           }
 
-          return executionController.executeContract(instruction)
+          return controller.execute(instruction)
             .then(res => JSON.stringify(res))
         },
-        lock(_, { secretWord, amount }) {
+        lock (_, args) {
           const { secretWord, amount } = args
           const instruction = {
             engine: 'plutus',
@@ -219,8 +219,7 @@ module.exports = function (executionController) {
             methodArguments: { secretWord, amount },
             originatorPk: args.originatorPk
           }
-
-          return executionController.executeContract(instruction)
+          return controller.execute(instruction)
             .then(res => JSON.stringify(res))
         }
       }
