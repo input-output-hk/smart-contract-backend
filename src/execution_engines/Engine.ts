@@ -17,7 +17,7 @@ export type SmartContractResponse = any
 
 export interface Engine {
   load: (args: LoadContractIntoEngine) => Promise<boolean>
-  execute: (args: ExecuteContract) => Promise<{ data: SmartContractResponse } | { error: string }>
+  execute: (args: ExecuteContract) => Promise<{ data: SmartContractResponse }>
   unload: (args: UnloadContractFromEngine) => Promise<boolean>
 }
 

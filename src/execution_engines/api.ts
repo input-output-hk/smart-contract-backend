@@ -38,6 +38,9 @@ export function configureApi () {
 
 export function bootApi () {
   const { ENGINE } = process.env
+  if (!ENGINE) {
+    throw new Error('Engine not provided')
+  }
 
   const enginePort = ENGINE === Engines.docker
     ? checkDockerEngineEnv()

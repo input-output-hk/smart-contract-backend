@@ -6,7 +6,7 @@ import { loadContainer, initializeDockerClient, findContainerId } from '../docke
 import { Engines } from '../Engine'
 const MOCK_IMAGE = 'samjeston/smart_contract_server_mock'
 
-describe('api', () => {
+describe('Docker API Integration', () => {
   let app: Server
 
   beforeEach(async () => {
@@ -94,13 +94,13 @@ describe('api', () => {
         .send({ number1: 1, number2: 2 })
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
-        .expect(201)
+        .expect(200)
         .then(response => {
           expect(response.body.data.success).to.eql(true)
         })
     })
 
-    it('throws a 400 if method arguments is missing in the request body', () => {
+    it('throws a 400 if the contract is not yet loaded', () => {
       return request(app)
         .post('/execute/abcd/add')
         .set('Accept', 'application/json')

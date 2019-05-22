@@ -33,16 +33,16 @@ export class ContainerController extends Controller {
     await engine.unload({ contractAddress })
   }
 
-  @SuccessResponse('201', 'Created')
+  @SuccessResponse('200', 'Ok')
   @Post('execute/{contractAddress}/{method}')
   public async execute (contractAddress: string, method: string, @Body() methodArguments: any): Promise<{ data: SmartContractResponse } | { error: string }> {
     const engine = getEngine()
     contractAddress = contractAddress.toLowerCase()
 
     try {
-      return engine.execute({ contractAddress, method, methodArgs: methodArguments })
+      const res = await engine.execute({ contractAddress, method, methodArgs: methodArguments })
+      return res
     } catch (e) {
-      // TODO: Match custom errors for 400, vs unhandled for 500
       this.setStatus(400)
       return { error: e.message }
     }

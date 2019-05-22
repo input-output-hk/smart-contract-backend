@@ -1,6 +1,7 @@
 import { Engine } from '../Engine'
 import { loadContainer, findContainerPort, findContainerId, unloadContainer } from './docker-api'
 import axios from 'axios'
+import { ContractNotLoaded } from '../errors'
 
 const DockerEngine: Engine = {
   load: async ({ contractAddress, executable }) => {
@@ -18,18 +19,17 @@ const DockerEngine: Engine = {
   execute: async ({ contractAddress, method, methodArgs }) => {
     const { RUNTIME } = process.env
     let contractEndpoint: string
-    const containerNotFoundError = 'Container not initialized. Call /loadContainer and try again'
     if (RUNTIME !== 'docker') {
       const associatedPort = await findContainerPort(contractAddress)
       if (associatedPort === 0) {
-        throw new Error(containerNotFoundError)
+        throw new ContractNotLoaded()
       }
 
       contractEndpoint = `http://localhost:${associatedPort}`
     } else {
       const { containerId } = await findContainerId(contractAddress)
       if (!containerId) {
-        throw new Error(containerNotFoundError)
+        throw new ContractNotLoaded()
       }
 
       contractEndpoint = `http://${contractAddress}:8080`
@@ -42,7 +42,7 @@ const DockerEngine: Engine = {
       result = await axios.post(`${contractEndpoint}/${method}`, methodArgs)
     }
 
-    return result
+    return { data: result.data }
   },
   unload: async ({ contractAddress }) => {
     await unloadContainer(contractAddress)
