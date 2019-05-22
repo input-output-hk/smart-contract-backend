@@ -31,6 +31,10 @@ describe('PlutusEngineClient', () => {
     nock(executionEndpoint)
       .post(`/execute/${testContract.address}/add`)
       .reply(201)
+
+    nock(walletEndpoint)
+      .post(`/transaction/submitSignedTransaction`)
+      .reply(201)
   })
 
   afterEach(() => nock.cleanAll())
@@ -62,6 +66,12 @@ describe('PlutusEngineClient', () => {
         methodArguments: { number1: 5, number2: 10 }
       })
       expect(response.status).to.eq(201)
+    })
+  })
+  describe('submitTransaction', () => {
+    it('forwards a signed transaction to the wallet API', async () => {
+      const submit = await engine.submitSignedTransaction('signedTxData')
+      expect(submit.status).to.eq(201)
     })
   })
 })
