@@ -16,7 +16,8 @@ const NodeEngine: Engine = {
 
     const contractString = contracts[contractAddress]
     if (!contractString) throw new ContractNotLoaded()
-    return executeInBrowser(contractString, method, methodArgs)
+    const data = await executeInBrowser(contractString, method, methodArgs)
+    return { data }
   },
   unload: async ({ contractAddress }) => {
     return delete contracts[contractAddress]

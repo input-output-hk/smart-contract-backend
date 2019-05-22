@@ -21,12 +21,35 @@ export async function executeInBrowser (executable: string, endpoint: string, fn
   try {
     const browser = await puppeteer.launch()
     const page = await browser.newPage()
-    const executionContext = await page.mainFrame().executionContext()
 
-    const result = await executionContext.evaluate(({ executable, endpoint, args }) => {
+    console.log(`
+      Exec: ${executable}
+      endpoint: ${endpoint}
+      fnArgs: ${JSON.stringify(fnArgs)}
+    `)
+
+    page.on('console', msg => {
+      for (let i = 0; i < msg.args().length; ++i) { console.log(`${i}: ${msg.args()[i]}`) }
+    })
+
+    const result = await page.evaluate((a) => {
+      console.log(a)
+      const { executable, endpoint, args } = a
+      console.log('----')
+      console.log(executable)
+      console.log('-----')
       const methods = JSON.parse(executable)
+
+      console.log(methods)
+      console.log('----')
+
       const endpointFnAsString = methods[endpoint]
       if (!endpointFnAsString) throw new Error('Endpoint does not exist')
+
+      console.log(methods)
+      console.log(endpointFnAsString)
+      console.log(args)
+      console.log('----')
 
       /* eslint-disable */
       const fn = new Function(`return (${endpointFnAsString}).apply(null, arguments)`)
@@ -37,6 +60,7 @@ export async function executeInBrowser (executable: string, endpoint: string, fn
     await browser.close()
     return result
   } catch (e) {
+    console.log(e)
     throw new ExecutionFailure(e.message)
   }
 }

@@ -6,7 +6,7 @@ import { loadContainer, initializeDockerClient, findContainerId } from '../docke
 import { Engines } from '../Engine'
 const MOCK_IMAGE = 'samjeston/smart_contract_server_mock'
 
-describe('Docker API Integration', () => {
+describe('Docker Execution API Integration', () => {
   let app: Server
 
   beforeEach(async () => {
