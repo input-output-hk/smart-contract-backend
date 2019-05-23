@@ -1,5 +1,4 @@
 import * as Docker from 'dockerode'
-const fp = require('find-free-port')
 
 export function initializeDockerClient () {
   return new Docker({ socketPath: '/var/run/docker.sock' })
@@ -24,13 +23,22 @@ export async function findContainerPort (contractAddress: string): Promise<numbe
   return Number(portMappings[0].HostPort)
 }
 
-export async function createContainer ({ contractAddress, dockerImageRepository, lowerPortBound, upperPortBound }: { contractAddress: string, dockerImageRepository: string, lowerPortBound: number, upperPortBound: number }) {
+let portRef = 0
+export async function createContainer ({ contractAddress, dockerImageRepository, lowerPortBound }: { contractAddress: string, dockerImageRepository: string, lowerPortBound: number, upperPortBound: number }) {
   const { RUNTIME } = process.env
   const docker = initializeDockerClient()
-  const [freePort] = await fp(lowerPortBound, upperPortBound, '0.0.0.0')
+
+  // TODO: find-free-port could never work from the context of Docker
+  // Implement port mapper from the Server module
+  const nextPort = portRef
+    ? portRef + 1
+    : lowerPortBound
+
+  portRef = nextPort
+
   const baseHostConfig = {
     AutoRemove: true,
-    PortBindings: { '8080/tcp': [{ 'HostPort': `${freePort}` }] }
+    PortBindings: { '8080/tcp': [{ 'HostPort': `${nextPort}` }] }
   }
 
   const targetHostConfig = RUNTIME === 'docker'
@@ -53,7 +61,7 @@ export async function createContainer ({ contractAddress, dockerImageRepository,
   }
 
   await container.start()
-  return { port: freePort }
+  return { port: nextPort }
 }
 
 export function pullContainer (dockerImageRepository: string) {

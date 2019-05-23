@@ -2,6 +2,7 @@ import { Post, Route, Body, SuccessResponse, Controller } from 'tsoa'
 import DockerEngine from '../docker'
 import NodeEngine from '../node_js'
 import { LoadContractIntoEngine, Engine, UnloadContractFromEngine, SmartContractResponse, Engines } from '../Engine'
+import { ContractNotLoaded } from '../errors'
 
 function getEngine (): Engine {
   const { ENGINE } = process.env
@@ -39,12 +40,15 @@ export class ContainerController extends Controller {
     const engine = getEngine()
     contractAddress = contractAddress.toLowerCase()
 
-    try {
-      const res = await engine.execute({ contractAddress, method, methodArgs: methodArguments })
-      return res
-    } catch (e) {
-      this.setStatus(400)
-      return { error: e.message }
-    }
+    return engine.execute({ contractAddress, method, methodArgs: methodArguments })
+      .catch(e => {
+        if (e instanceof ContractNotLoaded) {
+          this.setStatus(400)
+        } else {
+          this.setStatus(500)
+        }
+
+        return { error: e.message }
+      })
   }
 }

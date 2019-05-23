@@ -47,11 +47,7 @@ export function bootApi () {
     : checkNodeEngineEnv()
 
   const app = configureApi()
-  const server = app.listen(enginePort, (err: any) => {
-    if (err) {
-      throw new Error(`Unable to boot API on port ${enginePort}`)
-    }
-
+  const server = app.listen(enginePort, () => {
     console.log(`Smart Contract Docker Engine listening on Port ${enginePort}`)
   })
 

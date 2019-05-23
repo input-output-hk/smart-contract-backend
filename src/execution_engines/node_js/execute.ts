@@ -38,7 +38,6 @@ export async function executeInBrowser (executable: string, endpoint: string, fn
     await browser.close()
     return result
   } catch (e) {
-    console.log(e)
     throw new ExecutionFailure(e.message)
   }
 }
