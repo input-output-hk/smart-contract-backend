@@ -53,7 +53,7 @@ describe('NodeEngine', () => {
     it('executes the specified method and returns the result', async () => {
       await NodeEngine.load({ contractAddress: mockAddress, executable: mockModule })
       const res = await NodeEngine.execute({ contractAddress: mockAddress, method: 'foobar', methodArgs: { a: 1, b: 2 } })
-      expect(res).to.eql(3)
+      expect(res).to.eql({ data: 3 })
     })
   })
 })
