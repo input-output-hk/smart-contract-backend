@@ -6,7 +6,7 @@ import { ExecutionEngines } from '../ExecutionEngine'
 use(chaiAsPromised)
 
 describe('NodeEngine', () => {
-  const mockModule = '{ "foobar": "(args) => args.a + args.b" }'
+  const mockModule = '{ foobar: (args) => args.a + args.b }'
   const mockAddress = 'abcd'
 
   beforeEach(() => {
