@@ -54,7 +54,7 @@ describe('Node Execution API Integration', () => {
   })
 
   describe('/unloadSmartContract', () => {
-    it('removes a contract container with the corresponding name', async () => {
+    it('removes a contract by address', async () => {
       return request(app)
         .post('/unloadSmartContract')
         .send({ contractAddress: 'abcd' })
@@ -72,7 +72,7 @@ describe('Node Execution API Integration', () => {
   })
 
   describe('/execute', () => {
-    it('successfully executes a method against a running contract', async () => {
+    it('successfully executes a method against a contract', async () => {
       await request(app)
         .post('/loadSmartContract')
         .send({ contractAddress: 'abcd', executable: mockModule })
