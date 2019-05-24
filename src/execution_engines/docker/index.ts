@@ -1,25 +1,26 @@
-import { ExecutionEngine } from '../ExecutionEngine'
+import { ExecutionEngine, DockerExecutionEngineContext } from '../ExecutionEngine'
 import { loadContainer, findContainerPort, findContainerId, unloadContainer } from './docker-api'
 import axios from 'axios'
 import { ContractNotLoaded } from '../errors'
+import { getConfig } from '../config'
 
 const DockerEngine: ExecutionEngine = {
   load: async ({ contractAddress, executable }) => {
-    const { CONTAINER_LOWER_PORT_BOUND, CONTAINER_UPPER_PORT_BOUND } = process.env
+    const { containerLowerPortBound, containerUpperPortBound } = getConfig()
 
     await loadContainer({
       contractAddress,
       dockerImageRepository: executable,
-      lowerPortBound: Number(CONTAINER_LOWER_PORT_BOUND),
-      upperPortBound: Number(CONTAINER_UPPER_PORT_BOUND)
+      lowerPortBound: containerLowerPortBound,
+      upperPortBound: containerUpperPortBound
     })
 
     return true
   },
   execute: async ({ contractAddress, method, methodArgs }) => {
-    const { RUNTIME } = process.env
+    const { dockerExecutionEngineContext } = getConfig()
     let contractEndpoint: string
-    if (RUNTIME !== 'docker') {
+    if (dockerExecutionEngineContext !== DockerExecutionEngineContext.docker) {
       const associatedPort = await findContainerPort(contractAddress)
       if (associatedPort === 0) {
         throw new ContractNotLoaded()
