@@ -1,9 +1,9 @@
-import { Engine } from '../Engine'
+import { ExecutionEngine } from '../ExecutionEngine'
 import { loadContainer, findContainerPort, findContainerId, unloadContainer } from './docker-api'
 import axios from 'axios'
 import { ContractNotLoaded } from '../errors'
 
-const DockerEngine: Engine = {
+const DockerEngine: ExecutionEngine = {
   load: async ({ contractAddress, executable }) => {
     const { CONTAINER_LOWER_PORT_BOUND, CONTAINER_UPPER_PORT_BOUND } = process.env
 

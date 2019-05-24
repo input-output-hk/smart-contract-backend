@@ -1,9 +1,8 @@
 import * as express from 'express'
 import * as bodyParser from 'body-parser'
 import { RegisterRoutes } from './routes'
-
 import './controllers/smart-contract'
-import { Engines } from './Engine'
+import { ExecutionEngineConfig } from './config'
 const swaggerUiAssetPath = require('swagger-ui-dist').getAbsoluteFSPath()
 
 export function configureApi () {
@@ -36,39 +35,12 @@ export function configureApi () {
   return app
 }
 
-export function bootApi () {
-  const { ENGINE } = process.env
-  if (!ENGINE) {
-    throw new Error('Engine not provided')
-  }
-
-  const enginePort = ENGINE === Engines.docker
-    ? checkDockerEngineEnv()
-    : checkNodeEngineEnv()
-
+export function bootApi (config: ExecutionEngineConfig) {
   const app = configureApi()
-  const server = app.listen(enginePort, () => {
-    console.log(`Smart Contract Docker Engine listening on Port ${enginePort}`)
+  const server = app.listen(config.executionApiPort, () => {
+    console.log(`Smart contract ${config.executionEngine} engine listening on port ${config.executionApiPort}`)
   })
 
   const { address, port } = server.address().valueOf() as any
   console.log(`API Documentation at ${address}:${port}/docs`)
-}
-
-function checkDockerEngineEnv () {
-  const { EXECUTION_API_PORT, CONTAINER_LOWER_PORT_BOUND, CONTAINER_UPPER_PORT_BOUND, RUNTIME } = process.env
-  if (!EXECUTION_API_PORT || !CONTAINER_LOWER_PORT_BOUND || !CONTAINER_UPPER_PORT_BOUND || !RUNTIME) {
-    throw new Error('Missing environment config')
-  }
-
-  return Number(EXECUTION_API_PORT)
-}
-
-function checkNodeEngineEnv () {
-  const { EXECUTION_API_PORT } = process.env
-  if (!EXECUTION_API_PORT) {
-    throw new Error('Missing environment config')
-  }
-
-  return Number(EXECUTION_API_PORT)
 }

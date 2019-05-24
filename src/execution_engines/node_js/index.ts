@@ -1,10 +1,10 @@
-import { Engine } from '../Engine'
+import { ExecutionEngine } from '../ExecutionEngine'
 import { executeInBrowser } from './execute'
 import { BadArgument, ContractNotLoaded } from '../errors'
 
 let contracts: { [contractAddress: string]: string } = {}
 
-const NodeEngine: Engine = {
+const NodeEngine: ExecutionEngine = {
   load: async ({ contractAddress, executable }) => {
     contracts[contractAddress] = executable
     return true

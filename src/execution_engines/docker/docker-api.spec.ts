@@ -1,11 +1,19 @@
 import { expect } from 'chai'
 import { loadContainer, initializeDockerClient, unloadContainer } from './docker-api'
 import axios from 'axios'
+import { DockerExecutionEngineContext, ExecutionEngines } from '../ExecutionEngine'
 const MOCK_IMAGE = 'samjeston/smart_contract_server_mock'
 
 describe('dockerApi', () => {
-  const dockerSpecItFn = process.env.RUNTIME === 'docker' ? it : it.skip
-  const hostSpecItFn = process.env.RUNTIME !== 'docker' ? it : it.skip
+  const dockerSpecItFn = process.env.DOCKER_EXECUTION_ENGINE_CONTEXT === DockerExecutionEngineContext.docker ? it : it.skip
+  const hostSpecItFn = process.env.DOCKER_EXECUTION_ENGINE_CONTEXT !== DockerExecutionEngineContext.docker ? it : it.skip
+
+  beforeEach(() => {
+    process.env.EXECUTION_ENGINE = ExecutionEngines.docker
+    process.env.EXECUTION_API_PORT = '4100'
+    process.env.CONTAINER_LOWER_PORT_BOUND = '4200'
+    process.env.CONTAINER_UPPER_PORT_BOUND = '4300'
+  })
 
   afterEach(async () => {
     const docker = initializeDockerClient()

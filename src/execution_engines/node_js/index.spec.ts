@@ -2,7 +2,7 @@ import { expect, use } from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import NodeEngine from './index'
 import { ContractNotLoaded, BadArgument, ExecutionFailure } from '../errors'
-import { Engines } from '../Engine'
+import { ExecutionEngines } from '../ExecutionEngine'
 use(chaiAsPromised)
 
 describe('NodeEngine', () => {
@@ -10,7 +10,7 @@ describe('NodeEngine', () => {
   const mockAddress = 'abcd'
 
   beforeEach(() => {
-    process.env.ENGINE = Engines.nodejs
+    process.env.ENGINE = ExecutionEngines.nodejs
   })
 
   afterEach(async () => {

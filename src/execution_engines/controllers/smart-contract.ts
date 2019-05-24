@@ -1,13 +1,12 @@
 import { Post, Route, Body, SuccessResponse, Controller } from 'tsoa'
 import DockerEngine from '../docker'
 import NodeEngine from '../node_js'
-import { LoadContractIntoEngine, Engine, UnloadContractFromEngine, SmartContractResponse, Engines } from '../Engine'
+import { LoadContractArgs, ExecutionEngine, UnloadContractArgs, SmartContractResponse, ExecutionEngines } from '../ExecutionEngine'
 import { ContractNotLoaded } from '../errors'
+import { getConfig, ExecutionEngineConfig } from '../config'
 
-function getEngine (): Engine {
-  const { ENGINE } = process.env
-
-  return ENGINE === Engines.docker
+function getEngine (config: ExecutionEngineConfig): ExecutionEngine {
+  return config.executionEngine === ExecutionEngines.docker
     ? DockerEngine
     : NodeEngine
 }
@@ -16,8 +15,8 @@ function getEngine (): Engine {
 export class ContainerController extends Controller {
   @SuccessResponse('204', 'No Content')
   @Post('loadSmartContract')
-  public async loadSmartContract (@Body() { contractAddress, executable }: LoadContractIntoEngine): Promise<void> {
-    const engine = getEngine()
+  public async loadSmartContract (@Body() { contractAddress, executable }: LoadContractArgs): Promise<void> {
+    const engine = getEngine(getConfig())
     contractAddress = contractAddress.toLowerCase()
     this.setStatus(204)
 
@@ -26,8 +25,8 @@ export class ContainerController extends Controller {
 
   @SuccessResponse('204', 'No Content')
   @Post('unloadSmartContract')
-  public async unloadSmartContract (@Body() { contractAddress }: UnloadContractFromEngine): Promise<void> {
-    const engine = getEngine()
+  public async unloadSmartContract (@Body() { contractAddress }: UnloadContractArgs): Promise<void> {
+    const engine = getEngine(getConfig())
     contractAddress = contractAddress.toLowerCase()
     this.setStatus(204)
 
@@ -37,7 +36,7 @@ export class ContainerController extends Controller {
   @SuccessResponse('200', 'Ok')
   @Post('execute/{contractAddress}/{method}')
   public async execute (contractAddress: string, method: string, @Body() methodArguments: any): Promise<{ data: SmartContractResponse } | { error: string }> {
-    const engine = getEngine()
+    const engine = getEngine(getConfig())
     contractAddress = contractAddress.toLowerCase()
 
     return engine.execute({ contractAddress, method, methodArgs: methodArguments })

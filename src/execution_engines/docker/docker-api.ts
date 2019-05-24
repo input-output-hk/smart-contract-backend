@@ -1,4 +1,6 @@
 import * as Docker from 'dockerode'
+import { getConfig } from '../config'
+import { DockerExecutionEngineContext } from '../ExecutionEngine'
 
 export function initializeDockerClient () {
   return new Docker({ socketPath: '/var/run/docker.sock' })
@@ -25,7 +27,7 @@ export async function findContainerPort (contractAddress: string): Promise<numbe
 
 let portRef = 0
 export async function createContainer ({ contractAddress, dockerImageRepository, lowerPortBound }: { contractAddress: string, dockerImageRepository: string, lowerPortBound: number, upperPortBound: number }) {
-  const { RUNTIME } = process.env
+  const { nodeEnv, dockerExecutionEngineContext } = getConfig()
   const docker = initializeDockerClient()
 
   // TODO: find-free-port could never work from the context of Docker
@@ -41,7 +43,7 @@ export async function createContainer ({ contractAddress, dockerImageRepository,
     PortBindings: { '8080/tcp': [{ 'HostPort': `${nextPort}` }] }
   }
 
-  const targetHostConfig = RUNTIME === 'docker'
+  const targetHostConfig = dockerExecutionEngineContext === DockerExecutionEngineContext.docker
     ? { NetworkMode: 'smart-contract-backend_default', ...baseHostConfig }
     : baseHostConfig
 
@@ -54,7 +56,7 @@ export async function createContainer ({ contractAddress, dockerImageRepository,
 
   const container = await docker.createContainer(containerOpts)
 
-  if (process.env.NODE_ENV !== 'test') {
+  if (nodeEnv !== 'test') {
     container.attach({ stream: true, stdout: true, stderr: true }, function (_, stream) {
       stream.pipe(process.stdout)
     })

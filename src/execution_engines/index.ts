@@ -1,3 +1,5 @@
 
 import { bootApi } from './api'
-bootApi()
+import { getConfig } from './config'
+
+bootApi(getConfig())

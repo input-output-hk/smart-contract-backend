@@ -3,7 +3,9 @@ import { configureApi, bootApi } from '../api'
 import * as request from 'supertest'
 import { Server } from 'http'
 import NodeEngine from '../node_js'
-import { Engines } from '../Engine'
+import { getConfig } from '../config'
+import { ExecutionEngines } from '../ExecutionEngine'
+import { MissingConfig } from '../errors'
 
 describe('Node Execution API Integration', () => {
   let app: Server
@@ -11,7 +13,8 @@ describe('Node Execution API Integration', () => {
   const mockAddress = 'abcd'
 
   beforeEach(async () => {
-    process.env.ENGINE = Engines.nodejs
+    process.env.EXECUTION_ENGINE = ExecutionEngines.nodejs
+    process.env.EXECUTION_API_PORT = '4100'
     app = await configureApi().listen(4100)
   })
 
@@ -23,7 +26,7 @@ describe('Node Execution API Integration', () => {
   describe('bootApi', () => {
     it('throws an error when env config is missing', () => {
       process.env.EXECUTION_API_PORT = ''
-      expect(() => bootApi()).to.throw(/Missing environment config/)
+      expect(() => bootApi(getConfig())).to.throw(MissingConfig)
     })
   })
 

@@ -3,16 +3,19 @@ import { configureApi, bootApi } from '../api'
 import * as request from 'supertest'
 import { Server } from 'http'
 import { loadContainer, initializeDockerClient, findContainerId } from '../docker/docker-api'
-import { Engines } from '../Engine'
+import { ExecutionEngines } from '../ExecutionEngine'
+import { getConfig } from '../config'
+import { MissingConfig } from '../errors'
 const MOCK_IMAGE = 'samjeston/smart_contract_server_mock'
 
 describe('Docker Execution API Integration', () => {
   let app: Server
 
   beforeEach(async () => {
+    process.env.EXECUTION_ENGINE = ExecutionEngines.docker
+    process.env.EXECUTION_API_PORT = '4100'
     process.env.CONTAINER_LOWER_PORT_BOUND = '4200'
     process.env.CONTAINER_UPPER_PORT_BOUND = '4300'
-    process.env.ENGINE = Engines.docker
     app = await configureApi().listen(4100)
   })
 
@@ -27,7 +30,7 @@ describe('Docker Execution API Integration', () => {
   describe('bootApi', () => {
     it('throws an error when env config is missing', () => {
       process.env.CONTAINER_LOWER_PORT_BOUND = ''
-      expect(() => bootApi()).to.throw(/Missing environment config/)
+      expect(() => bootApi(getConfig())).to.throw(MissingConfig)
     })
   })
 
