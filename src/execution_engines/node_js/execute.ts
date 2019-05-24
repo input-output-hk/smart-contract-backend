@@ -1,15 +1,28 @@
 import * as puppeteer from 'puppeteer'
 import { ExecutionFailure } from '../errors'
 
+let browser: puppeteer.Browser
+async function getBrowser() {
+  if (!browser) {
+    browser = await puppeteer.launch()
+  }
+
+  return browser
+}
+
+export async function loadPage() {
+  const browser = await getBrowser()
+  return browser.newPage()
+}
+
+export function unloadPage(page: puppeteer.Page) {
+  return page.close()
+}
+
 /**
- * The executeInBrowser function creates a new chromium instance, navigates to a blank
- * page and executes the passed executable endpoint and arguments against this blank page
- *
- * As this is an isolated page, there is no content that can be maliciously
- * farmed by untrusted code
- *
- * This pattern will have low performance, as a new chromium instance is booted for each
- * function call.
+ * The executeInBrowser function executes smart contract endpoints against an isolated
+ * page for the contract. As this is an isolated page, there is no content that can be maliciously
+ * farmed by untrusted code.
  *
  * An executable should be JSON, with the keys as endpoint names, and the values
  * as a string representation of the function to be executed. This representation
@@ -17,11 +30,8 @@ import { ExecutionFailure } from '../errors'
  *
  * Fn arguments must also be an object
  */
-export async function executeInBrowser (executable: string, endpoint: string, fnArgs: any) {
+export async function executeInBrowser(page: puppeteer.Page, executable: string, endpoint: string, fnArgs: any) {
   try {
-    const browser = await puppeteer.launch()
-    const page = await browser.newPage()
-
     const result = await page.evaluate((a) => {
       const { executable, endpoint, args } = a
       const methods = JSON.parse(executable)
@@ -35,7 +45,6 @@ export async function executeInBrowser (executable: string, endpoint: string, fn
       /* eslint-enable */
     }, { executable, endpoint, args: JSON.stringify(fnArgs) })
 
-    await browser.close()
     return result
   } catch (e) {
     throw new ExecutionFailure(e.message)
