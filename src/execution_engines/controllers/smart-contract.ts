@@ -42,7 +42,7 @@ export class ContainerController extends Controller {
     return engine.execute({ contractAddress, method, methodArgs: methodArguments })
       .catch(e => {
         if (e instanceof ContractNotLoaded) {
-          this.setStatus(400)
+          this.setStatus(404)
         } else {
           this.setStatus(500)
         }

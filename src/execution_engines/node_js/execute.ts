@@ -2,7 +2,7 @@ import * as puppeteer from 'puppeteer'
 import { ExecutionFailure } from '../errors'
 
 let browser: puppeteer.Browser
-async function getBrowser() {
+async function getBrowser () {
   if (!browser) {
     browser = await puppeteer.launch()
   }
@@ -10,12 +10,12 @@ async function getBrowser() {
   return browser
 }
 
-export async function loadPage() {
+export async function loadPage () {
   const browser = await getBrowser()
   return browser.newPage()
 }
 
-export function unloadPage(page: puppeteer.Page) {
+export function unloadPage (page: puppeteer.Page) {
   return page.close()
 }
 
@@ -30,7 +30,7 @@ export function unloadPage(page: puppeteer.Page) {
  *
  * Fn arguments must also be an object
  */
-export async function executeInBrowser(page: puppeteer.Page, executable: string, endpoint: string, fnArgs: any) {
+export async function executeInBrowser (page: puppeteer.Page, executable: string, endpoint: string, fnArgs: any) {
   try {
     const result = await page.evaluate((a) => {
       const { executable, endpoint, args } = a

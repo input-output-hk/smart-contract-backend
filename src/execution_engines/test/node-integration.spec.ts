@@ -93,12 +93,12 @@ describe('Node Execution API Integration', () => {
         })
     })
 
-    it('throws a 400 if the contract is not yet loaded', () => {
+    it('throws a 404 if the contract is not yet loaded', () => {
       return request(app)
         .post('/execute/abcd/add')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
-        .expect(400)
+        .expect(404)
     })
   })
 })
