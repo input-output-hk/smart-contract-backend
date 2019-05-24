@@ -6,5 +6,5 @@ export async function initializeContractEngine (contractAddress: string) {
   const executionEndpoint = `${EXECUTION_SERVICE_URI}/loadSmartContract`
   const dockerImageRepository = await getImageRepository(contractAddress)
 
-  return axios.post(executionEndpoint, { contractAddress, dockerImageRepository })
+  return axios.post(executionEndpoint, { contractAddress, executable: dockerImageRepository })
 }

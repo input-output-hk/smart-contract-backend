@@ -1,8 +1,8 @@
 import * as express from 'express'
 import * as bodyParser from 'body-parser'
 import { RegisterRoutes } from './routes'
-
 import './controllers/smart-contract'
+import { ExecutionEngineConfig } from './config'
 const swaggerUiAssetPath = require('swagger-ui-dist').getAbsoluteFSPath()
 
 export function configureApi () {
@@ -35,20 +35,10 @@ export function configureApi () {
   return app
 }
 
-export function bootApi () {
-  const { DOCKER_EXECUTION_API_PORT, CONTAINER_LOWER_PORT_BOUND, CONTAINER_UPPER_PORT_BOUND, RUNTIME } = process.env
-
-  if (!DOCKER_EXECUTION_API_PORT || !CONTAINER_LOWER_PORT_BOUND || !CONTAINER_UPPER_PORT_BOUND || !RUNTIME) {
-    throw new Error('Missing environment config')
-  }
-
+export function bootApi (config: ExecutionEngineConfig) {
   const app = configureApi()
-  const server = app.listen(Number(DOCKER_EXECUTION_API_PORT), (err: any) => {
-    if (err) {
-      throw new Error(`Unable to boot API on port ${DOCKER_EXECUTION_API_PORT}`)
-    }
-
-    console.log(`Smart Contract Docker Engine listening on Port ${DOCKER_EXECUTION_API_PORT}`)
+  const server = app.listen(config.executionApiPort, () => {
+    console.log(`Smart contract ${config.executionEngine} engine listening on port ${config.executionApiPort}`)
   })
 
   const { address, port } = server.address().valueOf() as any

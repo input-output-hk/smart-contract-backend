@@ -37,8 +37,8 @@ CMD ["npx", "pm2", "--no-daemon", "start", "dist/server/index.js"]
 FROM node:10.15.3-alpine as docker_execution
 RUN mkdir /application
 RUN mkdir /application/docker
-COPY --from=builder /application/dist/execution_engines/docker /application/dist/execution_engines/docker
+COPY --from=builder /application/dist/execution_engines /application/dist/execution_engines
 COPY --from=builder /application/dist/swagger.json /application/dist/swagger.json
 COPY --from=production_deps /application/node_modules /application/node_modules
 WORKDIR /application
-CMD ["npx", "pm2", "--no-daemon", "start", "dist/execution_engines/docker/index.js"]
+CMD ["npx", "pm2", "--no-daemon", "start", "dist/execution_engines/index.js"]

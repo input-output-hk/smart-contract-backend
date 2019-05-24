@@ -1,5 +1,6 @@
 import * as Docker from 'dockerode'
-const fp = require('find-free-port')
+import { getConfig } from '../config'
+import { DockerExecutionEngineContext } from '../ExecutionEngine'
 
 export function initializeDockerClient () {
   return new Docker({ socketPath: '/var/run/docker.sock' })
@@ -24,16 +25,25 @@ export async function findContainerPort (contractAddress: string): Promise<numbe
   return Number(portMappings[0].HostPort)
 }
 
-export async function createContainer ({ contractAddress, dockerImageRepository, lowerPortBound, upperPortBound }: { contractAddress: string, dockerImageRepository: string, lowerPortBound: number, upperPortBound: number }) {
-  const { RUNTIME } = process.env
+let portRef = 0
+export async function createContainer ({ contractAddress, dockerImageRepository, lowerPortBound }: { contractAddress: string, dockerImageRepository: string, lowerPortBound: number, upperPortBound: number }) {
+  const { nodeEnv, dockerExecutionEngineContext } = getConfig()
   const docker = initializeDockerClient()
-  const [freePort] = await fp(lowerPortBound, upperPortBound, '0.0.0.0')
+
+  // TODO: find-free-port could never work from the context of Docker
+  // Implement port mapper from the Server module
+  const nextPort = portRef
+    ? portRef + 1
+    : lowerPortBound
+
+  portRef = nextPort
+
   const baseHostConfig = {
     AutoRemove: true,
-    PortBindings: { '8080/tcp': [{ 'HostPort': `${freePort}` }] }
+    PortBindings: { '8080/tcp': [{ 'HostPort': `${nextPort}` }] }
   }
 
-  const targetHostConfig = RUNTIME === 'docker'
+  const targetHostConfig = dockerExecutionEngineContext === DockerExecutionEngineContext.docker
     ? { NetworkMode: 'smart-contract-backend_default', ...baseHostConfig }
     : baseHostConfig
 
@@ -44,16 +54,20 @@ export async function createContainer ({ contractAddress, dockerImageRepository,
     HostConfig: targetHostConfig
   }
 
+  const host = dockerExecutionEngineContext === DockerExecutionEngineContext.docker
+    ? `http://${contractAddress}:8080`
+    : `http://localhost:${nextPort}`
+
   const container = await docker.createContainer(containerOpts)
 
-  if (process.env.NODE_ENV !== 'test') {
+  if (nodeEnv !== 'test') {
     container.attach({ stream: true, stdout: true, stderr: true }, function (_, stream) {
       stream.pipe(process.stdout)
     })
   }
 
   await container.start()
-  return { port: freePort }
+  return { port: nextPort, host }
 }
 
 export function pullContainer (dockerImageRepository: string) {
@@ -73,7 +87,7 @@ export function pullContainer (dockerImageRepository: string) {
   })
 }
 
-export async function loadContainer ({ dockerImageRepository, contractAddress, lowerPortBound, upperPortBound }: { dockerImageRepository: string, contractAddress: string, lowerPortBound: number, upperPortBound: number }): Promise<{ port: number }> {
+export async function loadContainer ({ dockerImageRepository, contractAddress, lowerPortBound, upperPortBound }: { dockerImageRepository: string, contractAddress: string, lowerPortBound: number, upperPortBound: number }): Promise<{ port: number, host: string }> {
   contractAddress = contractAddress.toLowerCase()
   const containerRunning = (await findContainerId(contractAddress)).containerId
   if (containerRunning) return
