@@ -54,6 +54,10 @@ export async function createContainer ({ contractAddress, dockerImageRepository,
     HostConfig: targetHostConfig
   }
 
+  const host = dockerExecutionEngineContext === DockerExecutionEngineContext.docker
+    ? `http://${contractAddress}:8080`
+    : `http://localhost:${nextPort}`
+
   const container = await docker.createContainer(containerOpts)
 
   if (nodeEnv !== 'test') {
@@ -63,7 +67,7 @@ export async function createContainer ({ contractAddress, dockerImageRepository,
   }
 
   await container.start()
-  return { port: nextPort }
+  return { port: nextPort, host }
 }
 
 export function pullContainer (dockerImageRepository: string) {
@@ -83,7 +87,7 @@ export function pullContainer (dockerImageRepository: string) {
   })
 }
 
-export async function loadContainer ({ dockerImageRepository, contractAddress, lowerPortBound, upperPortBound }: { dockerImageRepository: string, contractAddress: string, lowerPortBound: number, upperPortBound: number }): Promise<{ port: number }> {
+export async function loadContainer ({ dockerImageRepository, contractAddress, lowerPortBound, upperPortBound }: { dockerImageRepository: string, contractAddress: string, lowerPortBound: number, upperPortBound: number }): Promise<{ port: number, host: string }> {
   contractAddress = contractAddress.toLowerCase()
   const containerRunning = (await findContainerId(contractAddress)).containerId
   if (containerRunning) return

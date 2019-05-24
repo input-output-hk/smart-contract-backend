@@ -1,19 +1,30 @@
 import { ExecutionEngine, DockerExecutionEngineContext } from '../ExecutionEngine'
 import { loadContainer, findContainerPort, findContainerId, unloadContainer } from './docker-api'
 import axios from 'axios'
-import { ContractNotLoaded } from '../errors'
+import { ContractNotLoaded, ContainerFailedToStart } from '../errors'
 import { getConfig } from '../config'
+const ping = require('ping')
 
 const DockerEngine: ExecutionEngine = {
   load: async ({ contractAddress, executable }) => {
     const { containerLowerPortBound, containerUpperPortBound } = getConfig()
 
-    await loadContainer({
+    const { host } = await loadContainer({
       contractAddress,
       dockerImageRepository: executable,
       lowerPortBound: containerLowerPortBound,
       upperPortBound: containerUpperPortBound
     })
+
+    let alive = false
+    let pingCount = 0
+    while (!alive) {
+      if (pingCount > 10) {
+        throw new ContainerFailedToStart()
+      }
+      alive = await ping.promise.probe(host)
+      await new Promise(resolve => setTimeout(resolve, 50))
+    }
 
     return true
   },
