@@ -2,10 +2,10 @@ import axios from 'axios'
 import { Contract, Engine, PortAllocation } from './core'
 import { Server } from './application'
 import {
-  getPubSubClient,
   HttpTarGzBundleFetcher,
   InMemoryRepository,
-  PlutusEngineClient
+  PlutusEngineClient,
+  RedisPubSubClient
 } from './infrastructure'
 
 const {
@@ -54,7 +54,7 @@ Server({
     })
   ]]),
   bundleFetcher: HttpTarGzBundleFetcher(networkInterface),
-  pubSubClient: getPubSubClient(REDIS_HOST, parseInt(REDIS_PORT))
+  pubSubClient: RedisPubSubClient({ host: REDIS_HOST, port: parseInt(REDIS_PORT) })
 }).boot()
   .then(() => console.log('Server booted'))
   .catch((error) => console.error(error.message))
