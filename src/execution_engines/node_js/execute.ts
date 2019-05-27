@@ -48,7 +48,6 @@ export async function executeInBrowser (page: puppeteer.Page, endpoint: string, 
       }
     }, { endpoint, args: JSON.stringify(fnArgs) })
 
-    console.log(result)
     return result
   } catch (e) {
     throw new ExecutionFailure(e.message)

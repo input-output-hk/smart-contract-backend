@@ -60,6 +60,8 @@ function init() {
 }
 ```
 
+The return type of these functions should be a JSON representation of the result, or a Promise that resolves to this same JSON
+
 ## Security
 
 Running untrusted code, when there is no risk to the author of the code, is hard. To achieve this as safely as possible, the Principle of Least Privilege is followed.
