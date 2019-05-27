@@ -33,9 +33,9 @@ Each image needs to satisfy the following HTTP interface for each contract endpo
 
 ### JavaScript Target
 
-`executable`: A valid string that parses to a JavaScript object, containing contract endpoints
+`executable`: A string that parses to a JavaScript object, containing contract endpoints
 
-If a Plutus smart contract has two contract endpoint, `foo` & `bar`, both with a single JSON argument, the `executable` string is as follows:
+If a Plutus smart contract has two contract endpoint, `foo` & `bar`, both with a JSON argument, the `executable` string is as follows:
 
 ```
 {

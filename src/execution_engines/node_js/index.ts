@@ -17,7 +17,7 @@ const NodeEngine: ExecutionEngine = {
     return true
   },
   execute: async ({ contractAddress, method, methodArgs }) => {
-    if (!(methodArgs instanceof Object)) {
+    if (methodArgs && !(methodArgs instanceof Object)) {
       throw new BadArgument(typeof methodArgs)
     }
 
