@@ -12,7 +12,7 @@ let contracts: {
 
 const NodeEngine: ExecutionEngine = {
   load: async ({ contractAddress, executable }) => {
-    const contractPage = await loadPage()
+    const contractPage = await loadPage(executable)
     contracts[contractAddress] = { executable, page: contractPage }
     return true
   },
@@ -23,7 +23,7 @@ const NodeEngine: ExecutionEngine = {
 
     const contract = contracts[contractAddress]
     if (!contract) throw new ContractNotLoaded()
-    const data = await executeInBrowser(contract.page, contract.executable, method, methodArgs)
+    const data = await executeInBrowser(contract.page, method, methodArgs)
     return { data }
   },
   unload: async ({ contractAddress }) => {

@@ -10,9 +10,18 @@ async function getBrowser () {
   return browser
 }
 
-export async function loadPage () {
+export async function loadPage (executable: string) {
   const browser = await getBrowser()
-  return browser.newPage()
+  const page = await browser.newPage()
+
+  await page.evaluate(({ executable }) => {
+    /* eslint-disable */
+    const exec = Function(`"use strict"; return (${executable})`)()
+    /* eslint-enable */
+    const w: any = window
+    w.contract = exec
+  }, { executable })
+  return page
 }
 
 export function unloadPage (page: puppeteer.Page) {
@@ -24,26 +33,21 @@ export function unloadPage (page: puppeteer.Page) {
  * page for the contract. As this is an isolated page, there is no content that can be maliciously
  * farmed by untrusted code.
  *
- * An executable should be JSON, with the keys as endpoint names, and the values
- * as a string representation of the function to be executed. This representation
- * means that no untrusted code is ever executed in the context of NodeJS
+ * An executable should a plain string, with a top level javascript object that contains keys
+ * of contract endpoints that map to the associated compile contract functions.
+ * This representation means that no untrusted code is ever executed in the context of NodeJS
  *
  * Fn arguments must also be an object
  */
-export async function executeInBrowser (page: puppeteer.Page, executable: string, endpoint: string, fnArgs: any) {
+export async function executeInBrowser (page: puppeteer.Page, endpoint: string, fnArgs: any) {
   try {
-    const result = await page.evaluate((a) => {
-      const { executable, endpoint, args } = a
-      const methods = JSON.parse(executable)
+    const result = await page.evaluate(({ endpoint, args }) => {
+      const w: any = window
+      const endpointFn = w.contract[endpoint]
+      if (!endpointFn) throw new Error('Endpoint does not exist')
 
-      const endpointFnAsString = methods[endpoint]
-      if (!endpointFnAsString) throw new Error('Endpoint does not exist')
-
-      /* eslint-disable */
-      const fn = new Function(`return (${endpointFnAsString}).apply(null, arguments)`)
-      return fn.call(null, JSON.parse(args))
-      /* eslint-enable */
-    }, { executable, endpoint, args: JSON.stringify(fnArgs) })
+      return endpointFn(JSON.parse(args))
+    }, { endpoint, args: JSON.stringify(fnArgs) })
 
     return result
   } catch (e) {

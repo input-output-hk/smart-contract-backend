@@ -23,25 +23,62 @@ export interface ExecutionEngine {
 
 The most up to date implementation of this interface in TypeScript can be seen [here](ExecutionEngine.ts)
 
+### Docker Image Target
+
+`executable`: A string reference to the Docker image to load
+
+Each image needs to satisfy the following HTTP interface for each contract endpoint:
+
+`POST /{contractEndpoint}` where method arguments are the body of the payload
+
+### JavaScript Target
+
+`executable`: A valid string that parses to a JavaScript object, containing contract endpoints
+
+If a Plutus smart contract has two contract endpoint, `foo` & `bar`, both with a single JSON argument, the `executable` string is as follows:
+
+```
+{
+  foo: (fooJsonArgument) => ...,
+  bar: (barJsonArgument) => ...,
+}
+```
+
+If this is not a manageable target for GHCJS, the below approach is a logical alternative to the above:
+
+```
+function foo (fooJsonArgument) {
+  return ...
+}
+
+function bar (barJsonArgument) {
+  return ...
+}
+
+function init() {
+  return { foo, bar }
+}
+```
+
 ## Security
 
 Running untrusted code, when there is no risk to the author of the code, is hard. To achieve this as safely as possible, the Principle of Least Privilege is followed.
 
-### Docker (Docker Image Target)
+### Docker Image Target
 
 Docker should be considered a development target, or a target where only trusted contract images are to be run. Docker does not provide any kind of virtualization and as such exposes the system's kernel as a vulnerability. Namespaces and control groups can be used to greatly limit the resources and system of containers orchestrated through the Docker execution engine, however community consensus is that this is not a satisfactory paradigm for untrusted code execution.
 
-### NodeJS
+### Javascript Target
 
-We don't run untrusted contract code in NodeJS itself due to the privileges available to a Node process. Instead, we use the Puppeteer API to pass the executable JS blob to Chromium which then runs the endpoint in an isolated fashion. Chromium is a good fit for security and the execution of arbitrary JavaScript because Chromium's "sandbox leverages the OS-provided security to allow code execution that cannot make persistent changes to the computer or access information that is confidential. The architecture and exact assurances that the sandbox provides are dependent on the operating system."
+Untrusted contract code is not run in NodeJS due to the escalated privileges available to a Node process, even when run in a tightly restricted namespace. Instead, we use the Puppeteer API to pass the executable JS blob to Chromium which then runs the endpoint in an isolated fashion. Chromium is a good fit for security and the execution of arbitrary JavaScript because Chromium's "sandbox leverages the OS-provided security to allow code execution that cannot make persistent changes to the computer or access information that is confidential. The architecture and exact assurances that the sandbox provides are dependent on the operating system."
 
 #### Security Tests
 
-- [Memory boundaries between pages](node_js/security/page_boundaries.spec.ts)
-- [Isolation from NodeJS runtime and API](node_js/security/isolation_from_nodejs.spec.ts)
-- [Load tests](node_js/security/load_test.spec.ts)
-- [Network attacks](node_js/security/network_attacks.spec.ts)
-- [Resource consumption attack](node_js/security/resource_consumption_attack.spec.ts)
+- [Memory boundaries between pages](test/security/node_js/page_boundaries.spec.ts)
+- [Isolation from NodeJS runtime and API](test/security/node_js/isolation_from_nodejs.spec.ts)
+- [Load tests](test/security/node_js/load_test.spec.ts)
+- [Network attacks](test/security/node_js/network_attacks.spec.ts)
+- [Resource consumption attack](test/security/node_js/resource_consumption_attack.spec.ts)
 
 #### Chromium Security Resources
 
