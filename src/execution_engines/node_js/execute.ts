@@ -14,6 +14,12 @@ export async function loadPage (executable: string) {
   const browser = await getBrowser()
   const page = await browser.newPage()
 
+  // Disallow all outgoing requests
+  await page.setRequestInterception(true)
+  page.on('request', interceptedRequest => {
+    interceptedRequest.abort()
+  })
+
   await page.evaluate(({ executable }) => {
     /* eslint-disable */
     const exec = Function(`"use strict"; return (${executable})`)()
@@ -42,6 +48,7 @@ export async function executeInBrowser (page: puppeteer.Page, endpoint: string, 
       }
     }, { endpoint, args: JSON.stringify(fnArgs) })
 
+    console.log(result)
     return result
   } catch (e) {
     throw new ExecutionFailure(e.message)

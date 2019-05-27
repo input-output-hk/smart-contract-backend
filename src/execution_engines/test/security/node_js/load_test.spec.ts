@@ -33,5 +33,7 @@ describe('Puppeteer Load Test', () => {
 
     const hrend = process.hrtime(hrstart)
     console.info('Puppeteer Execution time - 500 calls: %ds %dms', hrend[0], hrend[1] / 1000000)
+
+    await NodeEngine.unload({ contractAddress: 'contract1' })
   })
 })
