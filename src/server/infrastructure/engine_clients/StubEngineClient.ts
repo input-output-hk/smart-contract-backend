@@ -12,7 +12,7 @@ export function StubEngineClient (): EngineClient {
     call ({ contractAddress, method, methodArguments }: ContractExecutionInstruction) {
       return { contractAddress, method, methodArguments }
     },
-    execute ({ contractAddress, method, methodArguments }: ContractExecutionInstruction) {
+    async execute ({ contractAddress, method, methodArguments }: ContractExecutionInstruction) {
       return { contractAddress, method, methodArguments }
     },
     async submitSignedTransaction (transaction: string) {

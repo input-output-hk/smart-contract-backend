@@ -8,6 +8,6 @@ export interface EngineClient {
   }) => Promise<any>
   unloadExecutable: (contractAddress: Contract['address']) => Promise<any>
   call: (executionInstruction: ContractExecutionInstruction) => any
-  execute: (executionInstruction: ContractExecutionInstruction) => any
+  execute: (executionInstruction: ContractExecutionInstruction) => Promise<any>
   submitSignedTransaction: (transaction: string) => Promise<any>
 }
