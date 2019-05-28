@@ -1,8 +1,8 @@
 # Execution Engine
 
-The Smart Contract Backend Execution Engine provides a pluggable way to execute smart contracts.
+_Run_ smart contracts in isolation using Chromium processes via NodeJS, or _Docker_ containers in a trusted scenario with access to a Docker daemon.
 
-An execution engine is configured for each executable target. At the moment these include Docker images and plain JavaScript. Configuration includes the launch of a web server for the executable target.
+_Interact_ via a HTTP API to call contract endpoints, with the invocation result data passed back in the response.
 
 ## Interface
 

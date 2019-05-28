@@ -1,7 +1,7 @@
 import { expect, use } from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import * as puppeteer from 'puppeteer'
-import { executeInBrowser, loadPage, unloadPage } from './execute'
+import { executeInBrowser, deploy, unloadPage } from './execute'
 import { ExecutionFailure } from '../errors'
 use(chaiAsPromised)
 
@@ -14,7 +14,7 @@ describe('executeInBrowser', () => {
     const fn = ({ a, b }: { a: number, b: number }) => a + b
     const executable = `{endpoint1: ${fn}}`
 
-    page = await loadPage(executable)
+    page = await deploy(executable)
     const res = await executeInBrowser(page, 'endpoint1', { a: 1, b: 2 })
     expect(res).to.eql(3)
   })
@@ -23,7 +23,7 @@ describe('executeInBrowser', () => {
     const fn = () => { throw new Error('failed') }
     const executable = `{endpoint1: ${fn}}`
 
-    page = await loadPage(executable)
+    page = await deploy(executable)
     const res = executeInBrowser(page, 'endpoint1', { a: 1, b: 2 })
     return expect(res).to.eventually.be.rejectedWith(ExecutionFailure)
   })
@@ -32,7 +32,7 @@ describe('executeInBrowser', () => {
     const fn = ({ a, b }: { a: number, b: number }) => a + b
     const executable = `{endpoint1: ${fn}}`
 
-    page = await loadPage(executable)
+    page = await deploy(executable)
     const res = executeInBrowser(page, 'endpoint2', { a: 1, b: 2 })
     return expect(res).to.eventually.be.rejectedWith(ExecutionFailure)
   })

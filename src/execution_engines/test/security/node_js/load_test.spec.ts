@@ -8,7 +8,7 @@ describe('Puppeteer Load Test', () => {
 
   // Once we have an actual JS based contract, we can update this spec to use
   // it instead
-  it('measures the time to execute a trivial contract method 500 times', async () => {
+  it('Executing a simple array map 500 times...', async () => {
     const contract1 = `{
       foo: (args) => {
         const targetData = args.data

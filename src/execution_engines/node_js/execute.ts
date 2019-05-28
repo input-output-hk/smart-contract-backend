@@ -10,7 +10,7 @@ async function getBrowser () {
   return browser
 }
 
-export async function loadPage (executable: string) {
+export async function deploy (executable: string) {
   const browser = await getBrowser()
   const page = await browser.newPage()
 
