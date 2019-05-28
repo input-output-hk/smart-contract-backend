@@ -32,10 +32,22 @@ export async function loadPage (executable: string) {
 
 export function unloadPage (page: puppeteer.Page) {
   return page.close()
+    .catch(e => {
+      if (e.message.match(/Protocol error: Connection closed/)) {
+        return
+      }
+
+      throw e
+    })
 }
 
 export async function executeInBrowser (page: puppeteer.Page, endpoint: string, fnArgs: any) {
   try {
+    // Primitive resource consumption protection
+    // If endpoint execution takes more than 2 seconds, it is considered
+    // an attack so the page is forcibly closed.
+    const timer = setTimeout(async () => unloadPage(page), 2000)
+
     const result = await page.evaluate(({ endpoint, args }) => {
       const w: any = window
       const endpointFn = w.contract[endpoint]
@@ -47,6 +59,8 @@ export async function executeInBrowser (page: puppeteer.Page, endpoint: string, 
         return endpointFn()
       }
     }, { endpoint, args: JSON.stringify(fnArgs) })
+
+    clearTimeout(timer)
 
     return result
   } catch (e) {
