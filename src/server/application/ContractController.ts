@@ -32,12 +32,13 @@ export function ContractController (config: Config) {
         }
         await contractRepository.add(contract)
       }
-      const { bundle: { executable, graphQlSchema, meta }, address } = contract
+      const { bundle: { graphQlSchema, meta }, address } = contract
       const engineClient = engineClients.get(meta.engine)
-      await engineClient.loadExecutable({ contractAddress, executable })
+      await engineClient.loadExecutable({ contractAddress: address, executable: meta.dockerImageRepository })
+      const schema = requireFromString(graphQlSchema)(ContractInteractionController({ engineClient, pubSubClient }))
       await apiServerController.deploy(
         address,
-        requireFromString(graphQlSchema)(ContractInteractionController({ engineClient, pubSubClient }))
+        schema
       )
       return true
     },
