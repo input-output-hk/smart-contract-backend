@@ -7,31 +7,37 @@ describe('Puppeteer Page Boundaries', () => {
     process.env.ENGINE = ExecutionEngines.nodejs
   })
 
-  it('state set on the window by one contract cannot be read by another', async () => {
-    const contract1 = `{
-      foo: () => window.a = 1,
-      bar: () => window.a
-    }`
+  describe('State isolation', () => {
+    beforeEach(async () => {
+      const contract1 = `{
+        foo: () => window.a = 1,
+        bar: () => window.a
+      }`
 
-    const contract2 = `{
-      bar: () => window.a
-    }`
+      const contract2 = `{
+        bar: () => window.a
+      }`
 
-    await NodeEngine.load({ contractAddress: 'contract1', executable: contract1 })
-    await NodeEngine.load({ contractAddress: 'contract2', executable: contract2 })
+      await NodeEngine.load({ contractAddress: 'contract1', executable: contract1 })
+      await NodeEngine.load({ contractAddress: 'contract2', executable: contract2 })
+    })
 
-    await NodeEngine.execute({ contractAddress: 'contract1', method: 'foo' })
-    const contract1Result = await NodeEngine.execute({ contractAddress: 'contract1', method: 'bar' })
-    expect(contract1Result.data).to.eql(1)
+    afterEach(async () => {
+      await NodeEngine.unload({ contractAddress: 'contract1' })
+      await NodeEngine.unload({ contractAddress: 'contract2' })
+    })
 
-    const contract2Result = await NodeEngine.execute({ contractAddress: 'contract2', method: 'bar' })
-    expect(contract2Result.data).to.eql(undefined)
+    it('state set on the window by one contract cannot be read by another', async () => {
+      await NodeEngine.execute({ contractAddress: 'contract1', method: 'foo' })
+      const contract1Result = await NodeEngine.execute({ contractAddress: 'contract1', method: 'bar' })
+      expect(contract1Result.data).to.eql(1)
 
-    await NodeEngine.unload({ contractAddress: 'contract1' })
-    await NodeEngine.unload({ contractAddress: 'contract2' })
+      const contract2Result = await NodeEngine.execute({ contractAddress: 'contract2', method: 'bar' })
+      expect(contract2Result.data).to.eql(undefined)
+    })
   })
 
-  it('localStorage cannot be accessed', async () => {
+  it('Local storage inaccessible', async () => {
     const contract1 = `{
       foo: () => localStorage.setItem('val', 1)
     }`
@@ -44,7 +50,7 @@ describe('Puppeteer Page Boundaries', () => {
     await NodeEngine.unload({ contractAddress: 'contract1' })
   })
 
-  it('cookies cannot be accessed', async () => {
+  it('Cookies inaccessible', async () => {
     const contract1 = `{
       foo: () => document.cookie = "username=John Doe"
     }`

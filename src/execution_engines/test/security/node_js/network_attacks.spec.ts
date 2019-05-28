@@ -7,40 +7,22 @@ describe('Puppeteer Network Security', () => {
     process.env.ENGINE = ExecutionEngines.nodejs
   })
 
-  describe('GET', () => {
-    it('Outgoing GET requests to a remote origin are aborted', async () => {
-      return tryXhr('GET')
-    })
-  })
+  it('Prevents outgoing HTTP requests for a range of methods', async () => {
+    const methods = [
+      'GET',
+      'POST',
+      'HEAD',
+      'OPTIONS',
+      'DELETE',
+      'PUT',
+      'PATCH',
+      'CONNECT',
+      'TRACE'
+    ]
 
-  describe('POST', () => {
-    it('Outgoing POST requests to a remote origin are aborted', async () => {
-      return tryXhr('POST')
-    })
-  })
-
-  describe('PUT', () => {
-    it('Outgoing PUT requests to a remote origin are aborted', async () => {
-      return tryXhr('PUT')
-    })
-  })
-
-  describe('OPTIONS', () => {
-    it('Outgoing OPTIONS requests to a remote origin are aborted', async () => {
-      return tryXhr('OPTIONS')
-    })
-  })
-
-  describe('PATCH', () => {
-    it('Outgoing PATCH requests to a remote origin are aborted', async () => {
-      return tryXhr('PATCH')
-    })
-  })
-
-  describe('DELETE', () => {
-    it('Outgoing DELETE requests to a remote origin are aborted', async () => {
-      return tryXhr('DELETE')
-    })
+    for (const method in methods) {
+      await tryXhr(method)
+    }
   })
 })
 
@@ -69,8 +51,8 @@ async function tryXhr (httpMethod: string) {
   await NodeEngine.load({ contractAddress: 'contract1', executable: contract1 })
 
   const methodArgs = { maliciousEndpoint: 'http://google.com', httpMethod }
-  const failedAccess = NodeEngine.execute({ contractAddress: 'contract1', method: 'foo', methodArgs })
-  await expect(failedAccess).to.eventually.be.rejectedWith(/Evaluation failed: 1/)
+  const failedRequest = NodeEngine.execute({ contractAddress: 'contract1', method: 'foo', methodArgs })
+  await expect(failedRequest).to.eventually.be.rejectedWith(/Evaluation failed: 1/)
 
   await NodeEngine.unload({ contractAddress: 'contract1' })
 }
