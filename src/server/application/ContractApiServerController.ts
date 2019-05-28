@@ -43,6 +43,7 @@ export function ContractApiServerController (portManager: ReturnType<typeof Port
         if (error.code === 'EADDRINUSE') {
           return this.deploy(contractAddress, graphQlSchema)
         }
+        return false
       }
     },
     async tearDown (contractAddress: Contract['address']): Promise<boolean> {
