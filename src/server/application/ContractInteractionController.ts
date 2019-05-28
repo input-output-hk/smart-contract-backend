@@ -12,9 +12,10 @@ export function ContractInteractionController (config: Config) {
     call (instruction: ContractExecutionInstruction) {
       return engineClient.call(instruction)
     },
-    execute (instruction: ContractExecutionInstruction) {
-      const transaction = engineClient.execute(instruction)
-      return pubSubClient.publish(`${Events.SIGNATURE_REQUIRED}.${instruction.originatorPk}`, { transaction })
+    async execute (instruction: ContractExecutionInstruction) {
+      const response = await engineClient.execute(instruction)
+      await pubSubClient.publish(`${Events.SIGNATURE_REQUIRED}.${instruction.originatorPk}`, { transaction: response.data })
+      return response.data
     },
     submitSignedTransaction (signedTransaction: string) {
       return engineClient.submitSignedTransaction(signedTransaction)
