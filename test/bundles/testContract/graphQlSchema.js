@@ -134,14 +134,16 @@ module.exports = function (controller) {
         add (_, args) {
           const { number1, number2 } = args
           const instruction = {
-            engine: 'testEngine',
             method: 'add',
             contractAddress: 'testContract',
             methodArguments: { number1, number2 },
             originatorPk: args.originatorPk
           }
           return controller.execute(instruction)
-            .then(res => JSON.stringify(res))
+            .then(res => {
+              console.log(res)
+              return JSON.stringify(res)
+            })
         }
       }
     }

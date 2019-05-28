@@ -134,7 +134,6 @@ module.exports = function (controller) {
         add(_, args) {
           const { number1, number2 } = args
           const instruction = {
-            engine: 'plutus',
             method: 'add',
             contractAddress: 'abcd',
             methodArguments: { number1, number2 },

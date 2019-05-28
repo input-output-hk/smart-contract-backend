@@ -202,7 +202,6 @@ module.exports = function (controller) {
       Mutation: {
         startGame () {
           const instruction = {
-            engine: 'plutus',
             method: 'initialise',
             contractAddress: 'plutusGuessingGame',
           }
@@ -213,7 +212,6 @@ module.exports = function (controller) {
         lock (_, args) {
           const { secretWord, amount } = args
           const instruction = {
-            engine: 'plutus',
             method: 'lock',
             contractAddress: 'plutusGuessingGame',
             methodArguments: { secretWord, amount },

@@ -69,11 +69,11 @@ export class World {
     }
   }
 
-  initializeContract(address: string) {
+  loadContract(address: string) {
     return this.apolloClient.mutate({
       mutation: gql`
         mutation {
-          initializeContract(contractAddress: "${address}", bundleLocation: "http://bundle_server:9001/${address}")
+          loadContract(contractAddress: "${address}", bundleLocation: "http://bundle_server:9001/${address}")
         }
       `
     })
