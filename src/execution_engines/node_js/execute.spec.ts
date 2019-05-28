@@ -11,7 +11,7 @@ describe('executeInBrowser', () => {
   afterEach(() => unloadPage(page))
 
   it('executes an arbitrary function against the context of chromium', async () => {
-    const fn = function endpoint1 ({ a, b }: { a: number, b: number }) { return a + b }
+    const fn = ({ a, b }: { a: number, b: number }) => a + b
     const executable = `{endpoint1: ${fn}}`
 
     page = await loadPage(executable)
@@ -20,7 +20,7 @@ describe('executeInBrowser', () => {
   })
 
   it('throws if the function call falls', async () => {
-    const fn = function endpoint1 () { throw new Error('failed') }
+    const fn = () => { throw new Error('failed') }
     const executable = `{endpoint1: ${fn}}`
 
     page = await loadPage(executable)
@@ -29,7 +29,7 @@ describe('executeInBrowser', () => {
   })
 
   it('throws if the endpoint does not exist on the executable', async () => {
-    const fn = function endpoint1 ({ a, b }: { a: number, b: number }) { return a + b }
+    const fn = ({ a, b }: { a: number, b: number }) => a + b
     const executable = `{endpoint1: ${fn}}`
 
     page = await loadPage(executable)

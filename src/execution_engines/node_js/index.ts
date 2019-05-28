@@ -5,7 +5,6 @@ import { Page } from 'puppeteer'
 
 let contracts: {
   [contractAddress: string]: {
-    executable: string
     page: Page
   }
 } = {}
@@ -13,7 +12,7 @@ let contracts: {
 const NodeEngine: ExecutionEngine = {
   load: async ({ contractAddress, executable }) => {
     const contractPage = await loadPage(executable)
-    contracts[contractAddress] = { executable, page: contractPage }
+    contracts[contractAddress] = { page: contractPage }
     return true
   },
   execute: async ({ contractAddress, method, methodArgs }) => {
