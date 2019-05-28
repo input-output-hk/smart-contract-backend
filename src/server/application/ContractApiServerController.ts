@@ -5,6 +5,7 @@ import { ApolloServer } from 'apollo-server-express'
 import { makeExecutableSchema, IExecutableSchemaDefinition } from 'apollo-server'
 import { Contract } from '../core'
 import { PortManager } from '.'
+import { listen } from '../lib/express'
 
 export function ContractApiServerController (portManager: ReturnType<typeof PortManager>) {
   const servers = new Map<Contract['address'], http.Server>()
@@ -57,12 +58,4 @@ export function ContractApiServerController (portManager: ReturnType<typeof Port
       return true
     }
   }
-}
-
-async function listen (app: ReturnType<typeof express>, port: number): Promise<http.Server> {
-  return new Promise((resolve, reject) => {
-    const server: http.Server = app.listen({ port })
-      .on('listening', () => resolve(server))
-      .on('error', (error) => reject(error))
-  })
 }
