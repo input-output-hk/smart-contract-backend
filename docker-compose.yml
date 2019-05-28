@@ -26,14 +26,15 @@ services:
       target: docker_execution
     init: true
     environment:
-      - DOCKER_EXECUTION_API_PORT=9000
+      - EXECUTION_API_PORT=9000
       - CONTAINER_LOWER_PORT_BOUND=11000
       - CONTAINER_UPPER_PORT_BOUND=12000
-      - RUNTIME=docker
+      - DOCKER_EXECUTION_ENGINE_CONTEXT=docker
+      - EXECUTION_ENGINE=docker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       # - ./dist/swagger.json:/application/dist/swagger.json
-      # - ./dist/execution_engines/docker:/application/dist/execution_engines/docker
+      # - ./dist/execution_engines:/application/dist/execution_engines
     ports:
       - 9000:9000
   bundle_server:
