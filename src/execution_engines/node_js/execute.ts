@@ -10,40 +10,57 @@ async function getBrowser () {
   return browser
 }
 
-export async function loadPage () {
+export async function deploy (executable: string) {
   const browser = await getBrowser()
-  return browser.newPage()
+  const page = await browser.newPage()
+
+  // Disallow all outgoing requests
+  await page.setRequestInterception(true)
+  page.on('request', interceptedRequest => {
+    interceptedRequest.abort()
+  })
+
+  await page.evaluate(({ executable }) => {
+    /* eslint-disable */
+    const exec = Function(`"use strict"; return (${executable})`)()
+    /* eslint-enable */
+    const w: any = window
+    w.contract = exec
+  }, { executable })
+  return page
 }
 
 export function unloadPage (page: puppeteer.Page) {
   return page.close()
+    .catch(e => {
+      if (e.message.match(/Protocol error: Connection closed/)) {
+        return
+      }
+
+      throw e
+    })
 }
 
-/**
- * The executeInBrowser function executes smart contract endpoints against an isolated
- * page for the contract. As this is an isolated page, there is no content that can be maliciously
- * farmed by untrusted code.
- *
- * An executable should be JSON, with the keys as endpoint names, and the values
- * as a string representation of the function to be executed. This representation
- * means that no untrusted code is ever executed in the context of NodeJS
- *
- * Fn arguments must also be an object
- */
-export async function executeInBrowser (page: puppeteer.Page, executable: string, endpoint: string, fnArgs: any) {
+export async function executeInBrowser (page: puppeteer.Page, endpoint: string, fnArgs: any) {
   try {
-    const result = await page.evaluate((a) => {
-      const { executable, endpoint, args } = a
-      const methods = JSON.parse(executable)
+    // Primitive resource consumption protection
+    // If endpoint execution takes more than 2 seconds, it is considered
+    // an attack so the page is forcibly closed.
+    const timer = setTimeout(async () => unloadPage(page), 2000)
 
-      const endpointFnAsString = methods[endpoint]
-      if (!endpointFnAsString) throw new Error('Endpoint does not exist')
+    const result = await page.evaluate(({ endpoint, args }) => {
+      const w: any = window
+      const endpointFn = w.contract[endpoint]
+      if (!endpointFn) throw new Error('Endpoint does not exist')
 
-      /* eslint-disable */
-      const fn = new Function(`return (${endpointFnAsString}).apply(null, arguments)`)
-      return fn.call(null, JSON.parse(args))
-      /* eslint-enable */
-    }, { executable, endpoint, args: JSON.stringify(fnArgs) })
+      if (args) {
+        return endpointFn(JSON.parse(args))
+      } else {
+        return endpointFn()
+      }
+    }, { endpoint, args: JSON.stringify(fnArgs) })
+
+    clearTimeout(timer)
 
     return result
   } catch (e) {

@@ -9,7 +9,7 @@ import { MissingConfig } from '../errors'
 
 describe('Node Execution API Integration', () => {
   let app: Server
-  const mockModule = '{ "foobar": "(args) => { return {result: args.number1 + args.number2 }}" }'
+  const mockModule = '{ foobar: (args) => { return {result: args.number1 + args.number2 }} }'
   const mockAddress = 'abcd'
 
   beforeEach(async () => {

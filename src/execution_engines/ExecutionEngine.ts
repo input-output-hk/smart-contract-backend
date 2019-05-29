@@ -10,7 +10,7 @@ export interface UnloadContractArgs {
 export interface ExecuteContractArgs {
   contractAddress: string
   method: string
-  methodArgs: any
+  methodArgs?: any
 }
 
 export type SmartContractResponse = any
