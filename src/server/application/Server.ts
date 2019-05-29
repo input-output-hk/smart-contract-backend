@@ -2,20 +2,18 @@ import http from 'http'
 import { PubSubEngine } from 'apollo-server'
 import { Engine, EngineClient } from '../core'
 import {
+  Api,
   BundleFetcher,
   ContractApiServerController,
   ContractController,
-  ContractProxy,
   PortManager,
-  PortManagerConfig,
-  ServiceApi
+  PortManagerConfig
 } from '.'
 import { ContractRepository } from './lib/ContractRepository'
-import { listen, close } from '../lib/http'
+import { close } from '../lib/http'
 
 export type Config = {
-  serviceApi: { port: number }
-  contractProxy: { port: number }
+  apiPort: number
   contractRepository: ContractRepository
   portManagerConfig: PortManagerConfig
   engineClients: Map<Engine, EngineClient>
@@ -34,26 +32,21 @@ export function Server (config: Config) {
     engineClients,
     pubSubClient
   })
-  let serviceApi = ServiceApi({
+  let api = Api({
     contractController,
     contractRepository,
-    pubSubClient: config.pubSubClient
-  })
-  let serviceApiHttpServer: http.Server
-  let contractProxy = ContractProxy({
-    ...config.contractProxy,
     apiServerController,
-    catchAllUri: `http://localhost:${config.serviceApi.port}`
+    pubSubClient
   })
+  let apiServer: http.Server
   return {
     async boot (): Promise<void> {
-      await listen(contractProxy, config.contractProxy.port)
-      serviceApiHttpServer = await serviceApi.listen({ port: config.serviceApi.port })
+      apiServer = await api.app.listen({ port: config.apiPort })
+      api.apolloServer.installSubscriptionHandlers(apiServer)
     },
     async shutdown (): Promise<void> {
       await Promise.all([
-        close(serviceApiHttpServer),
-        close(contractProxy),
+        close(apiServer),
         apiServerController.closeAllServers()
       ])
     }

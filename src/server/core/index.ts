@@ -1,4 +1,4 @@
-export { Bundle } from './Bundle'
+export { Bundle, ExecutableType } from './Bundle'
 export { Contract } from './Contract'
 export { ContractExecutionInstruction } from './ContractExecutionInstruction'
 export { Engine } from './Engine'

@@ -5,7 +5,6 @@ COPY package.json /application/package.json
 WORKDIR /application
 RUN npm i
 COPY . /application
-RUN rm .env || true
 RUN npm run build
 
 FROM node:10.15.3-alpine as test

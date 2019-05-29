@@ -7,7 +7,6 @@
     "build": "rm -rf dist && npm run api-build && tsc",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint --fix \"src/**/*.ts\"",
-    "start": "npm run build && node -r dotenv/config dist/index.js",
     "test": "npm run lint && npm run build && NODE_ENV=test nyc mocha",
     "test:watch": "mocha -w",
     "test:coverage": "npm test && http-server coverage",
@@ -18,7 +17,7 @@
     "e2e:build": "rm -rf test/e2e/dist && tsc --project test/e2e",
     "e2e:run": "cucumber-js --require 'test/e2e/dist/**/*.js' --format node_modules/cucumber-pretty --exit --tags \"not @Todo\" features/**/*.feature",
     "e2e": "npm run e2e:build && npm run e2e:run",
-    "e2e:local": "APPLICATION_URI=http://127.0.0.1:8081 WS_URI=ws://localhost:8079/graphql npm run e2e"
+    "e2e:local": "APPLICATION_URI=http://127.0.0.1:8081 WS_URI=ws://localhost:8081/graphql npm run e2e"
   },
   "repository": {
     "type": "git",
@@ -89,13 +88,14 @@
     "typescript": "^3.3.3333"
   },
   "dependencies": {
+    "@types/axios": "^0.14.0",
     "apollo-link": "^1.2.10",
     "apollo-link-http": "^1.5.13",
     "apollo-server": "^2.5.0",
     "apollo-server-express": "^2.5.0",
     "apollo-server-testing": "^2.4.8",
     "axios": "^0.18.0",
-    "body-parser": "^1.18.3",
+    "body-parser": "^1.19.0",
     "decompress": "^4.2.0",
     "dockerode": "^2.5.8",
     "dotenv": "^6.2.0",

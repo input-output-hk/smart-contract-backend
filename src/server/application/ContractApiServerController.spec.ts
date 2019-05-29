@@ -80,7 +80,8 @@ describe('ContractApiServerController', () => {
     let engineClient: ReturnType<typeof StubEngineClient>
     let portAllocationRepository: Repository<PortAllocation>
     let schema: IExecutableSchemaDefinition
-    beforeEach(() => {
+    let rogueService: ReturnType<typeof RogueService>
+    beforeEach(async () => {
       portAllocationRepository = InMemoryRepository<PortAllocation>()
       engineClient = StubEngineClient()
       schema = testContract.graphQLSchema(engineClient)
@@ -90,18 +91,18 @@ describe('ContractApiServerController', () => {
           range: { lower: 8082, upper: 8084 }
         })
       )
+      rogueService = RogueService()
+      await rogueService.listen(8082)
     })
     afterEach(async () => {
       await controller.closeAllServers()
+      await rogueService.close()
     })
 
     it('Requests a new port allocation if a collision occurs when starting the server', async () => {
-      const rogueService = RogueService()
-      await rogueService.listen(8082)
       const deploy = await controller.deploy(testContract.address, schema)
       expect(deploy).to.be.true
       expect((await checkServer(8083)).statusText).to.eq('OK')
-      rogueService.close()
     })
   })
 })

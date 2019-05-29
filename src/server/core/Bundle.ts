@@ -1,7 +1,7 @@
 import { IExecutableSchemaDefinition } from 'apollo-server'
 import { Engine, EngineClient } from '.'
 
-enum ExecutableType {
+export enum ExecutableType {
   docker = 'docker',
   wasm = 'wasm'
 }

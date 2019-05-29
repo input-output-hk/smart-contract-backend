@@ -16,7 +16,7 @@ export class World {
     const { APPLICATION_URI, WS_URI } = process.env
 
     const httpLink = new HttpLink({
-      uri: APPLICATION_URI,
+      uri: `${APPLICATION_URI}/graphql`,
       fetch
     })
 
@@ -96,7 +96,7 @@ export class World {
     const { APPLICATION_URI } = process.env
 
     const httpLink = new HttpLink({
-      uri: `${APPLICATION_URI}/${address}`,
+      uri: `${APPLICATION_URI}/contract/${address}`,
       fetch
     })
 

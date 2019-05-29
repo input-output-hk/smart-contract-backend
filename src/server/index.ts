@@ -9,7 +9,6 @@ import {
 } from './infrastructure'
 
 const {
-  SERVICE_API_PORT,
   API_PORT,
   EXECUTION_SERVICE_URI,
   WALLET_SERVICE_URI,
@@ -20,7 +19,6 @@ const {
 } = process.env
 
 if (
-  !SERVICE_API_PORT ||
   !API_PORT ||
   !EXECUTION_SERVICE_URI ||
   !WALLET_SERVICE_URI ||
@@ -35,8 +33,7 @@ if (
 const networkInterface = axios.create()
 
 Server({
-  serviceApi: { port: Number(SERVICE_API_PORT) },
-  contractProxy: { port: Number(API_PORT) },
+  apiPort: Number(API_PORT),
   contractRepository: InMemoryRepository<Contract>(),
   portManagerConfig: {
     repository: InMemoryRepository<PortAllocation>(),

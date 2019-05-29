@@ -34,7 +34,7 @@ export function ContractApiServerController (portManager: ReturnType<typeof Port
         schema: makeExecutableSchema(graphQlSchema),
         introspection: true
       })
-      apolloServer.applyMiddleware({ app })
+      apolloServer.applyMiddleware({ app, path: '/graphql' })
       try {
         const server = await listen(app, allocation.portNumber)
         servers.set(contractAddress, server)
