@@ -1,4 +1,4 @@
-module.exports = function (executionController) {
+module.exports = function (controller) {
   return {
     typeDefs: {
       "kind": "Document",
@@ -131,19 +131,19 @@ module.exports = function (executionController) {
         }
       },
       Mutation: {
-        add(_, args) {
+        add (_, args) {
           const { number1, number2 } = args
           const instruction = {
-            engine: 'testEngine',
             method: 'add',
             contractAddress: 'testContract',
             methodArguments: { number1, number2 },
             originatorPk: args.originatorPk
           }
-
-          // Submit to execution controller
-          return executionController.executeContract(instruction)
-            .then(res => JSON.stringify(res))
+          return controller.execute(instruction)
+            .then(res => {
+              console.log(res)
+              return JSON.stringify(res)
+            })
         }
       }
     }

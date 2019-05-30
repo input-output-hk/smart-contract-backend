@@ -1,4 +1,4 @@
-module.exports = function (executionController) {
+module.exports = function (controller) {
   return {
     typeDefs: {
       "kind": "Document",
@@ -134,15 +134,12 @@ module.exports = function (executionController) {
         add(_, args) {
           const { number1, number2 } = args
           const instruction = {
-            engine: 'plutus',
             method: 'add',
             contractAddress: 'abcd',
             methodArguments: { number1, number2 },
             originatorPk: args.originatorPk
           }
-
-          // Submit to execution controller
-          return executionController.executeContract(instruction)
+          return controller.execute(instruction)
             .then(res => JSON.stringify(res))
         }
       }

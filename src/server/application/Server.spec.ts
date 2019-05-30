@@ -6,7 +6,7 @@ import { Contract, Engine, PortAllocation } from '../core'
 import { Server } from '.'
 import { Repository } from './lib/Repository'
 import { InMemoryRepository, HttpTarGzBundleFetcher, StubEngineClient } from '../infrastructure'
-import { testContract, ServiceApiClient } from './test'
+import { ServiceApiClient, testContracts } from '../test'
 const nock = require('nock')
 
 use(chaiAsPromised)
@@ -16,16 +16,14 @@ describe('Server', () => {
   let portAllocationRepository: Repository<PortAllocation>
   const networkInterface = axios.create()
   const executionEndpoint = 'http://execution'
-  const SERVICE_API_PORT = 8079
   const API_PORT = 8081
   let apiClient: ReturnType<typeof ServiceApiClient>
+  const testContract = testContracts[0]
 
   beforeEach(() => {
     portAllocationRepository = InMemoryRepository<PortAllocation>()
-    const pubSubClient = new PubSub()
     server = Server({
-      serviceApi: { port: SERVICE_API_PORT },
-      contractProxy: { port: API_PORT },
+      apiPort: API_PORT,
       contractRepository: InMemoryRepository<Contract>(),
       portManagerConfig: {
         repository: portAllocationRepository,
@@ -36,12 +34,12 @@ describe('Server', () => {
       },
       engineClients: new Map([[
         Engine.stub,
-        StubEngineClient(pubSubClient)
+        StubEngineClient()
       ]]),
       bundleFetcher: HttpTarGzBundleFetcher(networkInterface),
-      pubSubClient
+      pubSubClient: new PubSub()
     })
-    apiClient = ServiceApiClient(SERVICE_API_PORT)
+    apiClient = ServiceApiClient(API_PORT)
     nock(executionEndpoint)
       .post()
       .reply(200, { data: {} })
@@ -57,9 +55,8 @@ describe('Server', () => {
     beforeEach(async () => server.boot())
     afterEach(async () => server.shutdown())
 
-    it('Exposes the service API and contract proxy', async () => {
-      const proxyResponse = await axios.get(`http://localhost:${API_PORT}/.well-known/apollo/server-health`)
-      expect(proxyResponse.statusText).to.eq('OK')
+    it('Starts the API server', async () => {
+      expect((await checkServer(API_PORT)).statusText).to.eq('OK')
       expect((await apiClient.schema()).__schema).to.exist
       expect((await apiClient.contracts()).length).to.eq(0)
     })
@@ -73,12 +70,21 @@ describe('Server', () => {
       expect((await apiClient.contracts()).length).to.eq(1)
     })
 
-    it('Closes the service API, contract proxy, and loaded contract servers', async () => {
+    it('Closes the API server and loaded contract API servers', async () => {
       const contractPort = (await portAllocationRepository.getLast()).portNumber
+      expect((await checkServer(contractPort)).statusText).to.eq('OK')
+      expect((await checkServer(API_PORT)).statusText).to.eq('OK')
       await server.shutdown()
-      await expect(axios.get(`http://localhost:${contractPort}`)).to.be.rejected
-      await expect(axios.get(`http://localhost:${API_PORT}/.well-known/apollo/server-health`)).to.be.rejected
-      await expect(apiClient.schema()).to.rejected
+      await expect(checkServer(API_PORT)).to.be.rejected
+      await expect(checkServer(contractPort)).to.be.rejected
     })
   })
 })
+
+function checkServer (port: number) {
+  return axios({
+    url: `http://localhost:${port}/graphql`,
+    method: 'post',
+    data: { query: `{ __schema { types { name } } }` }
+  })
+}

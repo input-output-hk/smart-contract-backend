@@ -7,7 +7,7 @@ import { Contract, Engine, EngineClient, PortAllocation } from '../core'
 import { BundleFetcher, ContractApiServerController, ContractController, PortManager } from '.'
 import { ContractRepository } from './lib/ContractRepository'
 import { InMemoryRepository, HttpTarGzBundleFetcher, StubEngineClient } from '../infrastructure'
-import { testContract } from './test'
+import { testContracts } from '../test'
 
 const nock = require('nock')
 use(sinonChai)
@@ -18,7 +18,7 @@ describe('Contract Controller', () => {
   let repository: ContractRepository
   let engineClients: Map<Engine, EngineClient>
   let controller: ReturnType<typeof ContractController>
-
+  const testContract = testContracts[0]
   const networkInterface = axios.create()
 
   beforeEach(async () => {
@@ -34,13 +34,14 @@ describe('Contract Controller', () => {
     bundleFetcher = HttpTarGzBundleFetcher(networkInterface)
     engineClients = new Map([[
       Engine.stub,
-      StubEngineClient(new PubSub())
+      StubEngineClient()
     ]])
     controller = ContractController({
       apiServerController,
       contractRepository: repository,
       bundleFetcher,
-      engineClients
+      engineClients,
+      pubSubClient: new PubSub()
     })
 
     nock(testContract.location)

@@ -7,7 +7,6 @@
     "build": "rm -rf dist && npm run api-build && tsc",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint --fix \"src/**/*.ts\"",
-    "start": "npm run build && node -r dotenv/config dist/index.js",
     "test": "npm run lint && npm run build && NODE_ENV=test nyc mocha",
     "test:watch": "mocha -w",
     "test:coverage": "npm test && http-server coverage",
@@ -18,7 +17,7 @@
     "e2e:build": "rm -rf test/e2e/dist && tsc --project test/e2e",
     "e2e:run": "cucumber-js --require 'test/e2e/dist/**/*.js' --format node_modules/cucumber-pretty --exit --tags \"not @Todo\" features/**/*.feature",
     "e2e": "npm run e2e:build && npm run e2e:run",
-    "e2e:local": "APPLICATION_URI=http://127.0.0.1:8081 WS_URI=ws://localhost:8079/graphql npm run e2e"
+    "e2e:local": "APPLICATION_URI=http://127.0.0.1:8081 WS_URI=ws://localhost:8081/graphql npm run e2e"
   },
   "repository": {
     "type": "git",
@@ -51,12 +50,14 @@
     "@types/hapi": "^18.0.1",
     "@types/ioredis": "^4.0.10",
     "@types/mocha": "^5.2.6",
-    "@types/node": "^11.13.10",
+    "@types/node": "^11.11.1",
     "@types/node-fetch": "^2.3.4",
+    "@types/puppeteer": "^1.12.4",
     "@types/require-from-string": "^1.2.0",
     "@types/sinon": "^7.0.10",
     "@types/sinon-chai": "^3.2.2",
     "@types/supertest": "^2.0.7",
+    "@types/web3": "^1.0.18",
     "@typescript-eslint/eslint-plugin": "^1.4.2",
     "apollo-boost": "^0.3.1",
     "apollo-link-error": "^1.1.10",
@@ -87,13 +88,14 @@
     "typescript": "^3.3.3333"
   },
   "dependencies": {
+    "@types/axios": "^0.14.0",
     "apollo-link": "^1.2.10",
     "apollo-link-http": "^1.5.13",
     "apollo-server": "^2.5.0",
     "apollo-server-express": "^2.5.0",
     "apollo-server-testing": "^2.4.8",
     "axios": "^0.18.0",
-    "body-parser": "^1.18.3",
+    "body-parser": "^1.19.0",
     "decompress": "^4.2.0",
     "dockerode": "^2.5.8",
     "dotenv": "^6.2.0",
@@ -104,13 +106,15 @@
     "http-proxy": "^1.17.0",
     "ioredis": "^4.9.0",
     "nock": "^10.0.6",
+    "ping": "^0.2.2",
     "pm2": "^3.4.0",
+    "puppeteer": "^1.16.0",
     "require-from-string": "^2.0.2",
     "rimraf": "^2.6.3",
     "swagger-ui-dist": "^3.21.0",
     "tar": "^4.4.8",
     "tcp-port-used": "^1.0.1",
-    "ts-custom-error": "^3.0.0",
+    "ts-custom-error": "^3.1.0",
     "tsoa": "^2.3.8",
     "web3": "^1.0.0-beta.50",
     "websocket": "^1.0.28"
@@ -123,7 +127,8 @@
       "src/**/*.ts"
     ],
     "exclude": [
-      "src/**/*.spec.ts"
+      "src/**/*.spec.ts",
+      "src/execution_engines/node_js/execute.ts"
     ],
     "reporter": [
       "html"

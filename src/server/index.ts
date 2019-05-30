@@ -1,7 +1,14 @@
-import { bootApi } from './application'
+import axios from 'axios'
+import { Contract, Engine, PortAllocation } from './core'
+import { Server } from './application'
+import {
+  HttpTarGzBundleFetcher,
+  InMemoryRepository,
+  PlutusEngineClient,
+  RedisPubSubClient
+} from './infrastructure'
 
 const {
-  SERVICE_API_PORT,
   API_PORT,
   EXECUTION_SERVICE_URI,
   WALLET_SERVICE_URI,
@@ -12,7 +19,6 @@ const {
 } = process.env
 
 if (
-  !SERVICE_API_PORT ||
   !API_PORT ||
   !EXECUTION_SERVICE_URI ||
   !WALLET_SERVICE_URI ||
@@ -24,4 +30,28 @@ if (
   throw new Error('Required ENVs not set')
 }
 
-bootApi(Number(API_PORT))
+const networkInterface = axios.create()
+
+Server({
+  apiPort: Number(API_PORT),
+  contractRepository: InMemoryRepository<Contract>(),
+  portManagerConfig: {
+    repository: InMemoryRepository<PortAllocation>(),
+    range: {
+      lower: parseInt(CONTRACT_SERVER_LOWER_PORT_BOUND),
+      upper: parseInt(CONTRACT_SERVER_UPPER_PORT_BOUND)
+    }
+  },
+  engineClients: new Map([[
+    Engine.plutus,
+    PlutusEngineClient({
+      executionEndpoint: EXECUTION_SERVICE_URI,
+      walletEndpoint: WALLET_SERVICE_URI,
+      networkInterface
+    })
+  ]]),
+  bundleFetcher: HttpTarGzBundleFetcher(networkInterface),
+  pubSubClient: RedisPubSubClient({ host: REDIS_HOST, port: parseInt(REDIS_PORT) })
+}).boot()
+  .then(() => console.log('Server booted'))
+  .catch((error) => console.error(error.message))

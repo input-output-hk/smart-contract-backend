@@ -1,18 +1,18 @@
 import { expect, use } from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import axios from 'axios'
-import { IExecutableSchemaDefinition, PubSub } from 'apollo-server'
+import { IExecutableSchemaDefinition } from 'apollo-server'
 import { PortAllocation } from '../core'
 import { AllPortsAllocated } from '../core/errors'
 import { ContractApiServerController, PortManager, PortManagerConfig } from '.'
 import { Repository } from './lib/Repository'
 import { InMemoryRepository, StubEngineClient } from '../infrastructure'
-import { testContract } from './test'
-import { RogueService } from './test/Helpers'
+import { RogueService, testContracts } from '../test/'
 
 use(chaiAsPromised)
 
 describe('ContractApiServerController', () => {
+  const testContract = testContracts[0]
   describe('Full TCP port range available', () => {
     let controller: ReturnType<typeof ContractApiServerController>
     let engineClient: ReturnType<typeof StubEngineClient>
@@ -20,7 +20,7 @@ describe('ContractApiServerController', () => {
     let schema: IExecutableSchemaDefinition
     beforeEach(() => {
       portAllocationRepository = InMemoryRepository<PortAllocation>()
-      engineClient = StubEngineClient(new PubSub())
+      engineClient = StubEngineClient()
       schema = testContract.graphQLSchema(engineClient)
       controller = ContractApiServerController(
         PortManager({
@@ -80,9 +80,10 @@ describe('ContractApiServerController', () => {
     let engineClient: ReturnType<typeof StubEngineClient>
     let portAllocationRepository: Repository<PortAllocation>
     let schema: IExecutableSchemaDefinition
-    beforeEach(() => {
+    let rogueService: ReturnType<typeof RogueService>
+    beforeEach(async () => {
       portAllocationRepository = InMemoryRepository<PortAllocation>()
-      engineClient = StubEngineClient(new PubSub())
+      engineClient = StubEngineClient()
       schema = testContract.graphQLSchema(engineClient)
       controller = ContractApiServerController(
         CollidablePortManager({
@@ -90,18 +91,18 @@ describe('ContractApiServerController', () => {
           range: { lower: 8082, upper: 8084 }
         })
       )
+      rogueService = RogueService()
+      await rogueService.listen(8082)
     })
     afterEach(async () => {
       await controller.closeAllServers()
+      await rogueService.close()
     })
 
     it('Requests a new port allocation if a collision occurs when starting the server', async () => {
-      const rogueService = RogueService()
-      await rogueService.listen(8082)
       const deploy = await controller.deploy(testContract.address, schema)
       expect(deploy).to.be.true
       expect((await checkServer(8083)).statusText).to.eq('OK')
-      rogueService.close()
     })
   })
 })

@@ -1,6 +1,7 @@
 import { Before, After } from 'cucumber'
 import { World } from '../support/world'
 import axios from 'axios'
+import * as Docker from 'dockerode'
 
 Before({ timeout: 40000 }, async function () {
   const { APPLICATION_URI, WS_URI } = process.env
@@ -28,7 +29,13 @@ Before({ timeout: 40000 }, async function () {
   await healthCheck()
 })
 
-After(function () {
+After(async function () {
   const world = this as World
   world.unsubscribeFromPublicKey()
+
+  // This will be removed once unloading is implemented
+  const docker = new Docker({ socketPath: '/var/run/docker.sock' })
+  const containers = await docker.listContainers()
+  const targetContainers = containers.filter((container) => container.Image.match(/samjeston/g) || container.Image.match(/jann/g))
+  await Promise.all(targetContainers.map(c => docker.getContainer(c.Id).kill()))
 })

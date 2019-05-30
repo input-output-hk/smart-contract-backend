@@ -1,5 +1,6 @@
+import { PubSubEngine } from 'apollo-server'
 import { Contract, Engine, EngineClient } from '../core'
-import { BundleFetcher, ContractApiServerController } from '.'
+import { BundleFetcher, ContractApiServerController, ContractInteractionController } from '.'
 import { ContractRepository } from './lib/ContractRepository'
 const requireFromString = require('require-from-string')
 
@@ -8,10 +9,17 @@ type Config = {
   contractRepository: ContractRepository
   bundleFetcher: BundleFetcher
   engineClients: Map<Engine, EngineClient>
+  pubSubClient: PubSubEngine
 }
 
 export function ContractController (config: Config) {
-  const { apiServerController, bundleFetcher, contractRepository, engineClients } = config
+  const {
+    apiServerController,
+    bundleFetcher,
+    contractRepository,
+    engineClients,
+    pubSubClient
+  } = config
   return {
     async load (contractAddress: Contract['address'], bundleUri: string): Promise<boolean> {
       let contract = await contractRepository.find(contractAddress)
@@ -24,10 +32,14 @@ export function ContractController (config: Config) {
         }
         await contractRepository.add(contract)
       }
-      const { bundle: { executable, graphQlSchema, meta }, address } = contract
+      const { bundle: { graphQlSchema, meta }, address } = contract
       const engineClient = engineClients.get(meta.engine)
-      await engineClient.loadExecutable(contractAddress, executable)
-      await apiServerController.deploy(address, requireFromString(graphQlSchema)(engineClient))
+      await engineClient.loadExecutable({ contractAddress: address, executable: meta.dockerImageRepository })
+      const schema = requireFromString(graphQlSchema)(ContractInteractionController({ engineClient, pubSubClient }))
+      await apiServerController.deploy(
+        address,
+        schema
+      )
       return true
     },
     async unload (contractAddress: Contract['address']): Promise<boolean> {
