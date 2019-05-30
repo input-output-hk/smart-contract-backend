@@ -26,7 +26,7 @@ export function Api (config: Config) {
     contractProxy.web(req, res, { target: `http://localhost:${port}/graphql` })
   })
 
-  app.use((err: Error, _req: any, response: any, next: any) => {
+  app.use((err: Error, _req: express.Request, response: express.Response, next: express.NextFunction) => {
     if (err instanceof ContractNotLoaded) {
       return response.status(404).json({ error: err.message })
     }
