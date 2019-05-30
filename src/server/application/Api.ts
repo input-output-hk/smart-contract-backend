@@ -5,6 +5,7 @@ import { Bundle, Contract, Events } from '../core'
 import { ContractApiServerController, ContractController } from '.'
 import { ContractRepository } from './lib/ContractRepository'
 import net from 'net'
+import { ContractNotLoaded } from './errors'
 const httpProxy = require('http-proxy')
 
 export type Config = {
@@ -20,10 +21,19 @@ export function Api (config: Config) {
   const contractProxy = httpProxy.createProxyServer({})
   app.use('/contract/:address', (req, res, next) => {
     const { address } = req.params
-    if (!apiServerController.servers.has(address)) next()
+    if (!apiServerController.servers.has(address)) return next(new ContractNotLoaded())
     const { port } = apiServerController.servers.get(address).address().valueOf() as net.AddressInfo
     contractProxy.web(req, res, { target: `http://localhost:${port}/graphql` })
   })
+
+  app.use((err: Error, _req: any, response: any, next: any) => {
+    if (err instanceof ContractNotLoaded) {
+      return response.status(404).json({ error: err.message })
+    }
+
+    next(err)
+  })
+
   const apolloServer = buildApolloServer(config)
   apolloServer.applyMiddleware({ app, path: '/graphql' })
   return { apolloServer, app }
