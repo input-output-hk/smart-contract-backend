@@ -16,7 +16,7 @@ export class World {
     const { APPLICATION_URI, WS_URI } = process.env
 
     const httpLink = new HttpLink({
-      uri: APPLICATION_URI,
+      uri: `${APPLICATION_URI}/graphql`,
       fetch
     })
 
@@ -69,11 +69,11 @@ export class World {
     }
   }
 
-  initializeContract(address: string) {
+  loadContract(address: string) {
     return this.apolloClient.mutate({
       mutation: gql`
         mutation {
-          initializeContract(contractAddress: "${address}", bundleLocation: "http://bundle_server:9001/${address}")
+          loadContract(contractAddress: "${address}", bundleLocation: "http://bundle_server:9001/${address}")
         }
       `
     })
@@ -96,7 +96,7 @@ export class World {
     const { APPLICATION_URI } = process.env
 
     const httpLink = new HttpLink({
-      uri: `${APPLICATION_URI}/${address}`,
+      uri: `${APPLICATION_URI}/contract/${address}`,
       fetch
     })
 

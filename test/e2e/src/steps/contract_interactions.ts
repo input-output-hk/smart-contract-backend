@@ -18,7 +18,7 @@ Given('the contract is not loaded, calling contract {string} with the method {st
     await world.executeContract(contractAddress, method, JSON.parse(methodArgs))
     throw new Error('Invalid error')
   } catch (e) {
-    expect(e.message).to.eql('Network error: Response not successful: Received status code 400')
+    expect(e.message).to.eql('Network error: Response not successful: Received status code 404')
   }
 })
 

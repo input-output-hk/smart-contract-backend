@@ -87,11 +87,10 @@ export function pullContainer (dockerImageRepository: string) {
   })
 }
 
-export async function loadContainer ({ dockerImageRepository, contractAddress, lowerPortBound, upperPortBound }: { dockerImageRepository: string, contractAddress: string, lowerPortBound: number, upperPortBound: number }): Promise<{ port: number, host: string }> {
+export async function loadContainer ({ dockerImageRepository, contractAddress, lowerPortBound, upperPortBound }: { dockerImageRepository: string, contractAddress: string, lowerPortBound: number, upperPortBound: number }): Promise<{ port: number, host: string } | null> {
   contractAddress = contractAddress.toLowerCase()
   const containerRunning = (await findContainerId(contractAddress)).containerId
-  if (containerRunning) return
-
+  if (containerRunning) return Promise.resolve(null)
   await pullContainer(dockerImageRepository)
   return createContainer({ contractAddress, dockerImageRepository, lowerPortBound, upperPortBound })
 }

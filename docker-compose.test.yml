@@ -7,4 +7,4 @@ services:
     init: true
     environment:
       - APPLICATION_URI=http://server:8081
-      - WS_URI=ws://server:8079/graphql
+      - WS_URI=ws://server:8081/graphql

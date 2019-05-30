@@ -6,9 +6,7 @@ services:
       target: server
     init: true
     environment:
-      - API_PORT=8079
-      - CONTRACT_PROXY_PORT=8081
-      - STATIC_API_URI=http://localhost:8079
+      - API_PORT=8081
       - WALLET_SERVICE_URI=http://wallet:0000
       - EXECUTION_SERVICE_URI=http://docker_execution:9000
       - CONTRACT_SERVER_LOWER_PORT_BOUND=8082
@@ -18,7 +16,6 @@ services:
     # volumes:
     #   - ./dist/server:/application/dist/server
     ports:
-      - 8079:8079
       - 8081:8081
       - 8082:8082
   docker_execution:

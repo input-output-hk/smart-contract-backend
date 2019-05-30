@@ -33,7 +33,7 @@ After(async function () {
   const world = this as World
   world.unsubscribeFromPublicKey()
 
-  // This will be removed once unloading is implemented 
+  // This will be removed once unloading is implemented
   const docker = new Docker({ socketPath: '/var/run/docker.sock' })
   const containers = await docker.listContainers()
   const targetContainers = containers.filter((container) => container.Image.match(/samjeston/g) || container.Image.match(/jann/g))

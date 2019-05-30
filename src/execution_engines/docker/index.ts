@@ -8,21 +8,20 @@ const ping = require('ping')
 const DockerEngine: ExecutionEngine = {
   load: async ({ contractAddress, executable }) => {
     const { containerLowerPortBound, containerUpperPortBound } = getConfig()
-
-    const { host } = await loadContainer({
+    const loadedContainer = await loadContainer({
       contractAddress,
       dockerImageRepository: executable,
       lowerPortBound: containerLowerPortBound,
       upperPortBound: containerUpperPortBound
     })
-
+    if (!loadedContainer) return true
     let alive = false
     let pingCount = 0
     while (!alive) {
       if (pingCount > 10) {
         throw new ContainerFailedToStart()
       }
-      alive = await ping.promise.probe(host)
+      alive = await ping.promise.probe(loadedContainer.host)
       await new Promise(resolve => setTimeout(resolve, 50))
     }
 
