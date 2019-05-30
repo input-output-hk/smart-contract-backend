@@ -29,6 +29,7 @@ let portRef = 0
 export async function createContainer ({ contractAddress, dockerImageRepository, lowerPortBound }: { contractAddress: string, dockerImageRepository: string, lowerPortBound: number, upperPortBound: number }) {
   const { nodeEnv, dockerExecutionEngineContext } = getConfig()
   const docker = initializeDockerClient()
+
   // TODO: find-free-port could never work from the context of Docker
   // Implement port mapper from the Server module
   const nextPort = portRef
@@ -41,6 +42,7 @@ export async function createContainer ({ contractAddress, dockerImageRepository,
     AutoRemove: true,
     PortBindings: { '8080/tcp': [{ 'HostPort': `${nextPort}` }] }
   }
+
   const targetHostConfig = dockerExecutionEngineContext === DockerExecutionEngineContext.docker
     ? { NetworkMode: 'smart-contract-backend_default', ...baseHostConfig }
     : baseHostConfig
@@ -51,16 +53,19 @@ export async function createContainer ({ contractAddress, dockerImageRepository,
     ExposedPorts: { [`8080/tcp`]: {} },
     HostConfig: targetHostConfig
   }
+
   const host = dockerExecutionEngineContext === DockerExecutionEngineContext.docker
     ? `http://${contractAddress}:8080`
     : `http://localhost:${nextPort}`
 
   const container = await docker.createContainer(containerOpts)
+
   if (nodeEnv !== 'test') {
     container.attach({ stream: true, stdout: true, stderr: true }, function (_, stream) {
       stream.pipe(process.stdout)
     })
   }
+
   await container.start()
   return { port: nextPort, host }
 }
