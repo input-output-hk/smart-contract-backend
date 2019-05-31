@@ -4,13 +4,14 @@ import { PortAllocation } from '../../core'
 import { AllPortsAllocated } from '../../core/errors'
 import { PortMapper } from '.'
 import { InMemoryRepository } from '../infrastructure'
-import { RogueService } from '../test'
+import { checkPortIsFree, RogueService } from '../test'
 
 use(chaiAsPromised)
 
 describe('PortMapper', () => {
   let portMapper: ReturnType<typeof PortMapper>
-  beforeEach(() => {
+  beforeEach(async () => {
+    await checkPortIsFree(8082)
     portMapper = PortMapper({
       repository: InMemoryRepository<PortAllocation>(),
       range: {

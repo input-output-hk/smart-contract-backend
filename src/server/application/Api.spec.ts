@@ -8,7 +8,7 @@ import { HttpTarGzBundleFetcher, InMemoryRepository, StubEngineClient } from '..
 import { Api, ContractApiServerController, ContractController, PortMapper } from '.'
 import { listen } from '../lib/express'
 import { close } from '../lib/http'
-import { populatedContractRepository } from '../test'
+import { checkPortIsFree, populatedContractRepository } from '../test'
 const nock = require('nock')
 
 describe('Api', () => {
@@ -19,6 +19,7 @@ describe('Api', () => {
   const API_URI = `http://localhost:${API_PORT}`
 
   beforeEach(async () => {
+    await checkPortIsFree(8082)
     const pubSubClient = new PubSub()
     const contractRepository = await populatedContractRepository()
     const apiServerController = ContractApiServerController(PortMapper({

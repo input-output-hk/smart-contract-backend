@@ -25,8 +25,8 @@ describe('Contract Controller', () => {
     const portMapper = PortMapper({
       repository: InMemoryRepository<PortAllocation>(),
       range: {
-        lower: 8080,
-        upper: 8082
+        lower: 8082,
+        upper: 8084
       }
     })
     apiServerController = ContractApiServerController(portMapper)

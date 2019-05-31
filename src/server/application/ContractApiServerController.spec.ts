@@ -7,7 +7,7 @@ import { AllPortsAllocated } from '../../core/errors'
 import { ContractApiServerController, PortMapper, PortMapperConfig } from '.'
 import { Repository } from './lib/Repository'
 import { InMemoryRepository, StubEngineClient } from '../infrastructure'
-import { RogueService, testContracts } from '../test/'
+import { checkPortIsFree, RogueService, testContracts } from '../test/'
 
 use(chaiAsPromised)
 
@@ -18,7 +18,8 @@ describe('ContractApiServerController', () => {
     let engineClient: ReturnType<typeof StubEngineClient>
     let portAllocationRepository: Repository<PortAllocation>
     let schema: IExecutableSchemaDefinition
-    beforeEach(() => {
+    beforeEach(async () => {
+      await checkPortIsFree(8082)
       portAllocationRepository = InMemoryRepository<PortAllocation>()
       engineClient = StubEngineClient()
       schema = testContract.graphQLSchema(engineClient)
