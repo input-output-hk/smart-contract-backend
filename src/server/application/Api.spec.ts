@@ -5,7 +5,7 @@ import axios from 'axios'
 import { PubSub } from 'apollo-server'
 import { Engine, PortAllocation } from '../core'
 import { HttpTarGzBundleFetcher, InMemoryRepository, StubEngineClient } from '../infrastructure'
-import { Api, ContractApiServerController, ContractController, PortManager } from '.'
+import { Api, ContractApiServerController, ContractController, PortMapper } from '.'
 import { listen } from '../lib/express'
 import { close } from '../lib/http'
 import { populatedContractRepository } from '../test'
@@ -21,7 +21,7 @@ describe('Api', () => {
   beforeEach(async () => {
     const pubSubClient = new PubSub()
     const contractRepository = await populatedContractRepository()
-    const apiServerController = ContractApiServerController(PortManager({
+    const apiServerController = ContractApiServerController(PortMapper({
       repository: InMemoryRepository<PortAllocation>(),
       range: { lower: 8082, upper: 8084 }
     }))

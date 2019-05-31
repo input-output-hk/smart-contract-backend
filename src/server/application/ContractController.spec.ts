@@ -4,7 +4,7 @@ import * as sinonChai from 'sinon-chai'
 import axios from 'axios'
 import { PubSub } from 'apollo-server'
 import { Contract, Engine, EngineClient, PortAllocation } from '../core'
-import { BundleFetcher, ContractApiServerController, ContractController, PortManager } from '.'
+import { BundleFetcher, ContractApiServerController, ContractController, PortMapper } from '.'
 import { ContractRepository } from './lib/ContractRepository'
 import { InMemoryRepository, HttpTarGzBundleFetcher, StubEngineClient } from '../infrastructure'
 import { testContracts } from '../test'
@@ -22,14 +22,14 @@ describe('Contract Controller', () => {
   const networkInterface = axios.create()
 
   beforeEach(async () => {
-    const portManager = PortManager({
+    const portMapper = PortMapper({
       repository: InMemoryRepository<PortAllocation>(),
       range: {
         lower: 8080,
         upper: 8082
       }
     })
-    apiServerController = ContractApiServerController(portManager)
+    apiServerController = ContractApiServerController(portMapper)
     repository = InMemoryRepository<Contract>()
     bundleFetcher = HttpTarGzBundleFetcher(networkInterface)
     engineClients = new Map([[

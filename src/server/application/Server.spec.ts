@@ -25,7 +25,7 @@ describe('Server', () => {
     server = Server({
       apiPort: API_PORT,
       contractRepository: InMemoryRepository<Contract>(),
-      portManagerConfig: {
+      portMapperConfig: {
         repository: portAllocationRepository,
         range: {
           lower: 8082,

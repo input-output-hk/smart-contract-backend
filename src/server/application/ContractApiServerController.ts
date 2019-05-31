@@ -4,10 +4,10 @@ import { AddressInfo } from 'net'
 import { ApolloServer } from 'apollo-server-express'
 import { makeExecutableSchema, IExecutableSchemaDefinition } from 'apollo-server'
 import { Contract } from '../core'
-import { PortManager } from '.'
+import { PortMapper } from '.'
 import { listen } from '../lib/express'
 
-export function ContractApiServerController (portManager: ReturnType<typeof PortManager>) {
+export function ContractApiServerController (portMapper: ReturnType<typeof PortMapper>) {
   const servers = new Map<Contract['address'], http.Server>()
 
   function shutdownServer (contractAddress: Contract['address'], server: http.Server) {
@@ -15,7 +15,7 @@ export function ContractApiServerController (portManager: ReturnType<typeof Port
       const { port } = server.address().valueOf() as AddressInfo
       server.close(async (error) => {
         if (error) return reject(error)
-        await portManager.releasePort(port)
+        await portMapper.releasePort(port)
         servers.delete(contractAddress)
         resolve(true)
       })
@@ -26,7 +26,7 @@ export function ContractApiServerController (portManager: ReturnType<typeof Port
     servers,
     async deploy (contractAddress: Contract['address'], graphQlSchema: IExecutableSchemaDefinition): Promise<boolean> {
       if (servers.has(contractAddress)) return true
-      const allocation = await portManager.getAvailablePort()
+      const allocation = await portMapper.getAvailablePort()
       // Handling the express app is necessary since ApolloServer does not reject the 'listen' promise
       // when a connection error occurs
       const app = express()

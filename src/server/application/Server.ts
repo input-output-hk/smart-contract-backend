@@ -6,8 +6,8 @@ import {
   BundleFetcher,
   ContractApiServerController,
   ContractController,
-  PortManager,
-  PortManagerConfig
+  PortMapper,
+  PortMapperConfig
 } from '.'
 import { ContractRepository } from './lib/ContractRepository'
 import { close } from '../lib/http'
@@ -15,16 +15,16 @@ import { close } from '../lib/http'
 export type Config = {
   apiPort: number
   contractRepository: ContractRepository
-  portManagerConfig: PortManagerConfig
+  portMapperConfig: PortMapperConfig
   engineClients: Map<Engine, EngineClient>
   bundleFetcher: BundleFetcher
   pubSubClient: PubSubEngine
 }
 
 export function Server (config: Config) {
-  const { contractRepository, portManagerConfig, engineClients, bundleFetcher, pubSubClient } = config
-  const portManager = PortManager(portManagerConfig)
-  const apiServerController = ContractApiServerController(portManager)
+  const { contractRepository, portMapperConfig, engineClients, bundleFetcher, pubSubClient } = config
+  const portMapper = PortMapper(portMapperConfig)
+  const apiServerController = ContractApiServerController(portMapper)
   const contractController = ContractController({
     contractRepository,
     bundleFetcher,
