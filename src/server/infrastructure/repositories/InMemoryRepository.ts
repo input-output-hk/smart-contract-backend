@@ -1,5 +1,4 @@
-import { Repository } from '../../application/lib/Repository'
-import { Entity } from '../../../core/lib'
+import { Entity, Repository } from '../../../lib'
 import { UnknownEntity } from '../../../core/errors'
 
 export function InMemoryRepository<T extends Entity > (): Repository<T> {

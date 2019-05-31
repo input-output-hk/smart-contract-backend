@@ -1,4 +1,4 @@
-import { Entity } from './lib'
+import { Entity } from '../lib'
 import { Bundle } from '.'
 
 export interface Contract extends Entity {

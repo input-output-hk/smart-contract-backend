@@ -1,7 +1,7 @@
 import { expect, use } from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import { InMemoryRepository } from './InMemoryRepository'
-import { Entity } from '../../../core/lib'
+import { Entity } from '../../../lib'
 import { UnknownEntity } from '../../../core/errors'
 use(chaiAsPromised)
 

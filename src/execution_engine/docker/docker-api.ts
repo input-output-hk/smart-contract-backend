@@ -30,8 +30,6 @@ export async function createContainer ({ contractAddress, dockerImageRepository,
   const { nodeEnv, dockerExecutionEngineContext } = getConfig()
   const docker = initializeDockerClient()
 
-  // TODO: find-free-port could never work from the context of Docker
-  // Implement port mapper from the Server module
   const nextPort = portRef
     ? portRef + 1
     : lowerPortBound

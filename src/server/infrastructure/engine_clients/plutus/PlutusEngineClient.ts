@@ -1,5 +1,5 @@
 import { EngineClient } from '../../../../core'
-import { NetworkInterface } from '../../../application/lib/NetworkInterface'
+import { NetworkInterface } from '../../../../lib'
 
 type Config = {
   executionEndpoint: string,
