@@ -1,6 +1,6 @@
 import * as http from 'http'
 
-export const httpPromises = {
+export const httpEventPromiseHandler = {
   async listen (server: http.Server, port: number): Promise<http.Server> {
     return new Promise((resolve, reject) => {
       server.listen({ port })

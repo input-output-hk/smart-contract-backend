@@ -4,7 +4,7 @@ import * as express from 'express'
 import axios from 'axios'
 import { PubSub } from 'apollo-server'
 import { Engine, PortAllocation } from '../../core'
-import { expressPromises, httpPromises, PortMapper } from '../../lib'
+import { expressEventPromiseHandler, httpEventPromiseHandler, PortMapper } from '../../lib'
 import { HttpTarGzBundleFetcher, InMemoryRepository, StubEngineClient } from '../infrastructure'
 import { Api, ContractApiServerController, ContractController } from '.'
 
@@ -43,9 +43,9 @@ describe('Api', () => {
       pubSubClient
     })
 
-    apiServer = await expressPromises.listen(api.app, API_PORT)
+    apiServer = await expressEventPromiseHandler.listen(api.app, API_PORT)
     const testContractApp = express()
-    testContractServer = await expressPromises.listen(testContractApp, 8082)
+    testContractServer = await expressEventPromiseHandler.listen(testContractApp, 8082)
     apiServerController.servers.set('abcd', testContractServer)
     nock('http://localhost:8082')
       .get('/graphql/')
@@ -53,8 +53,8 @@ describe('Api', () => {
   })
 
   afterEach(async () => {
-    await httpPromises.close(apiServer)
-    await httpPromises.close(testContractServer)
+    await httpEventPromiseHandler.close(apiServer)
+    await httpEventPromiseHandler.close(testContractServer)
     return nock.cleanAll()
   })
 

@@ -1,7 +1,7 @@
 import http from 'http'
 import { PubSubEngine } from 'apollo-server'
 import { ContractRepository, Engine, EngineClient } from '../../core'
-import { httpPromises, PortMapper, PortMapperConfig } from '../../lib'
+import { httpEventPromiseHandler, PortMapper, PortMapperConfig } from '../../lib'
 import {
   Api,
   BundleFetcher,
@@ -43,7 +43,7 @@ export function Server (config: Config) {
     },
     async shutdown (): Promise<void> {
       await Promise.all([
-        httpPromises.close(apiServer),
+        httpEventPromiseHandler.close(apiServer),
         apiServerController.closeAllServers()
       ])
     }
