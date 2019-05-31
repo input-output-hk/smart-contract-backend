@@ -1,13 +1,13 @@
 {
   "swagger": {
     "outputDirectory": "./dist",
-    "entryFile": "./src/execution_engines/index.ts",
+    "entryFile": "./src/execution_engine/index.ts",
     "basePath": "/"
   },
   "routes": {
     "basePath": "/",
-    "entryFile": "./src/execution_engines/api.ts",
-    "routesDir": "./src/execution_engines"
+    "entryFile": "./src/execution_engine/api.ts",
+    "routesDir": "./src/execution_engine"
   },
   "compilerOptions": {
     "baseUrl": "src"
