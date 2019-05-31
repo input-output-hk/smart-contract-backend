@@ -1,7 +1,7 @@
 import { createServer, Server } from 'net'
-import { PortAllocation } from '../core'
-import { NumberRange } from '../core/lib'
-import { AllPortsAllocated } from '../core/errors'
+import { PortAllocation } from '../../core'
+import { NumberRange } from '../../core/lib'
+import { AllPortsAllocated } from '../../core/errors'
 import { PortAllocationRepository } from './lib/PortAllocationRepository'
 
 export type Config ={

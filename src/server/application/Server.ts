@@ -1,6 +1,6 @@
 import http from 'http'
 import { PubSubEngine } from 'apollo-server'
-import { Engine, EngineClient } from '../core'
+import { Engine, EngineClient } from '../../core'
 import {
   Api,
   BundleFetcher,

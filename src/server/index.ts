@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Contract, Engine, PortAllocation } from './core'
+import { Contract, Engine, PortAllocation } from '../core'
 import { Server } from './application'
 import {
   HttpTarGzBundleFetcher,

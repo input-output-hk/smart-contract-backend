@@ -1,5 +1,5 @@
 import { PubSubEngine } from 'apollo-server'
-import { ContractExecutionInstruction, EngineClient, Events } from '../core'
+import { ContractExecutionInstruction, EngineClient, Events } from '../../core'
 
 type Config = {
   engineClient: EngineClient,

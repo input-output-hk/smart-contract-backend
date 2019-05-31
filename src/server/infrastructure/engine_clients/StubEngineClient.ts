@@ -1,4 +1,4 @@
-import { Contract, ContractExecutionInstruction, EngineClient } from '../../core'
+import { Contract, ContractExecutionInstruction, EngineClient } from '../../../core'
 
 export function StubEngineClient (): EngineClient {
   return {

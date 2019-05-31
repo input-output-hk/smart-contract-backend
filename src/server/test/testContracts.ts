@@ -1,4 +1,4 @@
-import { Contract } from '../core'
+import { Contract } from '../../core'
 
 type ContractReference = {
   address: Contract['address']

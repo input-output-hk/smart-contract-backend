@@ -1,4 +1,4 @@
-import { Contract, ContractExecutionInstruction, EngineClient } from '../../../core'
+import { Contract, ContractExecutionInstruction, EngineClient } from '../../../../core'
 import { RawEthereumTransaction } from './RawEthereumTransaction'
 const Web3 = require('web3')
 

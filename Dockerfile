@@ -28,6 +28,7 @@ CMD ["npx", "pm2", "--no-daemon", "start", "dist/bundle_server/index.js"]
 
 FROM node:10.15.3-alpine as server
 RUN mkdir /application
+COPY --from=builder /application/dist/core /application/dist/core
 COPY --from=builder /application/dist/server /application/dist/server
 COPY --from=production_deps /application/node_modules /application/node_modules
 WORKDIR /application

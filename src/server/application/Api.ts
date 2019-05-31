@@ -1,7 +1,7 @@
 import * as express from 'express'
 import { ApolloServer } from 'apollo-server-express'
 import { gql, PubSubEngine } from 'apollo-server'
-import { Bundle, Contract, Events } from '../core'
+import { Bundle, Contract, Events } from '../../core'
 import { ContractApiServerController, ContractController } from '.'
 import { ContractRepository } from './lib/ContractRepository'
 import net from 'net'

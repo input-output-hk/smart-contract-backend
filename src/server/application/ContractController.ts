@@ -1,5 +1,5 @@
 import { PubSubEngine } from 'apollo-server'
-import { Contract, Engine, EngineClient } from '../core'
+import { Contract, Engine, EngineClient } from '../../core'
 import { BundleFetcher, ContractApiServerController, ContractInteractionController } from '.'
 import { ContractRepository } from './lib/ContractRepository'
 const requireFromString = require('require-from-string')

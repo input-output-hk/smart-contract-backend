@@ -1,4 +1,4 @@
-import { EngineClient } from '../../../core'
+import { EngineClient } from '../../../../core'
 import { NetworkInterface } from '../../../application/lib/NetworkInterface'
 
 type Config = {

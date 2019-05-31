@@ -3,7 +3,7 @@ import * as express from 'express'
 import { AddressInfo } from 'net'
 import { ApolloServer } from 'apollo-server-express'
 import { makeExecutableSchema, IExecutableSchemaDefinition } from 'apollo-server'
-import { Contract } from '../core'
+import { Contract } from '../../core'
 import { PortMapper } from '.'
 import { listen } from '../lib/express'
 

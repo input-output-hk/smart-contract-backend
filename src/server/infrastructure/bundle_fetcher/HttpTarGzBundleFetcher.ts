@@ -1,6 +1,6 @@
 import { BundleFetcher } from '../../application'
 import { NetworkInterface } from '../../application/lib/NetworkInterface'
-import { Bundle } from '../../core'
+import { Bundle } from '../../../core'
 const decompress = require('decompress')
 
 export function HttpTarGzBundleFetcher (networkInterface: NetworkInterface): BundleFetcher {
