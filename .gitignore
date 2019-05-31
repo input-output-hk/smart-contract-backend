@@ -6,6 +6,5 @@
 /test/e2e/dist
 docker/*
 !docker/README.md
-.env
 *.tar.gz
 .idea

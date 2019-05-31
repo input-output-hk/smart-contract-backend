@@ -4,8 +4,7 @@ import { AddressInfo } from 'net'
 import { ApolloServer } from 'apollo-server-express'
 import { makeExecutableSchema, IExecutableSchemaDefinition } from 'apollo-server'
 import { Contract } from '../../core'
-import { PortMapper } from '.'
-import { listen } from '../lib/express'
+import { expressEventPromiseHandler, PortMapper } from '../../lib'
 
 export function ContractApiServerController (portMapper: ReturnType<typeof PortMapper>) {
   const servers = new Map<Contract['address'], http.Server>()
@@ -36,7 +35,7 @@ export function ContractApiServerController (portMapper: ReturnType<typeof PortM
       })
       apolloServer.applyMiddleware({ app, path: '/graphql' })
       try {
-        const server = await listen(app, allocation.portNumber)
+        const server = await expressEventPromiseHandler.listen(app, allocation.portNumber)
         servers.set(contractAddress, server)
         return true
       } catch (error) {

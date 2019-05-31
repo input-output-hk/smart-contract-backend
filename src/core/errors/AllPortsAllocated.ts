@@ -1,5 +1,5 @@
 import { CustomError } from 'ts-custom-error'
-import { NumberRange } from '../lib'
+import { NumberRange } from '../../lib'
 
 export class AllPortsAllocated extends CustomError {
   public constructor (range: NumberRange) {
