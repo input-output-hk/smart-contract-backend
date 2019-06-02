@@ -1,4 +1,4 @@
-import { Entity } from '../../core/lib'
+import { Entity } from '../lib'
 
 export interface Repository<T extends Entity> {
   add(entity: T): Promise<void>

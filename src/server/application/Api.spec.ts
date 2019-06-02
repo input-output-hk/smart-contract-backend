@@ -3,12 +3,12 @@ import * as http from 'http'
 import * as express from 'express'
 import axios from 'axios'
 import { PubSub } from 'apollo-server'
-import { Engine, PortAllocation } from '../core'
+import { Engine, PortAllocation } from '../../core'
+import { expressEventPromiseHandler, httpEventPromiseHandler, PortMapper } from '../../lib'
 import { HttpTarGzBundleFetcher, InMemoryRepository, StubEngineClient } from '../infrastructure'
-import { Api, ContractApiServerController, ContractController, PortManager } from '.'
-import { listen } from '../lib/express'
-import { close } from '../lib/http'
-import { populatedContractRepository } from '../test'
+import { Api, ContractApiServerController, ContractController } from '.'
+
+import { checkPortIsFree, populatedContractRepository } from '../test'
 const nock = require('nock')
 
 describe('Api', () => {
@@ -19,9 +19,10 @@ describe('Api', () => {
   const API_URI = `http://localhost:${API_PORT}`
 
   beforeEach(async () => {
+    await checkPortIsFree(8082)
     const pubSubClient = new PubSub()
     const contractRepository = await populatedContractRepository()
-    const apiServerController = ContractApiServerController(PortManager({
+    const apiServerController = ContractApiServerController(PortMapper({
       repository: InMemoryRepository<PortAllocation>(),
       range: { lower: 8082, upper: 8084 }
     }))
@@ -42,9 +43,9 @@ describe('Api', () => {
       pubSubClient
     })
 
-    apiServer = await listen(api.app, API_PORT)
+    apiServer = await expressEventPromiseHandler.listen(api.app, API_PORT)
     const testContractApp = express()
-    testContractServer = await listen(testContractApp, 8082)
+    testContractServer = await expressEventPromiseHandler.listen(testContractApp, 8082)
     apiServerController.servers.set('abcd', testContractServer)
     nock('http://localhost:8082')
       .get('/graphql/')
@@ -52,8 +53,8 @@ describe('Api', () => {
   })
 
   afterEach(async () => {
-    await close(apiServer)
-    await close(testContractServer)
+    await httpEventPromiseHandler.close(apiServer)
+    await httpEventPromiseHandler.close(testContractServer)
     return nock.cleanAll()
   })
 

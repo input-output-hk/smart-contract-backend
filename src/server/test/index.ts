@@ -1,3 +1,4 @@
+export { checkPortIsFree } from './checkPortIsFree'
 export { RogueService } from './RogueService'
 export { ServiceApiClient } from './ServiceApiClient'
 export { populatedContractRepository } from './populatedContractRepository'

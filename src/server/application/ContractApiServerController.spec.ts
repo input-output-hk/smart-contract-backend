@@ -2,12 +2,12 @@ import { expect, use } from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import axios from 'axios'
 import { IExecutableSchemaDefinition } from 'apollo-server'
-import { PortAllocation } from '../core'
-import { AllPortsAllocated } from '../core/errors'
-import { ContractApiServerController, PortManager, PortManagerConfig } from '.'
-import { Repository } from './lib/Repository'
+import { PortAllocation } from '../../core'
+import { AllPortsAllocated } from '../../core/errors'
+import { Repository, PortMapper, PortMapperConfig } from '../../lib'
+import { ContractApiServerController } from '.'
 import { InMemoryRepository, StubEngineClient } from '../infrastructure'
-import { RogueService, testContracts } from '../test/'
+import { checkPortIsFree, RogueService, testContracts } from '../test/'
 
 use(chaiAsPromised)
 
@@ -18,12 +18,13 @@ describe('ContractApiServerController', () => {
     let engineClient: ReturnType<typeof StubEngineClient>
     let portAllocationRepository: Repository<PortAllocation>
     let schema: IExecutableSchemaDefinition
-    beforeEach(() => {
+    beforeEach(async () => {
+      await checkPortIsFree(8082)
       portAllocationRepository = InMemoryRepository<PortAllocation>()
       engineClient = StubEngineClient()
       schema = testContract.graphQLSchema(engineClient)
       controller = ContractApiServerController(
-        PortManager({
+        PortMapper({
           repository: portAllocationRepository,
           range: { lower: 8082, upper: 8084 }
         })
@@ -86,7 +87,7 @@ describe('ContractApiServerController', () => {
       engineClient = StubEngineClient()
       schema = testContract.graphQLSchema(engineClient)
       controller = ContractApiServerController(
-        CollidablePortManager({
+        CollidablePortMapper({
           repository: portAllocationRepository,
           range: { lower: 8082, upper: 8084 }
         })
@@ -115,7 +116,7 @@ function checkServer (port: number) {
   })
 }
 
-function CollidablePortManager ({ repository, range }: PortManagerConfig) {
+function CollidablePortMapper ({ repository, range }: PortMapperConfig) {
   const startingPoolQty = range.upper - (range.lower - 1)
   return {
     isAvailable: async (): Promise<boolean> => {

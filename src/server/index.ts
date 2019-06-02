@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Contract, Engine, PortAllocation } from './core'
+import { Contract, Engine, PortAllocation } from '../core'
 import { Server } from './application'
 import {
   HttpTarGzBundleFetcher,
@@ -35,7 +35,7 @@ const networkInterface = axios.create()
 Server({
   apiPort: Number(API_PORT),
   contractRepository: InMemoryRepository<Contract>(),
-  portManagerConfig: {
+  portMapperConfig: {
     repository: InMemoryRepository<PortAllocation>(),
     range: {
       lower: parseInt(CONTRACT_SERVER_LOWER_PORT_BOUND),

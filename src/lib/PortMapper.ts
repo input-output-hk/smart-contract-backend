@@ -1,15 +1,15 @@
 import { createServer, Server } from 'net'
 import { PortAllocation } from '../core'
-import { NumberRange } from '../core/lib'
+import { NumberRange } from '../lib'
 import { AllPortsAllocated } from '../core/errors'
-import { PortAllocationRepository } from './lib/PortAllocationRepository'
+import { PortAllocationRepository } from '../core/PortAllocationRepository'
 
 export type Config ={
   repository: PortAllocationRepository
   range: NumberRange
 }
 
-export function PortManager ({ repository, range }: Config) {
+export function PortMapper ({ repository, range }: Config) {
   const startingPoolQty = range.upper - (range.lower - 1)
   return {
     isAvailable: async (port: number): Promise<boolean> => {

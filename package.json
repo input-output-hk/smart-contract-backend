@@ -56,6 +56,7 @@
     "@types/sinon": "^7.0.10",
     "@types/sinon-chai": "^3.2.2",
     "@types/supertest": "^2.0.7",
+    "@types/tcp-port-used": "^1.0.0",
     "@types/web3": "^1.0.18",
     "@typescript-eslint/eslint-plugin": "^1.4.2",
     "apollo-boost": "^0.3.1",
@@ -87,7 +88,6 @@
     "typescript": "^3.3.3333"
   },
   "dependencies": {
-    "@types/axios": "^0.14.0",
     "apollo-link": "^1.2.10",
     "apollo-link-http": "^1.5.13",
     "apollo-server": "^2.5.0",
@@ -127,7 +127,7 @@
     ],
     "exclude": [
       "src/**/*.spec.ts",
-      "src/execution_engines/node_js/execute.ts"
+      "src/execution_engine/node_js/execute.ts"
     ],
     "reporter": [
       "html"

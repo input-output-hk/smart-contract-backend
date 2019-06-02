@@ -1,4 +1,4 @@
-import { Contract, Engine, ExecutableType } from '../core'
+import { Contract, Engine, ExecutableType } from '../../core'
 import { InMemoryRepository } from '../infrastructure/repositories'
 import { testContracts } from '.'
 

@@ -1,4 +1,4 @@
-import { Entity } from './lib'
+import { Entity } from '../lib'
 
 export interface PortAllocation extends Entity {
   portNumber: number

@@ -2,11 +2,11 @@ import { expect, use } from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import axios from 'axios'
 import { PubSub } from 'apollo-server'
-import { Contract, Engine, PortAllocation } from '../core'
+import { Contract, Engine, PortAllocation } from '../../core'
+import { Repository } from '../../lib'
 import { Server } from '.'
-import { Repository } from './lib/Repository'
 import { InMemoryRepository, HttpTarGzBundleFetcher, StubEngineClient } from '../infrastructure'
-import { ServiceApiClient, testContracts } from '../test'
+import { ServiceApiClient, testContracts, checkPortIsFree } from '../test'
 const nock = require('nock')
 
 use(chaiAsPromised)
@@ -20,16 +20,17 @@ describe('Server', () => {
   let apiClient: ReturnType<typeof ServiceApiClient>
   const testContract = testContracts[0]
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    await checkPortIsFree(8082)
     portAllocationRepository = InMemoryRepository<PortAllocation>()
     server = Server({
       apiPort: API_PORT,
       contractRepository: InMemoryRepository<Contract>(),
-      portManagerConfig: {
+      portMapperConfig: {
         repository: portAllocationRepository,
         range: {
           lower: 8082,
-          upper: 8900
+          upper: 8084
         }
       },
       engineClients: new Map([[

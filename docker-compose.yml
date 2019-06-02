@@ -8,7 +8,7 @@ services:
     environment:
       - API_PORT=8081
       - WALLET_SERVICE_URI=http://wallet:0000
-      - EXECUTION_SERVICE_URI=http://docker_execution:9000
+      - EXECUTION_SERVICE_URI=http://execution_engine:9000
       - CONTRACT_SERVER_LOWER_PORT_BOUND=8082
       - CONTRACT_SERVER_UPPER_PORT_BOUND=8900
       - REDIS_HOST=redis
@@ -18,10 +18,10 @@ services:
     ports:
       - 8081:8081
       - 8082:8082
-  docker_execution:
+  execution_engine:
     build:
       context: .
-      target: docker_execution
+      target: execution_engine
     init: true
     environment:
       - EXECUTION_API_PORT=9000
@@ -32,7 +32,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       # - ./dist/swagger.json:/application/dist/swagger.json
-      # - ./dist/execution_engines:/application/dist/execution_engines
+      # - ./dist/execution_engine:/application/dist/execution_engine
     ports:
       - 9000:9000
   bundle_server:
