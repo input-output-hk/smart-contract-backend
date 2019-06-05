@@ -3,6 +3,7 @@ import * as Docker from 'dockerode'
 import axios from 'axios'
 import { DockerClient } from './DockerClient'
 import { DockerExecutionEngineContext } from '../execution_engines'
+import { Contract } from '../../../core'
 
 const MOCK_IMAGE = 'samjeston/smart_contract_server_mock'
 
@@ -29,6 +30,14 @@ describe('DockerClient', () => {
   })
 
   describe('loadContainer', () => {
+    async function tryLoadingTwice (dockerClient: ReturnType<typeof DockerClient>, contractAddress: Contract['address']): Promise<void> {
+      await dockerClient.loadContainer({ dockerImageRepository: MOCK_IMAGE, contractAddress, hostPort: 4200 })
+      await dockerClient.loadContainer({ dockerImageRepository: MOCK_IMAGE, contractAddress, hostPort: 4201 })
+      const containers = await dockerClient.listContainers()
+      const contractContainers = containers.filter(container => container.Image === MOCK_IMAGE)
+      expect(contractContainers.length).to.eql(1)
+    }
+
     describe('Docker networking', () => {
       beforeEach(() => {
         dockerClient = DockerClient({
@@ -38,21 +47,14 @@ describe('DockerClient', () => {
       })
       dockerSpecItFn('successfully boots a container that accepts HTTP on the returned port', async () => {
         await dockerClient.loadContainer({ dockerImageRepository: MOCK_IMAGE, contractAddress: 'abcd', hostPort: 4200 })
-
         const result = await axios.post(`http://abcd:8080/add`, {
           number1: 1,
           number2: 2
         })
-
         expect(result.status).to.eql(200)
       })
-      it('does not boot a second container when a container with that address is already running', async () => {
-        await dockerClient.loadContainer({ dockerImageRepository: MOCK_IMAGE, contractAddress: 'abcd', hostPort: 4200 })
-        await dockerClient.loadContainer({ dockerImageRepository: MOCK_IMAGE, contractAddress: 'abcd', hostPort: 4201 })
-
-        const containers = await dockerClient.listContainers()
-        const contractContainers = containers.filter(container => container.Image === MOCK_IMAGE)
-        expect(contractContainers.length).to.eql(1)
+      dockerSpecItFn('does not boot a second container when a container with that address is already running', async () => {
+        await tryLoadingTwice(dockerClient, 'abcd')
       })
     })
 
@@ -66,12 +68,15 @@ describe('DockerClient', () => {
 
       hostSpecItFn('successfully boots a container that accepts HTTP on the returned port', async () => {
         const container = await dockerClient.loadContainer({ dockerImageRepository: MOCK_IMAGE, contractAddress: 'abcd', hostPort: 4200 })
-        // if (!container)
         const result = await axios.post(`http://localhost:${container.port}/add`, {
           number1: 1,
           number2: 2
         })
         expect(result.status).to.eql(200)
+      })
+
+      hostSpecItFn('does not boot a second container when a container with that address is already running', async () => {
+        await tryLoadingTwice(dockerClient, 'abcd')
       })
     })
   })

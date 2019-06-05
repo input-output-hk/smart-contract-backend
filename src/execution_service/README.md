@@ -4,11 +4,7 @@ _Run_ smart contracts in isolation using Chromium processes via NodeJS, or _Dock
 
 _Interact_ via a HTTP API to call contract endpoints, with the invocation result data passed back in the response.
 
-## Interface
-
-The execution engine interface allows consumers to load, execute and unload smart contracts.
-
-The interface for this behaviour is defined as follows, and is exposed over HTTP:
+## Execution Engine
 
 ```
 // This type will be refined as integrations with Plutus proceeed
@@ -21,7 +17,7 @@ export interface ExecutionEngine {
 }
 ```
 
-The most up to date implementation of this interface in TypeScript can be seen [here](ExecutionEngine.ts)
+The most up to date implementation of this interface in TypeScript can be seen [here](./application/ExecutionEngine.ts)
 
 ### Docker Image Target
 

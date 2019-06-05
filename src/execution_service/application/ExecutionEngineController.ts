@@ -8,7 +8,7 @@ interface ExtendedExpressRequest extends express.Request {
 }
 
 @Route('')
-export class ContainerController extends Controller {
+export class ExecutionEngineController extends Controller {
   @SuccessResponse('204', 'No Content')
   @Post('loadSmartContract')
   public async loadSmartContract (@Request() request: ExtendedExpressRequest, @Body() { contractAddress, executable }: LoadContractArgs): Promise<void> {

@@ -127,7 +127,7 @@
     ],
     "exclude": [
       "src/**/*.spec.ts",
-      "src/execution_engine/infrastructure/node_js/execute.ts"
+      "src/execution_service/infrastructure/node_js/execute.ts"
     ],
     "reporter": [
       "html"

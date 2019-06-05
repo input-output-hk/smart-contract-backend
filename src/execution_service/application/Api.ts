@@ -1,7 +1,7 @@
 import * as express from 'express'
 import * as bodyParser from 'body-parser'
 import { RegisterRoutes } from '../routes'
-import '../controllers/smart-contract'
+import './ExecutionEngineController'
 import { ExecutionEngine } from '../application'
 const swaggerUiAssetPath = require('swagger-ui-dist').getAbsoluteFSPath()
 
