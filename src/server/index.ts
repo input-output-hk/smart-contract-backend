@@ -1,9 +1,9 @@
 import axios from 'axios'
 import { Contract, Engine, PortAllocation } from '../core'
+import { InMemoryRepository } from '../lib'
 import { Server } from './application'
 import {
   HttpTarGzBundleFetcher,
-  InMemoryRepository,
   PlutusEngineClient,
   RedisPubSubClient
 } from './infrastructure'

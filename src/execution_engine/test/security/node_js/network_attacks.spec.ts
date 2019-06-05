@@ -1,12 +1,7 @@
 import { expect } from 'chai'
-import NodeEngine from '../../../node_js'
-import { ExecutionEngines } from '../../../ExecutionEngine'
+import { NodeJsExecutionEngine } from '../../../infrastructure'
 
 describe('Puppeteer Network Security', () => {
-  beforeEach(() => {
-    process.env.ENGINE = ExecutionEngines.nodejs
-  })
-
   it('Prevents outgoing HTTP requests for a range of methods', async () => {
     const methods = [
       'GET',
@@ -48,11 +43,11 @@ async function tryXhr (httpMethod: string) {
     },
   }`
 
-  await NodeEngine.load({ contractAddress: 'contract1', executable: contract1 })
+  await NodeJsExecutionEngine.load({ contractAddress: 'contract1', executable: contract1 })
 
   const methodArgs = { maliciousEndpoint: 'http://google.com', httpMethod }
-  const failedRequest = NodeEngine.execute({ contractAddress: 'contract1', method: 'foo', methodArgs })
+  const failedRequest = NodeJsExecutionEngine.execute({ contractAddress: 'contract1', method: 'foo', methodArgs })
   await expect(failedRequest).to.eventually.be.rejectedWith(/Evaluation failed: 1/)
 
-  await NodeEngine.unload({ contractAddress: 'contract1' })
+  await NodeJsExecutionEngine.unload({ contractAddress: 'contract1' })
 }

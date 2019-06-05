@@ -1,12 +1,7 @@
 import { expect } from 'chai'
-import NodeEngine from '../../../node_js'
-import { ExecutionEngines } from '../../../ExecutionEngine'
+import { NodeJsExecutionEngine } from '../../../infrastructure'
 
 describe('Puppeteer Isolation from NodeJS', () => {
-  beforeEach(() => {
-    process.env.ENGINE = ExecutionEngines.nodejs
-  })
-
   it('has no access to the Node API', async () => {
     const contract1 = `{
       foo: () => {
@@ -14,12 +9,12 @@ describe('Puppeteer Isolation from NodeJS', () => {
       },
     }`
 
-    await NodeEngine.load({ contractAddress: 'contract1', executable: contract1 })
+    await NodeJsExecutionEngine.load({ contractAddress: 'contract1', executable: contract1 })
 
-    const failedAccess = NodeEngine.execute({ contractAddress: 'contract1', method: 'foo' })
+    const failedAccess = NodeJsExecutionEngine.execute({ contractAddress: 'contract1', method: 'foo' })
     await expect(failedAccess).to.eventually.be.rejectedWith(/require is not defined/)
 
-    await NodeEngine.unload({ contractAddress: 'contract1' })
+    await NodeJsExecutionEngine.unload({ contractAddress: 'contract1' })
   })
 
   it('has no access to the Node process globals', async () => {
@@ -27,11 +22,11 @@ describe('Puppeteer Isolation from NodeJS', () => {
       foo: () => process,
     }`
 
-    await NodeEngine.load({ contractAddress: 'contract1', executable: contract1 })
+    await NodeJsExecutionEngine.load({ contractAddress: 'contract1', executable: contract1 })
 
-    const failedAccess = NodeEngine.execute({ contractAddress: 'contract1', method: 'foo' })
+    const failedAccess = NodeJsExecutionEngine.execute({ contractAddress: 'contract1', method: 'foo' })
     await expect(failedAccess).to.eventually.be.rejectedWith(/process is not defined/)
 
-    await NodeEngine.unload({ contractAddress: 'contract1' })
+    await NodeJsExecutionEngine.unload({ contractAddress: 'contract1' })
   })
 })

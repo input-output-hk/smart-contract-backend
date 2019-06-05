@@ -1,12 +1,7 @@
 import { expect } from 'chai'
-import NodeEngine from '../../../node_js'
-import { ExecutionEngines } from '../../../ExecutionEngine'
+import { NodeJsExecutionEngine } from '../../../infrastructure'
 
 describe('Puppeteer Page Boundaries', () => {
-  beforeEach(() => {
-    process.env.ENGINE = ExecutionEngines.nodejs
-  })
-
   describe('State isolation', () => {
     beforeEach(async () => {
       const contract1 = `{
@@ -18,21 +13,21 @@ describe('Puppeteer Page Boundaries', () => {
         bar: () => window.a
       }`
 
-      await NodeEngine.load({ contractAddress: 'contract1', executable: contract1 })
-      await NodeEngine.load({ contractAddress: 'contract2', executable: contract2 })
+      await NodeJsExecutionEngine.load({ contractAddress: 'contract1', executable: contract1 })
+      await NodeJsExecutionEngine.load({ contractAddress: 'contract2', executable: contract2 })
     })
 
     afterEach(async () => {
-      await NodeEngine.unload({ contractAddress: 'contract1' })
-      await NodeEngine.unload({ contractAddress: 'contract2' })
+      await NodeJsExecutionEngine.unload({ contractAddress: 'contract1' })
+      await NodeJsExecutionEngine.unload({ contractAddress: 'contract2' })
     })
 
     it('state set on the window by one contract cannot be read by another', async () => {
-      await NodeEngine.execute({ contractAddress: 'contract1', method: 'foo' })
-      const contract1Result = await NodeEngine.execute({ contractAddress: 'contract1', method: 'bar' })
+      await NodeJsExecutionEngine.execute({ contractAddress: 'contract1', method: 'foo' })
+      const contract1Result = await NodeJsExecutionEngine.execute({ contractAddress: 'contract1', method: 'bar' })
       expect(contract1Result.data).to.eql(1)
 
-      const contract2Result = await NodeEngine.execute({ contractAddress: 'contract2', method: 'bar' })
+      const contract2Result = await NodeJsExecutionEngine.execute({ contractAddress: 'contract2', method: 'bar' })
       expect(contract2Result.data).to.eql(undefined)
     })
   })
@@ -42,12 +37,12 @@ describe('Puppeteer Page Boundaries', () => {
       foo: () => localStorage.setItem('val', 1)
     }`
 
-    await NodeEngine.load({ contractAddress: 'contract1', executable: contract1 })
+    await NodeJsExecutionEngine.load({ contractAddress: 'contract1', executable: contract1 })
 
-    const failedAccess = NodeEngine.execute({ contractAddress: 'contract1', method: 'foo' })
+    const failedAccess = NodeJsExecutionEngine.execute({ contractAddress: 'contract1', method: 'foo' })
     await expect(failedAccess).to.eventually.be.rejectedWith(/DOMException/)
 
-    await NodeEngine.unload({ contractAddress: 'contract1' })
+    await NodeJsExecutionEngine.unload({ contractAddress: 'contract1' })
   })
 
   it('Cookies inaccessible', async () => {
@@ -55,11 +50,11 @@ describe('Puppeteer Page Boundaries', () => {
       foo: () => document.cookie = "username=John Doe"
     }`
 
-    await NodeEngine.load({ contractAddress: 'contract1', executable: contract1 })
+    await NodeJsExecutionEngine.load({ contractAddress: 'contract1', executable: contract1 })
 
-    const failedAccess = NodeEngine.execute({ contractAddress: 'contract1', method: 'foo' })
+    const failedAccess = NodeJsExecutionEngine.execute({ contractAddress: 'contract1', method: 'foo' })
     await expect(failedAccess).to.eventually.be.rejectedWith(/DOMException/)
 
-    await NodeEngine.unload({ contractAddress: 'contract1' })
+    await NodeJsExecutionEngine.unload({ contractAddress: 'contract1' })
   })
 })

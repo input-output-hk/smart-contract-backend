@@ -2,9 +2,8 @@ import { expect, use } from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import { PortAllocation } from '../core'
 import { AllPortsAllocated } from '../core/errors'
-import { PortMapper } from '../lib'
-import { InMemoryRepository } from '../server/infrastructure'
-import { checkPortIsFree, RogueService } from '../server/test'
+import { checkPortIsFree, RogueService } from './test'
+import { PortMapper, InMemoryRepository } from '.'
 
 use(chaiAsPromised)
 

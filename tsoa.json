@@ -6,7 +6,7 @@
   },
   "routes": {
     "basePath": "/",
-    "entryFile": "./src/execution_engine/api.ts",
+    "entryFile": "./src/execution_engine/application/Api.ts",
     "routesDir": "./src/execution_engine"
   },
   "compilerOptions": {

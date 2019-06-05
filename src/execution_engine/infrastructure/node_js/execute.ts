@@ -1,5 +1,5 @@
 import * as puppeteer from 'puppeteer'
-import { ExecutionFailure } from '../errors'
+import { ExecutionFailure } from '../../errors'
 
 let browser: puppeteer.Browser
 async function getBrowser () {

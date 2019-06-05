@@ -1,59 +1,60 @@
-import { ExecutionEngines, DockerExecutionEngineContext } from './ExecutionEngine'
+import { ExecutionEngines, PortAllocation } from '../core'
+import { InMemoryRepository, PortMapper } from '../lib'
+import { DockerClient, DockerEngine, DockerExecutionEngineContext, NodeJsExecutionEngine } from './infrastructure'
 import { MissingConfig } from './errors'
+import { Config as ExecutionServiceConfig, ExecutionEngine } from './application'
 
-export interface ExecutionEngineConfig {
-  executionEngine: ExecutionEngines
-  executionApiPort: number
-  nodeEnv?: string,
-  containerLowerPortBound?: number
-  containerUpperPortBound?: number
-  dockerExecutionEngineContext?: DockerExecutionEngineContext
+export function getConfig (): ExecutionServiceConfig {
+  const {
+    executionEngineName,
+    apiPort,
+    containerLowerPortBound,
+    containerUpperPortBound,
+    dockerExecutionEngineContext
+  } = filterAndTypecastEnvs(process.env)
+
+  if (!apiPort) throw new MissingConfig('EXECUTION_API_PORT env not set')
+  let engine: ExecutionEngine
+  switch (executionEngineName) {
+    case ExecutionEngines.docker :
+      if (!containerLowerPortBound || !containerUpperPortBound) {
+        throw new MissingConfig('CONTAINER_LOWER_PORT_BOUND or CONTAINER_UPPER_PORT_BOUND env not set')
+      }
+      const portMapper = PortMapper({
+        repository: InMemoryRepository<PortAllocation>(),
+        range: {
+          lower: containerLowerPortBound,
+          upper: containerUpperPortBound
+        }
+      })
+      const dockerClient = DockerClient({
+        executionContext: dockerExecutionEngineContext
+      })
+      engine = DockerEngine({ portMapper, dockerClient, dockerExecutionEngineContext })
+      break
+    case ExecutionEngines.nodejs :
+      engine = NodeJsExecutionEngine
+      break
+  }
+  return {
+    apiPort,
+    engine
+  }
 }
 
-export function getConfig () {
+function filterAndTypecastEnvs (env: any) {
   const {
-    NODE_ENV,
     EXECUTION_ENGINE,
     EXECUTION_API_PORT,
     CONTAINER_LOWER_PORT_BOUND,
     CONTAINER_UPPER_PORT_BOUND,
     DOCKER_EXECUTION_ENGINE_CONTEXT
-  } = process.env
-
-  const config: ExecutionEngineConfig = {
-    nodeEnv: NODE_ENV,
-    executionEngine: EXECUTION_ENGINE as ExecutionEngines,
-    executionApiPort: Number(EXECUTION_API_PORT),
+  } = env
+  return {
+    executionEngineName: EXECUTION_ENGINE as ExecutionEngines,
+    apiPort: Number(EXECUTION_API_PORT),
     containerLowerPortBound: Number(CONTAINER_LOWER_PORT_BOUND),
     containerUpperPortBound: Number(CONTAINER_UPPER_PORT_BOUND),
-    dockerExecutionEngineContext: DOCKER_EXECUTION_ENGINE_CONTEXT
-      ? DOCKER_EXECUTION_ENGINE_CONTEXT as DockerExecutionEngineContext
-      : DockerExecutionEngineContext.host
-  }
-
-  if (!config.executionEngine) {
-    throw new MissingConfig('Execution engine not provided')
-  }
-
-  config.executionEngine === ExecutionEngines.docker
-    ? checkDockerEngineConfig(config)
-    : checkNodeEngineConfig(config)
-
-  return config
-}
-
-function checkDockerEngineConfig (config: ExecutionEngineConfig) {
-  if (
-    !config.executionApiPort ||
-    !config.containerLowerPortBound ||
-    !config.containerUpperPortBound
-  ) {
-    throw new MissingConfig('Missing docker environment config')
-  }
-}
-
-function checkNodeEngineConfig (config: ExecutionEngineConfig) {
-  if (!config.executionApiPort) {
-    throw new MissingConfig('Missing nodejs environment config')
+    dockerExecutionEngineContext: DOCKER_EXECUTION_ENGINE_CONTEXT as DockerExecutionEngineContext
   }
 }

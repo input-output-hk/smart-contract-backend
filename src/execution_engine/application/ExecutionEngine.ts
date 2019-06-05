@@ -1,3 +1,5 @@
+import { ExecutionEngines } from '../../core'
+
 export interface LoadContractArgs {
   contractAddress: string
   executable: string
@@ -16,17 +18,8 @@ export interface ExecuteContractArgs {
 export type SmartContractResponse = any
 
 export interface ExecutionEngine {
+  name: ExecutionEngines,
   load: (args: LoadContractArgs) => Promise<boolean>
   execute: (args: ExecuteContractArgs) => Promise<{ data: SmartContractResponse }>
   unload: (args: UnloadContractArgs) => Promise<boolean>
-}
-
-export enum ExecutionEngines {
-  docker = 'docker',
-  nodejs = 'nodejs'
-}
-
-export enum DockerExecutionEngineContext {
-  docker = 'docker',
-  host = 'host'
 }

@@ -1,33 +1,29 @@
 import { expect } from 'chai'
-import { configureApi, bootApi } from '../api'
 import * as request from 'supertest'
-import { Server } from 'http'
-import NodeEngine from '../node_js'
+import * as http from 'http'
+import { ExecutionEngines } from '../../core'
 import { getConfig } from '../config'
-import { ExecutionEngines } from '../ExecutionEngine'
-import { MissingConfig } from '../errors'
+import { ExecutionService } from '../application'
+import { NodeJsExecutionEngine } from '../infrastructure/execution_engines'
+import { checkPortIsFree } from '../../lib/test'
 
 describe('Node Execution API Integration', () => {
-  let app: Server
+  let executionService: ReturnType<typeof ExecutionService>
+  let app: http.Server
   const mockModule = '{ foobar: (args) => { return {result: args.number1 + args.number2 }} }'
   const mockAddress = 'abcd'
 
   beforeEach(async () => {
+    await checkPortIsFree(4100)
     process.env.EXECUTION_ENGINE = ExecutionEngines.nodejs
     process.env.EXECUTION_API_PORT = '4100'
-    app = await configureApi().listen(4100)
+    executionService = ExecutionService(getConfig())
+    app = await executionService.boot()
   })
 
   afterEach(async () => {
-    app.close()
-    await NodeEngine.unload({ contractAddress: mockAddress })
-  })
-
-  describe('bootApi', () => {
-    it('throws an error when env config is missing', () => {
-      process.env.EXECUTION_API_PORT = ''
-      expect(() => bootApi(getConfig())).to.throw(MissingConfig)
-    })
+    await executionService.shutdown()
+    await NodeJsExecutionEngine.unload({ contractAddress: mockAddress })
   })
 
   describe('/loadSmartContract', () => {

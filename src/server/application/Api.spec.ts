@@ -4,11 +4,11 @@ import * as express from 'express'
 import axios from 'axios'
 import { PubSub } from 'apollo-server'
 import { Engine, PortAllocation } from '../../core'
-import { expressEventPromiseHandler, httpEventPromiseHandler, PortMapper } from '../../lib'
-import { HttpTarGzBundleFetcher, InMemoryRepository, StubEngineClient } from '../infrastructure'
+import { expressEventPromiseHandler, httpEventPromiseHandler, PortMapper, InMemoryRepository } from '../../lib'
+import { checkPortIsFree, populatedContractRepository } from '../../lib/test'
+import { HttpTarGzBundleFetcher, StubEngineClient } from '../infrastructure'
 import { Api, ContractApiServerController, ContractController } from '.'
 
-import { checkPortIsFree, populatedContractRepository } from '../test'
 const nock = require('nock')
 
 describe('Api', () => {

@@ -1,11 +1,11 @@
 import * as express from 'express'
 import * as bodyParser from 'body-parser'
-import { RegisterRoutes } from './routes'
-import './controllers/smart-contract'
-import { ExecutionEngineConfig } from './config'
+import { RegisterRoutes } from '../routes'
+import '../controllers/smart-contract'
+import { ExecutionEngine } from '../application'
 const swaggerUiAssetPath = require('swagger-ui-dist').getAbsoluteFSPath()
 
-export function configureApi () {
+export function Api (engine: ExecutionEngine) {
   const app = express()
   app.use(bodyParser.json({ limit: '50mb' }))
   app.use('/documentation', express.static(swaggerUiAssetPath))
@@ -15,6 +15,11 @@ export function configureApi () {
 
   app.get('/docs', (_, res) => {
     res.redirect('/documentation?url=swagger.json')
+  })
+
+  app.use((req: any, _res, next) => {
+    req.engine = engine
+    next()
   })
 
   RegisterRoutes(app)
@@ -32,15 +37,5 @@ export function configureApi () {
     res.status(500).json({ error: 'Internal Server Error' })
   })
 
-  return app
-}
-
-export function bootApi (config: ExecutionEngineConfig) {
-  const app = configureApi()
-  const server = app.listen(config.executionApiPort, () => {
-    console.log(`Smart contract ${config.executionEngine} engine listening on port ${config.executionApiPort}`)
-  })
-
-  const { address, port } = server.address().valueOf() as any
-  console.log(`API Documentation at ${address}:${port}/docs`)
+  return { app }
 }

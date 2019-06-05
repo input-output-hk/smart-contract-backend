@@ -1,4 +1,4 @@
-# Execution Engine
+# Execution Service
 
 _Run_ smart contracts in isolation using Chromium processes via NodeJS, or _Docker_ containers in a trusted scenario with access to a Docker daemon.
 

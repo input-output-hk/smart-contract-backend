@@ -1,5 +1,5 @@
 import { Contract, Engine, ExecutableType } from '../../core'
-import { InMemoryRepository } from '../infrastructure/repositories'
+import { InMemoryRepository } from '../repositories'
 import { testContracts } from '.'
 
 export async function populatedContractRepository () {

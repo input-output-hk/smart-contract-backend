@@ -1,5 +1,5 @@
-import { Entity, Repository } from '../../../lib'
-import { UnknownEntity } from '../../../core/errors'
+import { Entity, Repository } from '..'
+import { UnknownEntity } from '../../core/errors'
 
 export function InMemoryRepository<T extends Entity > (): Repository<T> {
   const collection = new Map<T['id'], T>()

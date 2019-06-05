@@ -1,45 +1,36 @@
-import { Post, Route, Body, SuccessResponse, Controller } from 'tsoa'
-import DockerEngine from '../docker'
-import NodeEngine from '../node_js'
-import { LoadContractArgs, ExecutionEngine, UnloadContractArgs, SmartContractResponse, ExecutionEngines } from '../ExecutionEngine'
+import { Post, Route, Body, Request, SuccessResponse, Controller } from 'tsoa'
+import express from 'express'
+import { ExecutionEngine, LoadContractArgs, SmartContractResponse, UnloadContractArgs } from '../application'
 import { ContractNotLoaded } from '../errors'
-import { getConfig, ExecutionEngineConfig } from '../config'
 
-function getEngine (config: ExecutionEngineConfig): ExecutionEngine {
-  return config.executionEngine === ExecutionEngines.docker
-    ? DockerEngine
-    : NodeEngine
+interface ExtendedExpressRequest extends express.Request {
+  engine: ExecutionEngine
 }
 
 @Route('')
 export class ContainerController extends Controller {
   @SuccessResponse('204', 'No Content')
   @Post('loadSmartContract')
-  public async loadSmartContract (@Body() { contractAddress, executable }: LoadContractArgs): Promise<void> {
-    const engine = getEngine(getConfig())
+  public async loadSmartContract (@Request() request: ExtendedExpressRequest, @Body() { contractAddress, executable }: LoadContractArgs): Promise<void> {
     contractAddress = contractAddress.toLowerCase()
     this.setStatus(204)
-
-    await engine.load({ contractAddress, executable })
+    await request.engine.load({ contractAddress, executable })
   }
 
   @SuccessResponse('204', 'No Content')
   @Post('unloadSmartContract')
-  public async unloadSmartContract (@Body() { contractAddress }: UnloadContractArgs): Promise<void> {
-    const engine = getEngine(getConfig())
+  public async unloadSmartContract (@Request() request: ExtendedExpressRequest, @Body() { contractAddress }: UnloadContractArgs): Promise<void> {
     contractAddress = contractAddress.toLowerCase()
     this.setStatus(204)
-
-    await engine.unload({ contractAddress })
+    await request.engine.unload({ contractAddress })
   }
 
   @SuccessResponse('200', 'Ok')
   @Post('execute/{contractAddress}/{method}')
-  public async execute (contractAddress: string, method: string, @Body() methodArguments: any): Promise<{ data: SmartContractResponse } | { error: string }> {
-    const engine = getEngine(getConfig())
+  public async execute (@Request() request: ExtendedExpressRequest, contractAddress: string, method: string, @Body() methodArguments: any): Promise<{ data: SmartContractResponse } | { error: string }> {
     contractAddress = contractAddress.toLowerCase()
 
-    return engine.execute({ contractAddress, method, methodArgs: methodArguments })
+    return request.engine.execute({ contractAddress, method, methodArgs: methodArguments })
       .catch(e => {
         if (e instanceof ContractNotLoaded) {
           this.setStatus(404)

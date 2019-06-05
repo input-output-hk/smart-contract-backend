@@ -1,13 +1,15 @@
-import { ExecutionEngine } from '../ExecutionEngine'
-import { executeInBrowser, deploy, unloadPage } from './execute'
-import { BadArgument, ContractNotLoaded } from '../errors'
+import { ExecutionEngines } from '../../../core'
+import { ExecutionEngine } from '../../application'
+import { executeInBrowser, deploy, unloadPage } from '../node_js/execute'
+import { BadArgument, ContractNotLoaded } from '../../errors'
 import { Page } from 'puppeteer'
 
 let contracts: {
   [contractAddress: string]: Page
 } = {}
 
-const NodeEngine: ExecutionEngine = {
+export const NodeJsExecutionEngine: ExecutionEngine = {
+  name: ExecutionEngines.nodejs,
   load: async ({ contractAddress, executable }) => {
     const deployment = await deploy(executable)
     contracts[contractAddress] = deployment
@@ -30,5 +32,3 @@ const NodeEngine: ExecutionEngine = {
     return delete contracts[contractAddress]
   }
 }
-
-export default NodeEngine

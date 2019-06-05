@@ -2,7 +2,7 @@ import { expect, use } from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import * as puppeteer from 'puppeteer'
 import { executeInBrowser, deploy, unloadPage } from './execute'
-import { ExecutionFailure } from '../errors'
+import { ExecutionFailure } from '../../errors'
 use(chaiAsPromised)
 
 describe('executeInBrowser', () => {
