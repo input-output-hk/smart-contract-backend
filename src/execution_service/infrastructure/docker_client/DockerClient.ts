@@ -5,7 +5,7 @@ import { DockerExecutionEngineContext } from '../execution_engines'
 interface Config {
   dockerOptions?: Docker.DockerOptions | { socketPath: '/var/run/docker.sock' },
   executionContext: DockerExecutionEngineContext,
-  pipeStdout?: boolean | true
+  pipeStdout: boolean
 }
 
 export function DockerClient (config: Config) {

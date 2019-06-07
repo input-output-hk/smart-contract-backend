@@ -28,7 +28,8 @@ export function getConfig (): ExecutionServiceConfig {
         }
       })
       const dockerClient = DockerClient({
-        executionContext: dockerExecutionEngineContext
+        executionContext: dockerExecutionEngineContext,
+        pipeStdout: true
       })
       engine = DockerEngine({ portMapper, dockerClient, dockerExecutionEngineContext })
       break
