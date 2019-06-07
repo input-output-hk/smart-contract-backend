@@ -2,7 +2,7 @@ import { expect, use } from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import * as sinon from 'sinon'
 import { SolidityEngineClient } from './SolidityEngineClient'
-import { testContracts } from '../../../test'
+import { testContracts } from '../../../../lib/test'
 
 use(chaiAsPromised)
 

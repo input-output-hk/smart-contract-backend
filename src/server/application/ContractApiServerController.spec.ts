@@ -4,10 +4,10 @@ import axios from 'axios'
 import { IExecutableSchemaDefinition } from 'apollo-server'
 import { PortAllocation } from '../../core'
 import { AllPortsAllocated } from '../../core/errors'
-import { Repository, PortMapper, PortMapperConfig } from '../../lib'
+import { InMemoryRepository, Repository, PortMapper, PortMapperConfig } from '../../lib'
+import { checkPortIsFree, RogueService, testContracts } from '../../lib/test/'
 import { ContractApiServerController } from '.'
-import { InMemoryRepository, StubEngineClient } from '../infrastructure'
-import { checkPortIsFree, RogueService, testContracts } from '../test/'
+import { StubEngineClient } from '../infrastructure'
 
 use(chaiAsPromised)
 

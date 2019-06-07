@@ -8,11 +8,14 @@ module.exports = function () {
     ],
 
     tests: [
-      'src/server/**/*.spec.ts'
+      'src/**/*.spec.ts'
     ],
     env: {
       type: 'node'
     },
-    testFramework: 'mocha'
+    testFramework: 'mocha',
+    setup: function (wallaby) {
+      wallaby.testFramework.timeout(60000)
+    }
   }
 }

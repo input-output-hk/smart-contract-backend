@@ -3,10 +3,10 @@ import * as chaiAsPromised from 'chai-as-promised'
 import axios from 'axios'
 import { PubSub } from 'apollo-server'
 import { Contract, Engine, PortAllocation } from '../../core'
-import { Repository } from '../../lib'
+import { InMemoryRepository, Repository } from '../../lib'
+import { ServiceApiClient, testContracts, checkPortIsFree } from '../../lib/test'
 import { Server } from '.'
-import { InMemoryRepository, HttpTarGzBundleFetcher, StubEngineClient } from '../infrastructure'
-import { ServiceApiClient, testContracts, checkPortIsFree } from '../test'
+import { HttpTarGzBundleFetcher, StubEngineClient } from '../infrastructure'
 const nock = require('nock')
 
 use(chaiAsPromised)

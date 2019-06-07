@@ -4,10 +4,10 @@ import * as sinonChai from 'sinon-chai'
 import axios from 'axios'
 import { PubSub } from 'apollo-server'
 import { Contract, ContractRepository, Engine, EngineClient, PortAllocation } from '../../core'
-import { PortMapper } from '../../lib'
+import { InMemoryRepository, PortMapper } from '../../lib'
+import { testContracts } from '../../lib/test'
 import { BundleFetcher, ContractApiServerController, ContractController } from '.'
-import { InMemoryRepository, HttpTarGzBundleFetcher, StubEngineClient } from '../infrastructure'
-import { testContracts } from '../test'
+import { HttpTarGzBundleFetcher, StubEngineClient } from '../infrastructure'
 
 const nock = require('nock')
 use(sinonChai)

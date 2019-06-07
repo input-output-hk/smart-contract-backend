@@ -35,11 +35,13 @@ COPY --from=production_deps /application/node_modules /application/node_modules
 WORKDIR /application
 CMD ["npx", "pm2", "--no-daemon", "start", "dist/server/index.js"]
 
-FROM node:10.15.3-alpine as execution_engine
+FROM node:10.15.3-alpine as execution_service
 RUN mkdir /application
 RUN mkdir /application/docker
-COPY --from=builder /application/dist/execution_engine /application/dist/execution_engine
+COPY --from=builder /application/dist/core /application/dist/core
+COPY --from=builder /application/dist/lib /application/dist/lib
+COPY --from=builder /application/dist/execution_service /application/dist/execution_service
 COPY --from=builder /application/dist/swagger.json /application/dist/swagger.json
 COPY --from=production_deps /application/node_modules /application/node_modules
 WORKDIR /application
-CMD ["npx", "pm2", "--no-daemon", "start", "dist/execution_engine/index.js"]
+CMD ["npx", "pm2", "--no-daemon", "start", "dist/execution_service/index.js"]
