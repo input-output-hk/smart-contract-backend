@@ -31,7 +31,7 @@ Before({ timeout: 40000 }, async function () {
 
 After(async function () {
   const world = this as World
-  world.unsubscribeFromPublicKey()
+  world.client.disconnect()
 
   // This will be removed once unloading is implemented
   const docker = new Docker({ socketPath: '/var/run/docker.sock' })

@@ -12,9 +12,16 @@
     "sourceMap": true,
     "composite": true,
     "rootDir": "src",
+    "baseUrl": "../../",
+    "paths": {
+      "src": ["src"]
+    },
     "allowSyntheticDefaultImports": true
   },
   "include": [
     "src/**/*"
+  ],
+  "references": [
+    { "path": "../../tsconfig.json" }
   ]
 }
