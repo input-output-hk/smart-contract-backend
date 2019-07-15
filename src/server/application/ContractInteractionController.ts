@@ -14,7 +14,8 @@ export function ContractInteractionController (config: Config) {
     },
     async execute (instruction: ContractExecutionInstruction) {
       const response = await engineClient.execute(instruction)
-      await pubSubClient.publish(`${Events.SIGNATURE_REQUIRED}.${instruction.originatorPk}`, { transaction: response.data })
+      // 'response.data.data.response' used as a placeholder for the transaction string
+      await pubSubClient.publish(`${Events.SIGNATURE_REQUIRED}.${instruction.originatorPk}`, { transactionSigningRequest: { transaction: response.data.data.response } })
       return response.data
     },
     submitSignedTransaction (signedTransaction: string) {
