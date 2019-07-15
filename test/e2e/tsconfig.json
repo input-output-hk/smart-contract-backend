@@ -11,17 +11,11 @@
     "outDir": "dist/",
     "sourceMap": true,
     "composite": true,
-    "rootDir": "src",
-    "baseUrl": "../../",
-    "paths": {
-      "src": ["src"]
-    },
+    "rootDir": "../..",
     "allowSyntheticDefaultImports": true
   },
   "include": [
-    "src/**/*"
-  ],
-  "references": [
-    { "path": "../../tsconfig.json" }
+    "src/**/*",
+    "../../src/client/**/*"
   ]
 }

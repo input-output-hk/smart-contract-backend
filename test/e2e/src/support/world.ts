@@ -1,5 +1,5 @@
 import { setWorldConstructor } from 'cucumber'
-import { Client } from 'src/client'
+import { Client } from '../../../../src/client'
 
 export class World {
   client: ReturnType<typeof Client>
