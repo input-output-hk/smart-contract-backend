@@ -88,21 +88,24 @@ export function Client (config: Config) {
       }
     },
     async schema () {
-      return (await apolloClient.query({
+      const result = await apolloClient.query({
         query: gql`query { __schema { types { name } } }`
-      })).data
+      })
+      return result.data
     },
     async contracts () {
-      return (await apolloClient.query({
+      const result = await apolloClient.query({
         query: gql`query { contracts { contractAddress, engine }}`
-      })).data.contracts
+      })
+      return result.data.contracts
     },
     async loadContract (contract: { address: string, location: string }) {
-      return (await apolloClient.mutate({
+      const result = await apolloClient.mutate({
         mutation: gql`mutation {
             loadContract(contractAddress: "${contract.address}", bundleLocation: "${contract.location}")
         }`
-      })).data
+      })
+      return result.data
     },
     executeContract (address: string, method: string, methodArguments: any) {
       const httpLink = new HttpLink({
