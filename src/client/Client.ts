@@ -59,7 +59,7 @@ export function Client (config: Config) {
       query: { fetchPolicy: 'network-only' },
       watchQuery: { fetchPolicy: 'network-only' }
     },
-    link,
+    link
   })
 
   return {
@@ -73,7 +73,6 @@ export function Client (config: Config) {
         }`
       }).subscribe({
         next (result) {
-          console.log(result)
           const { data: { transactionSigningRequest: { transaction } } } = result
           config.transactionHandler(transaction, publicKey)
         },
