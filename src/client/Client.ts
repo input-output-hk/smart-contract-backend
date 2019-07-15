@@ -54,8 +54,12 @@ export function Client (config: Config) {
   ))
 
   const apolloClient = new ApolloClient({
+    cache: new InMemoryCache(),
+    defaultOptions: {
+      query: { fetchPolicy: 'network-only' },
+      watchQuery: { fetchPolicy: 'network-only' }
+    },
     link,
-    cache: new InMemoryCache()
   })
 
   return {
