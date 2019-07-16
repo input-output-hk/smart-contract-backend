@@ -4,7 +4,8 @@ import axios from 'axios'
 import { PubSub } from 'apollo-server'
 import { Contract, Engine, PortAllocation } from '../../core'
 import { InMemoryRepository, Repository } from '../../lib'
-import { ServiceApiClient, testContracts, checkPortIsFree } from '../../lib/test'
+import { testContracts, checkPortIsFree } from '../../lib/test'
+import { Client } from '../../client'
 import { Server } from '.'
 import { HttpTarGzBundleFetcher, StubEngineClient } from '../infrastructure'
 const nock = require('nock')
@@ -17,7 +18,11 @@ describe('Server', () => {
   const networkInterface = axios.create()
   const executionEndpoint = 'http://execution'
   const API_PORT = 8081
-  let apiClient: ReturnType<typeof ServiceApiClient>
+  const client = Client({
+    apiUri: `http://localhost:${API_PORT}`,
+    subscriptionUri: `ws://localhost:${API_PORT}`,
+    transactionHandler: () => {}
+  })
   const testContract = testContracts[0]
 
   beforeEach(async () => {
@@ -40,7 +45,7 @@ describe('Server', () => {
       bundleFetcher: HttpTarGzBundleFetcher(networkInterface),
       pubSubClient: new PubSub()
     })
-    apiClient = ServiceApiClient(API_PORT)
+    await client.connect('abc')
     nock(executionEndpoint)
       .post()
       .reply(200, { data: {} })
@@ -58,17 +63,17 @@ describe('Server', () => {
 
     it('Starts the API server', async () => {
       expect((await checkServer(API_PORT)).statusText).to.eq('OK')
-      expect((await apiClient.schema()).__schema).to.exist
-      expect((await apiClient.contracts()).length).to.eq(0)
+      expect((await client.schema()).__schema).to.exist
+      expect((await client.contracts()).length).to.eq(0)
     })
   })
 
   describe('Shutdown', () => {
     beforeEach(async () => {
       await server.boot()
-      expect((await apiClient.contracts()).length).to.eq(0)
-      await apiClient.loadContract(testContract)
-      expect((await apiClient.contracts()).length).to.eq(1)
+      expect((await client.contracts()).length).to.eq(0)
+      await client.loadContract(testContract)
+      expect((await client.contracts()).length).to.eq(1)
     })
 
     it('Closes the API server and loaded contract API servers', async () => {

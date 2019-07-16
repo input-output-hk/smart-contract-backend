@@ -11,10 +11,11 @@
     "outDir": "dist/",
     "sourceMap": true,
     "composite": true,
-    "rootDir": "src",
+    "rootDir": "../..",
     "allowSyntheticDefaultImports": true
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "../../src/client/**/*"
   ]
 }
