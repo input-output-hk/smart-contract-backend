@@ -107,7 +107,7 @@ describe('DockerClient', () => {
 
 async function cleanupTestContainers () {
   const docker = new Docker({ socketPath: '/var/run/docker.sock' })
-  const containers = await docker.listContainers({ all: true })
+  const containers = await docker.listContainers()
   const testContainers = containers.filter(container => container.Image === MOCK_IMAGE)
   await Promise.all(testContainers.map(async (container) => {
     await docker.getContainer(container.Id).remove({ force: true })
