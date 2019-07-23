@@ -35,7 +35,7 @@ pipeline {
   post {
     always {
       sh 'docker kill $(docker ps -q) || true'
-      sh 'docker-compose down'
+      sh 'docker-compose -p smart-contract-backend down'
       sh 'docker system prune -a -f'
     }
   }
