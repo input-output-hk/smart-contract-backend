@@ -22,8 +22,8 @@ pipeline {
     }
     stage('E2E Setup') {
       steps {
-        sh 'docker-compose build --no-cache'
-        sh 'docker-compose up -d'
+        sh 'docker-compose build'
+        sh 'docker-compose -p smart-contract-backend up -d'
       }
     }
     stage('E2E Test') {
