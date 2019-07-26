@@ -107,6 +107,14 @@ export function Client (config: Config) {
       })
       return result.data
     },
+    async unloadContract (address: string) {
+      const result = await apolloClient.mutate({
+        mutation: gql`mutation {
+            unloadContract(contractAddress: "${address}")
+        }`
+      })
+      return result.data
+    },
     executeContract (address: string, method: string, methodArguments: any) {
       const httpLink = new HttpLink({
         uri: `${config.apiUri}/contract/${address}`,

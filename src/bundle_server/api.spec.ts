@@ -24,14 +24,14 @@ describe('bundleServer:api', () => {
 
     it('throws a 404 if the contract does not exist on the filesystem', () => {
       return request(app)
-        .get('/abcde')
+        .get('/testContractz')
         .set('Accept', 'application/json')
         .expect(404)
     })
 
     it('returns a 200 with the contract bundle encoded as base64 when it exists', () => {
       return request(app)
-        .get('/abcd')
+        .get('/testContract')
         .set('Accept', 'application/json')
         .expect(200)
         .then(response => {

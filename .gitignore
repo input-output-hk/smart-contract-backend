@@ -9,3 +9,4 @@ docker/*
 *.tar.gz
 .idea
 *.tsbuildinfo
+build

@@ -1,0 +1,4 @@
+{
+  initialise: () => true,
+  lock: (args) => true
+}

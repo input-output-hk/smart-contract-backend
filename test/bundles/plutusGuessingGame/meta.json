@@ -1,6 +1,0 @@
-{
-  "engine": "plutus",
-  "executableType": "docker",
-  "hash": "e2f79e5b60330bba4c289962231b6ba2957d0b14e7deb3110417003c79dea635",
-  "dockerImageRepository": "jannmueller/plutus-contract-exe:7604e0731f2dac0899cd8376cb9af41503ffadac"
-}
