@@ -13,6 +13,7 @@ services:
       - CONTRACT_SERVER_UPPER_PORT_BOUND=8900
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - OPERATION_MODE=distributed
     # volumes:
     #   - ./dist/server:/application/dist/server
     ports:

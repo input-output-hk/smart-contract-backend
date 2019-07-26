@@ -8,3 +8,4 @@ docker/*
 !docker/README.md
 *.tar.gz
 .idea
+*.tsbuildinfo

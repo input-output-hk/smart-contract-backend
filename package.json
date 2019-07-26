@@ -11,6 +11,7 @@
     "test:watch": "mocha -w",
     "test:coverage": "npm test && http-server coverage",
     "api-build": "tsoa swagger && tsoa routes",
+    "start:local": "npm run build && node dist/single_process.js",
     "start:docker": "docker-compose up",
     "start:docker-init": "docker-compose up --build",
     "restart:docker": "docker-compose down && sudo rm -rf dist && npm run build && docker-compose up",
