@@ -31,7 +31,7 @@ process.env.EXECUTION_ENGINE = EXECUTION_ENGINE || 'nodejs'
 
 // Bundle Server ENVs
 process.env.BUNDLE_SERVER_PORT = BUNDLE_SERVER_PORT || '9001'
-process.env.BUNDLE_LOCATION = 'test/bundles/nodejs'
+process.env.BUNDLE_LOCATION = BUNDLE_LOCATION || 'test/bundles/nodejs'
 
 require('./bundle_server')
 require('./execution_service')
