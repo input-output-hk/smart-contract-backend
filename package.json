@@ -21,7 +21,8 @@
     "e2e:run": "cucumber-js --require \"test/e2e/dist/**/*.js\" --format node_modules/cucumber-pretty --exit --tags \"not @Todo\" features/**/*.feature",
     "e2e": "npm run e2e:build && npm run e2e:run",
     "e2e:docker": "cross-env TEST_MODE=docker APPLICATION_URI=http://127.0.0.1:8081 WS_URI=ws://localhost:8081/graphql npm run e2e",
-    "e2e:nodejs": "cross-env TEST_MODE=nodejs APPLICATION_URI=http://127.0.0.1:8081 WS_URI=ws://localhost:8081/graphql npm run e2e"
+    "e2e:nodejs": "cross-env TEST_MODE=nodejs APPLICATION_URI=http://127.0.0.1:8081 WS_URI=ws://localhost:8081/graphql npm run e2e",
+    "bundle": "node bundle/bundle_and_store.js"
   },
   "repository": {
     "type": "git",
@@ -69,6 +70,8 @@
     "apollo-link-error": "^1.1.11",
     "apollo-link-ws": "^1.0.18",
     "apollo-utilities": "^1.3.2",
+    "archiver": "^3.0.3",
+    "aws-sdk": "^2.502.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "cross-env": "^5.2.0",
