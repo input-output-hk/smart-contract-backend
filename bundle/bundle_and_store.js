@@ -49,7 +49,13 @@ function createZip(bundlePath, zipPath, exeName, buildDeps) {
     archive.file(join(bundlePath, exeName), { name: exeName })
 
     buildDeps.forEach(dep => {
-      archive.directory(join(bundlePath, dep), dep)
+      const testExp = RegExp('.node*', 'g')
+
+      if (testExp.test(dep)) {
+        archive.file(join(bundlePath, dep), { name: dep })
+      } else {
+        archive.directory(join(bundlePath, dep), dep)
+      }
     })
 
     archive.finalize()
@@ -128,7 +134,7 @@ async function main() {
     await createZip(bundlePath, zipPath, exeName, buildDeps)
 
     console.log('Uploading to S3...')
-    // await uploadToS3(s3Path, zipPath)
+    await uploadToS3(s3Path, zipPath)
   } catch (e) {
     console.log('An error occurred while creating the bundle')
     console.log(e.message)
