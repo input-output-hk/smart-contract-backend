@@ -89,18 +89,25 @@ async function uploadToS3(s3Path, zipPath) {
 }
 
 async function main() {
-  const hash = await commitHash()
-  console.log(`Creating Build for commit: ${hash}`)
-  await createBundle()
+  try {
+    const hash = await commitHash()
+    console.log(`Creating Build for commit: ${hash}`)
+    await createBundle()
 
-  const { bundlePath, exeName, s3Path } = determineOsInfo(hash)
-  const zipPath = `${bundlePath}.zip`
-  console.log(`Creating zip at ${zipPath}`)
-  await createZip(bundlePath, zipPath, exeName)
+    const { bundlePath, exeName, s3Path } = determineOsInfo(hash)
+    const zipPath = `${bundlePath}.zip`
+    console.log(`Creating zip at ${zipPath}`)
+    await createZip(bundlePath, zipPath, exeName)
 
-  console.log(s3Path)
-  console.log('Uploading to S3...')
-  await uploadToS3(s3Path, zipPath).catch(e => console.log(e))
+    console.log('Uploading to S3...')
+    await uploadToS3(s3Path, zipPath)
+  } catch (e) {
+    console.log('An error occurred while creating the bundle')
+    console.log(e.message)
+    throw e
+  }
 }
 
 main()
+  .then(() => console.log('Bundling complete'))
+  .catch(() => process.exit(1))
