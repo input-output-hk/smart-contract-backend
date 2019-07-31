@@ -128,7 +128,7 @@
     "tcp-port-used": "^1.0.1",
     "ts-custom-error": "^3.1.1",
     "tsoa": "^2.4.3",
-    "websocket": "^1.0.29"
+    "ws": "^7.1.1"
   },
   "nyc": {
     "extension": [
