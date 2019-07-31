@@ -45,7 +45,7 @@ pipeline {
   }
   post {
     always {
-      sh 'kill $(ps aux | grep \'node dist\' | awk \'{print $2}\') || true'
+      sh 'npm run stop:local-process'
       sh 'docker kill $(docker ps -q) || true'
       sh 'docker-compose -p smart-contract-backend down'
       sh 'docker system prune -a -f'
