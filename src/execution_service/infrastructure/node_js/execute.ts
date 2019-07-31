@@ -1,10 +1,25 @@
 import * as puppeteer from 'puppeteer'
 import { ExecutionFailure } from '../../errors'
+import * as path from 'path'
+import { platform } from 'os'
+const evaluater = require('../../../../puppeteer_evaluater')
 
 let browser: puppeteer.Browser
 async function getBrowser () {
+  const pAny: any = process
+  const isPkg = typeof pAny.pkg !== 'undefined'
+  const plat = platform()
+  const windowsReplacement = /^.*?\\node_modules\\puppeteer\\\.local-chromium/
+  const unixReplacement = /^.*?\/node_modules\/puppeteer\/\.local-chromium/
+  const chromiumExecutablePath = isPkg
+    ? puppeteer.executablePath().replace(
+      plat === 'win32' ? windowsReplacement : unixReplacement,
+      path.join(path.dirname(process.execPath), 'puppeteer')
+    )
+    : puppeteer.executablePath()
+
   if (!browser) {
-    browser = await puppeteer.launch()
+    browser = await puppeteer.launch({ executablePath: chromiumExecutablePath })
   }
 
   return browser
@@ -20,13 +35,8 @@ export async function deploy (executable: string) {
     interceptedRequest.abort()
   })
 
-  await page.evaluate(({ executable }) => {
-    /* eslint-disable */
-    const exec = Function(`"use strict"; return (${executable})`)()
-    /* eslint-enable */
-    const w: any = window
-    w.contract = exec
-  }, { executable })
+  await page.evaluate(evaluater.evaluate, { executable })
+
   return page
 }
 

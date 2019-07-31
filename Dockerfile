@@ -41,6 +41,7 @@ RUN mkdir /application/docker
 COPY --from=builder /application/dist/core /application/dist/core
 COPY --from=builder /application/dist/lib /application/dist/lib
 COPY --from=builder /application/dist/execution_service /application/dist/execution_service
+COPY --from=builder /application/puppeteer_evaluater.js /application/puppeteer_evaluater.js
 COPY --from=builder /application/dist/swagger.json /application/dist/swagger.json
 COPY --from=production_deps /application/node_modules /application/node_modules
 WORKDIR /application

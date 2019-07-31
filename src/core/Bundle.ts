@@ -3,6 +3,7 @@ import { Engine, EngineClient } from '.'
 
 export enum ExecutableType {
   docker = 'docker',
+  js = 'js',
   wasm = 'wasm'
 }
 

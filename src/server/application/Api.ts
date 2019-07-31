@@ -53,6 +53,7 @@ function buildApolloServer ({ contractController, contractRepository, pubSubClie
         }
         type Mutation {
             loadContract(contractAddress: String!, bundleLocation: String!): Boolean
+            unloadContract(contractAddress: String!): Boolean
         }
         type Subscription {
             transactionSigningRequest(publicKey: String!): SigningRequest
@@ -70,6 +71,9 @@ function buildApolloServer ({ contractController, contractRepository, pubSubClie
       Mutation: {
         loadContract (_: any, { contractAddress, bundleLocation }: { contractAddress: string, bundleLocation: string }) {
           return contractController.load(contractAddress, bundleLocation)
+        },
+        unloadContract (_: any, { contractAddress }: { contractAddress: string }) {
+          return contractController.unload(contractAddress)
         }
       },
       Subscription: {
