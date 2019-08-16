@@ -2,7 +2,7 @@ import * as express from 'express'
 import { ApolloServer } from 'apollo-server-express'
 import { gql, PubSubEngine } from 'apollo-server'
 import net from 'net'
-import { Bundle, Contract, ContractRepository, Events } from '../../core'
+import { Bundle, Contract, ContractRepository, Events, ContractExecutionInstruction } from '../../core'
 import { ContractApiServerController, ContractController } from '.'
 import { ContractNotLoaded } from './errors'
 const httpProxy = require('http-proxy')
@@ -14,7 +14,7 @@ export type Config = {
   pubSubClient: PubSubEngine
 }
 
-export function Api (config: Config) {
+export function Api(config: Config) {
   const { apiServerController } = config
   const app = express()
   const contractProxy = httpProxy.createProxyServer({})
@@ -38,7 +38,7 @@ export function Api (config: Config) {
   return { apolloServer, app }
 }
 
-function buildApolloServer ({ contractController, contractRepository, pubSubClient }: Config) {
+function buildApolloServer({ contractController, contractRepository, pubSubClient }: Config) {
   return new ApolloServer({
     typeDefs: gql`
         type SigningRequest {
@@ -53,6 +53,7 @@ function buildApolloServer ({ contractController, contractRepository, pubSubClie
         }
         type Mutation {
             loadContract(contractAddress: String!, bundleLocation: String!): Boolean
+            callContract(contractInstruction: TypeMe!): String
             unloadContract(contractAddress: String!): Boolean
         }
         type Subscription {
@@ -61,7 +62,7 @@ function buildApolloServer ({ contractController, contractRepository, pubSubClie
     `,
     resolvers: {
       Query: {
-        async contracts () {
+        async contracts() {
           const contracts = await contractRepository.findAll()
           return contracts.map(({ address, bundle }: { address: Contract['address'], bundle: Bundle }) => {
             return { contractAddress: address, engine: bundle.meta.engine }
@@ -69,11 +70,14 @@ function buildApolloServer ({ contractController, contractRepository, pubSubClie
         }
       },
       Mutation: {
-        loadContract (_: any, { contractAddress, bundleLocation }: { contractAddress: string, bundleLocation: string }) {
+        loadContract(_: any, { contractAddress, bundleLocation }: { contractAddress: string, bundleLocation: string }) {
           return contractController.load(contractAddress, bundleLocation)
         },
-        unloadContract (_: any, { contractAddress }: { contractAddress: string }) {
+        unloadContract(_: any, { contractAddress }: { contractAddress: string }) {
           return contractController.unload(contractAddress)
+        },
+        callContract(_: any, instruction: ContractExecutionInstruction) {
+          return contractController.call(instruction)
         }
       },
       Subscription: {

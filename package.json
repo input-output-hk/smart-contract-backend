@@ -118,6 +118,7 @@
     "graphql": "^14.4.2",
     "graphql-redis-subscriptions": "^2.1.0",
     "http-proxy": "^1.17.0",
+    "io-ts": "^2.0.1",
     "ioredis": "^4.11.1",
     "nock": "^10.0.6",
     "ping": "^0.2.2",

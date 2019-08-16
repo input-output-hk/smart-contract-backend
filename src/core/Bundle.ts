@@ -1,5 +1,4 @@
-import { IExecutableSchemaDefinition } from 'apollo-server'
-import { Engine, EngineClient } from '.'
+import { Engine } from '.'
 
 export enum ExecutableType {
   docker = 'docker',
@@ -9,11 +8,10 @@ export enum ExecutableType {
 
 export type Bundle = {
   executable: string
-  graphQlSchema: (engineClient: EngineClient) => IExecutableSchemaDefinition
+  schema: string
   meta: {
     engine: Engine
     executableType: ExecutableType
     hash: string
-    dockerImageRepository?: string
   }
 }
