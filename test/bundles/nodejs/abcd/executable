@@ -1,3 +1,0 @@
-{
-  add: (args) => args.number1 + args.number2
-}

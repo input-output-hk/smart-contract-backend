@@ -1,0 +1,15 @@
+{
+  "name": "create_docker_tar",
+  "version": "1.0.0",
+  "description": "Manually edit the contents in index.js to create the required mock container, then run `npm run docker-tar`",
+  "main": "index.js",
+  "scripts": {
+    "docker-tar": "docker build -t mock-contract . && docker save mock-contract | gzip > output.tar.gz"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1"
+  }
+}
