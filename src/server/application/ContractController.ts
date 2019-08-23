@@ -1,11 +1,23 @@
 import { PubSubEngine } from 'apollo-server'
-import { Contract, ContractRepository, Engine, EngineClient, ContractExecutionInstruction, Events, Endpoint } from '../../core'
-import { BundleFetcher, ContractApiServerController } from '.'
-import { ContractNotLoaded } from '../../execution_service/errors';
+import {
+  Contract,
+  ContractRepository,
+  Engine,
+  EngineClient,
+  ContractExecutionInstruction,
+  Events,
+  Endpoint,
+  ExecutableType
+} from '../../core'
+import { BundleFetcher } from '.'
+import { ContractNotLoaded } from '../../execution_service/errors'
 const requireFromString = require('require-from-string')
+import * as crypto from 'crypto'
+import * as fs from 'fs-extra'
+import axios from 'axios'
+import { compileContractSchema } from '../../lib'
 
 type Config = {
-  apiServerController: ReturnType<typeof ContractApiServerController>
   contractRepository: ContractRepository
   bundleFetcher: BundleFetcher
   engineClients: Map<Engine, EngineClient>
@@ -14,29 +26,50 @@ type Config = {
 
 export function ContractController(config: Config) {
   const {
-    apiServerController,
-    bundleFetcher,
     contractRepository,
     engineClients,
     pubSubClient
   } = config
   return {
-    async load(contractAddress: Contract['address'], bundleUri: string): Promise<boolean> {
+    async load(
+      contractAddress: Contract['address'],
+      executableInfo: {type: ExecutableType, engine: Engine},
+      loadOpts: {filePath?: string, uri: string}
+    ): Promise<boolean> {
       let contract = await contractRepository.find(contractAddress)
       if (!contract) {
-        const bundle = await bundleFetcher.fetch(bundleUri)
+        const engineClient = engineClients.get(executableInfo.engine)
+        const executable = !!loadOpts.filePath
+          ? await fs.readFile(loadOpts.filePath)
+          : Buffer.from((await axios.get(loadOpts.filePath)).data)
+
+        await engineClient.loadExecutable({ contractAddress, executable })
+        const { schema: uncompiledContractSchema } = await engineClient.call({
+          contractAddress,
+          method: 'schema'
+        })
+
+        const schema = await compileContractSchema(uncompiledContractSchema)
+
+        const hash = crypto.createHash('sha256')
+        hash.update(executable)
         contract = {
           id: contractAddress,
           address: contractAddress,
-          bundle
+          bundle: {
+            executable,
+            schema,
+            meta: {
+              engine: executableInfo.engine,
+              executableType: executableInfo.type,
+              hash: hash.digest('hex')
+            }
+          }
         }
+
         await contractRepository.add(contract)
       }
-      const { bundle: { schema, meta, executable }, address } = contract
-      const engineClient = engineClients.get(meta.engine)
-      await engineClient.loadExecutable({ contractAddress: address, executable })
 
-      // Now we cache the bundle somewhere
       return true
     },
     async call(instruction: ContractExecutionInstruction) {
@@ -69,7 +102,6 @@ export function ContractController(config: Config) {
       let contract = await contractRepository.find(contractAddress)
       if (!contract) return false
       const engineClient = engineClients.get(contract.bundle.meta.engine)
-      await apiServerController.tearDown(contractAddress)
       await engineClient.unloadExecutable(contractAddress)
       return contractRepository.remove(contract.address)
     }

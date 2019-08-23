@@ -7,7 +7,7 @@ export enum ExecutableType {
 }
 
 export type Bundle = {
-  executable: string
+  executable: Buffer
   schema: string
   meta: {
     engine: Engine

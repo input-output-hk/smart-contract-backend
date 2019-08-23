@@ -60,7 +60,7 @@ export function DockerEngine (config: Config): ExecutionEngine {
       }
 
       let result
-      if (method === 'initialise') {
+      if (method === 'initialise' || method === 'schema') {
         result = await axios.get(`${contractEndpoint}/${method}`)
       } else {
         result = await axios.post(`${contractEndpoint}/${method}`, methodArgs)

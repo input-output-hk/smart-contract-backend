@@ -52,6 +52,7 @@
     "@types/dockerode": "^2.5.20",
     "@types/expect": "^1.20.4",
     "@types/express": "^4.17.0",
+    "@types/fs-extra": "^8.0.0",
     "@types/graphql": "^14.2.2",
     "@types/hapi": "^18.0.2",
     "@types/ioredis": "^4.0.13",
@@ -128,6 +129,7 @@
     "tcp-port-used": "^1.0.1",
     "ts-custom-error": "^3.1.1",
     "tsoa": "^2.4.3",
+    "uuid": "^3.3.3",
     "ws": "^7.1.1"
   },
   "nyc": {
