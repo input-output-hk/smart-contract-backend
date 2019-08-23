@@ -1,30 +1,18 @@
 import * as express from 'express'
 import { ApolloServer } from 'apollo-server-express'
 import { gql, PubSubEngine } from 'apollo-server'
-import net from 'net'
-import { Bundle, Contract, ContractRepository, Events, ContractExecutionInstruction } from '../../core'
-import { ContractApiServerController, ContractController } from '.'
+import { Bundle, Contract, ContractRepository, ContractExecutionInstruction, ExecutableType, Engine, Events } from '../../core'
+import { ContractController } from '.'
 import { ContractNotLoaded } from './errors'
-const httpProxy = require('http-proxy')
 
 export type Config = {
   contractController: ReturnType<typeof ContractController>
   contractRepository: ContractRepository
-  apiServerController: ReturnType<typeof ContractApiServerController>
   pubSubClient: PubSubEngine
 }
 
 export function Api(config: Config) {
-  const { apiServerController } = config
   const app = express()
-  const contractProxy = httpProxy.createProxyServer({})
-  app.use('/contract/:address', (req, res, next) => {
-    const { address } = req.params
-    if (!apiServerController.servers.has(address)) return next(new ContractNotLoaded())
-    const { port } = apiServerController.servers.get(address).address().valueOf() as net.AddressInfo
-    contractProxy.web(req, res, { target: `http://localhost:${port}/graphql` })
-  })
-
   app.use((err: Error, _req: express.Request, response: express.Response, next: express.NextFunction) => {
     if (err instanceof ContractNotLoaded) {
       return response.status(404).json({ error: err.message })
@@ -41,9 +29,6 @@ export function Api(config: Config) {
 function buildApolloServer({ contractController, contractRepository, pubSubClient }: Config) {
   return new ApolloServer({
     typeDefs: gql`
-        type SigningRequest {
-            transaction: String!
-        }
         type Contract {
             engine: String!
             contractAddress: String!
@@ -51,9 +36,22 @@ function buildApolloServer({ contractController, contractRepository, pubSubClien
         type Query {
             contracts: [Contract]!
         }
+        input ExecutableInfo {
+          type: String!
+          engine: String!
+        }
+        input LoadOpts {
+          filePath: String!
+        }
+        input ContractInstruction {
+          originatorPk: String
+          method: String!
+          contractAddress: String!
+          methodArguments: String
+        }
         type Mutation {
-            loadContract(contractAddress: String!, bundleLocation: String!): Boolean
-            callContract(contractInstruction: TypeMe!): String
+            loadContract(contractAddress: String!, executableInfo: ExecutableInfo!, loadOpts: LoadOpts): Boolean
+            callContract(contractInstruction: ContractInstruction!): String
             unloadContract(contractAddress: String!): Boolean
         }
         type Subscription {
@@ -70,8 +68,8 @@ function buildApolloServer({ contractController, contractRepository, pubSubClien
         }
       },
       Mutation: {
-        loadContract(_: any, { contractAddress, bundleLocation }: { contractAddress: string, bundleLocation: string }) {
-          return contractController.load(contractAddress, bundleLocation)
+        loadContract(_: any, { contractAddress, executableInfo, loadOpts }: { contractAddress: string, executableInfo: { type: ExecutableType, engine: Engine }, loadOpts: {filePath: string} }) {
+          return contractController.load(contractAddress, executableInfo, loadOpts)
         },
         unloadContract(_: any, { contractAddress }: { contractAddress: string }) {
           return contractController.unload(contractAddress)

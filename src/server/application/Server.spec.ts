@@ -7,7 +7,7 @@ import { InMemoryRepository, Repository } from '../../lib'
 import { testContracts, checkPortIsFree } from '../../lib/test'
 import { Client } from '../../client'
 import { Server } from '.'
-import { HttpTarGzBundleFetcher, StubEngineClient } from '../infrastructure'
+import { StubEngineClient } from '../infrastructure'
 const nock = require('nock')
 
 use(chaiAsPromised)
@@ -15,7 +15,6 @@ use(chaiAsPromised)
 describe('Server', () => {
   let server: ReturnType<typeof Server>
   let portAllocationRepository: Repository<PortAllocation>
-  const networkInterface = axios.create()
   const executionEndpoint = 'http://execution'
   const API_PORT = 8081
   const client = Client({
@@ -31,18 +30,10 @@ describe('Server', () => {
     server = Server({
       apiPort: API_PORT,
       contractRepository: InMemoryRepository<Contract>(),
-      portMapperConfig: {
-        repository: portAllocationRepository,
-        range: {
-          lower: 8082,
-          upper: 8084
-        }
-      },
       engineClients: new Map([[
         Engine.stub,
         StubEngineClient()
       ]]),
-      bundleFetcher: HttpTarGzBundleFetcher(networkInterface),
       pubSubClient: new PubSub()
     })
     await client.connect('abc')
