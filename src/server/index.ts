@@ -35,7 +35,6 @@ Server({
     Engine.plutus,
     PlutusEngineClient({
       executionEndpoint: EXECUTION_SERVICE_URI,
-      walletEndpoint: WALLET_SERVICE_URI,
       networkInterface
     })
   ]]),

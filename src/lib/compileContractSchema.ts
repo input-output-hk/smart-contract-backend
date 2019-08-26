@@ -1,14 +1,14 @@
-const uuidv4 = require('uuid/v4')
 import * as fs from 'fs-extra'
 import { exec } from 'child_process'
+const uuidv4 = require('uuid/v4')
 
 // The uncompiled schema relies the following imports but they are
 // not declared from the Plutus generator.
 
 // This function is called when dynamically loading straight off of
 // the Plutus contract, or we creating a bundle for distribution
-export async function compileContractSchema(uncompiledSchema: string) {
-  const tempfileAllocator = uuidv4() 
+export async function compileContractSchema (uncompiledSchema: string) {
+  const tempfileAllocator = uuidv4()
 
   const tscFileName = `${tempfileAllocator}.ts`
   const outputFileName = `${tempfileAllocator}.js`
@@ -17,7 +17,7 @@ export async function compileContractSchema(uncompiledSchema: string) {
 
   const iotsPrefix = `import * as t from 'io-ts'`
   const createEndpointPrefix = `import { createEndpoint } from ${__dirname}/createEndpoint`
-  
+
   const uncompiledSchemaWithImports = `
     ${iotsPrefix}
     ${createEndpointPrefix}

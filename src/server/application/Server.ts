@@ -24,6 +24,7 @@ export function Server (config: Config) {
   let api = Api({
     contractController,
     contractRepository,
+    pubSubClient
   })
   let apiServer: http.Server
   return {
@@ -33,7 +34,7 @@ export function Server (config: Config) {
     },
     async shutdown (): Promise<void> {
       await Promise.all([
-        httpEventPromiseHandler.close(apiServer),
+        httpEventPromiseHandler.close(apiServer)
       ])
     }
   }

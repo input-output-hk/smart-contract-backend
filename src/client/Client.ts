@@ -7,6 +7,7 @@ import { Subscription } from 'apollo-client/util/Observable'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
 import { onError } from 'apollo-link-error'
+import { Contract, ExecutableType, Engine, ContractExecutionInstruction } from '../core'
 
 export interface Config {
   apiUri: string,
@@ -99,10 +100,14 @@ export function Client (config: Config) {
       })
       return result.data.contracts
     },
-    async loadContract (contract: { address: string, location: string }) {
+    async loadContract (
+      contractAddress: Contract['address'],
+      executableInfo: {type: ExecutableType, engine: Engine},
+      loadOpts: { filePath: string }
+    ) {
       const result = await apolloClient.mutate({
         mutation: gql`mutation {
-            loadContract(contractAddress: "${contract.address}", bundleLocation: "${contract.location}")
+            loadContract(contractAddress: "${contractAddress}", executableInfo: "${executableInfo}", loadOpts: "${loadOpts}")
         }`
       })
       return result.data
@@ -115,30 +120,11 @@ export function Client (config: Config) {
       })
       return result.data
     },
-    executeContract (address: string, method: string, methodArguments: any) {
-      const httpLink = new HttpLink({
-        uri: `${config.apiUri}/contract/${address}`,
-        fetch
-      })
-
-      const contractClient = new ApolloClient({ link: httpLink, cache: new InMemoryCache() })
-      const argString = Object.entries(methodArguments)
-        .reduce((accumulator: string, [key, value]) => {
-          const valueString = typeof value === 'string' ? `"${value}"` : `${value}`
-          const appendArgs = `${key}: ${valueString}`
-          if (!accumulator) {
-            return appendArgs
-          } else {
-            return `${accumulator}, ${appendArgs}`
-          }
-        }, '')
-
-      return contractClient.mutate({
-        mutation: gql`
-            mutation {
-                ${method}(${argString})
-            }
-        `
+    async callContract (contractInstruction: ContractExecutionInstruction) {
+      return apolloClient.mutate({
+        mutation: gql`mutation {
+            callContract(contractInstruction: "${contractInstruction}")
+        }`
       })
     }
   }

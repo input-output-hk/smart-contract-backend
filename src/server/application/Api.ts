@@ -11,7 +11,7 @@ export type Config = {
   pubSubClient: PubSubEngine
 }
 
-export function Api(config: Config) {
+export function Api (config: Config) {
   const app = express()
   app.use((err: Error, _req: express.Request, response: express.Response, next: express.NextFunction) => {
     if (err instanceof ContractNotLoaded) {
@@ -26,7 +26,7 @@ export function Api(config: Config) {
   return { apolloServer, app }
 }
 
-function buildApolloServer({ contractController, contractRepository, pubSubClient }: Config) {
+function buildApolloServer ({ contractController, contractRepository, pubSubClient }: Config) {
   return new ApolloServer({
     typeDefs: gql`
         type Contract {
@@ -60,7 +60,7 @@ function buildApolloServer({ contractController, contractRepository, pubSubClien
     `,
     resolvers: {
       Query: {
-        async contracts() {
+        async contracts () {
           const contracts = await contractRepository.findAll()
           return contracts.map(({ address, bundle }: { address: Contract['address'], bundle: Bundle }) => {
             return { contractAddress: address, engine: bundle.meta.engine }
@@ -68,13 +68,13 @@ function buildApolloServer({ contractController, contractRepository, pubSubClien
         }
       },
       Mutation: {
-        loadContract(_: any, { contractAddress, executableInfo, loadOpts }: { contractAddress: string, executableInfo: { type: ExecutableType, engine: Engine }, loadOpts: {filePath: string} }) {
+        loadContract (_: any, { contractAddress, executableInfo, loadOpts }: { contractAddress: string, executableInfo: { type: ExecutableType, engine: Engine }, loadOpts: {filePath: string} }) {
           return contractController.load(contractAddress, executableInfo, loadOpts)
         },
-        unloadContract(_: any, { contractAddress }: { contractAddress: string }) {
+        unloadContract (_: any, { contractAddress }: { contractAddress: string }) {
           return contractController.unload(contractAddress)
         },
-        callContract(_: any, instruction: ContractExecutionInstruction) {
+        callContract (_: any, instruction: ContractExecutionInstruction) {
           return contractController.call(instruction)
         }
       },

@@ -10,10 +10,10 @@ import {
   ExecutableType
 } from '../../core'
 import { ContractNotLoaded } from '../../execution_service/errors'
-const requireFromString = require('require-from-string')
 import * as crypto from 'crypto'
 import * as fs from 'fs-extra'
 import { compileContractSchema } from '../../lib'
+const requireFromString = require('require-from-string')
 
 type Config = {
   contractRepository: ContractRepository
@@ -21,14 +21,14 @@ type Config = {
   pubSubClient: PubSubEngine
 }
 
-export function ContractController(config: Config) {
+export function ContractController (config: Config) {
   const {
     contractRepository,
     engineClients,
     pubSubClient
   } = config
   return {
-    async load(
+    async load (
       contractAddress: Contract['address'],
       executableInfo: {type: ExecutableType, engine: Engine},
       loadOpts: { filePath: string }
@@ -67,7 +67,7 @@ export function ContractController(config: Config) {
 
       return true
     },
-    async call(instruction: ContractExecutionInstruction) {
+    async call (instruction: ContractExecutionInstruction) {
       const contract = await contractRepository.find(instruction.contractAddress)
       if (!contract) {
         throw new ContractNotLoaded()
@@ -86,7 +86,7 @@ export function ContractController(config: Config) {
       await pubSubClient.publish(`${Events.SIGNATURE_REQUIRED}.${instruction.originatorPk}`, { transactionSigningRequest: { transaction: JSON.stringify(response.data) } })
       return response.data
     },
-    async unload(contractAddress: Contract['address']): Promise<boolean> {
+    async unload (contractAddress: Contract['address']): Promise<boolean> {
       let contract = await contractRepository.find(contractAddress)
       if (!contract) return false
       const engineClient = engineClients.get(contract.bundle.meta.engine)
