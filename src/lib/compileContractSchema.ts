@@ -32,8 +32,8 @@ export async function compileContractSchema (uncompiledSchema: string) {
   } catch (e) {
     throw e
   } finally {
-    await fs.remove(tempTscFilePath)
-    await fs.remove(tempOutputFilePath)
+    // await fs.remove(tempTscFilePath)
+    // await fs.remove(tempOutputFilePath)
   }
 }
 
