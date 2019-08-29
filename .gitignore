@@ -1,4 +1,5 @@
 *node_modules*
+/contract_dist
 /dist
 /.nyc_output
 /coverage

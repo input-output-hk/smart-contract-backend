@@ -32,14 +32,19 @@ export async function compileContractSchema (uncompiledSchema: string) {
   } catch (e) {
     throw e
   } finally {
-    // await fs.remove(tempTscFilePath)
+    await fs.remove(tempTscFilePath)
     // await fs.remove(tempOutputFilePath)
   }
 }
 
 function tscExecutionHandler(tscFilePath: string, outputFilePath: string) {
   return new Promise(async (resolve, reject) => {
-    exec(`cd ../.. && npx tsc ${tscFilePath} --module amd --out ${outputFilePath}`, (err, stdout, stderr) => {
+    exec(`npx webpack \
+      --entry ${tscFilePath} \
+      --output ${outputFilePath} \
+      --mode production \
+      --output-library-target commonjs
+    `, (err, _stdout, stderr) => {
       if (err) {
         reject(new Error('tsc error'))
       }
@@ -48,7 +53,6 @@ function tscExecutionHandler(tscFilePath: string, outputFilePath: string) {
         reject(new Error('tsc error'))
       }
 
-      console.log(stdout)
       resolve()
     })
   })
