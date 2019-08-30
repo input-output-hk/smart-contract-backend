@@ -1,9 +1,10 @@
 import * as express from 'express'
 import { ApolloServer } from 'apollo-server-express'
 import { gql, PubSubEngine } from 'apollo-server'
-import { Bundle, Contract, ContractRepository, ContractExecutionInstruction, ExecutableType, Engine, Events } from '../../core'
+import { Bundle, Contract, ContractRepository, ContractCallInstruction, Events, Endpoint } from '../../core'
 import { ContractController } from '.'
 import { ContractNotLoaded } from './errors'
+import requireFromString = require('require-from-string')
 
 export type Config = {
   contractController: ReturnType<typeof ContractController>
@@ -30,18 +31,11 @@ function buildApolloServer ({ contractController, contractRepository, pubSubClie
   return new ApolloServer({
     typeDefs: gql`
         type Contract {
-            engine: String!
-            contractAddress: String!
+          description: String!
+          contractAddress: String!
         }
         type Query {
             contracts: [Contract]!
-        }
-        input ExecutableInfo {
-          type: String!
-          engine: String!
-        }
-        input LoadOpts {
-          filePath: String!
         }
         input ContractInstruction {
           originatorPk: String
@@ -50,12 +44,12 @@ function buildApolloServer ({ contractController, contractRepository, pubSubClie
           methodArguments: String
         }
         type Mutation {
-            loadContract(contractAddress: String!, executableInfo: ExecutableInfo!, loadOpts: LoadOpts): Boolean
-            callContract(contractInstruction: ContractInstruction!): String
-            unloadContract(contractAddress: String!): Boolean
+          loadContract(contractAddress: String!): Boolean
+          callContract(contractInstruction: ContractInstruction!): String
+          unloadContract(contractAddress: String!): Boolean
         }
         type Subscription {
-            transactionSigningRequest(publicKey: String!): SigningRequest
+          transactionSigningRequest(publicKey: String!): SigningRequest
         }
     `,
     resolvers: {
@@ -63,18 +57,28 @@ function buildApolloServer ({ contractController, contractRepository, pubSubClie
         async contracts () {
           const contracts = await contractRepository.findAll()
           return contracts.map(({ address, bundle }: { address: Contract['address'], bundle: Bundle }) => {
-            return { contractAddress: address, engine: bundle.meta.engine }
+            const schema = requireFromString(bundle.schema)
+            const eps: [string, Endpoint<any, any, any>][] = Object.entries(schema)
+            const description = eps.reduce((
+              acc: {[name: string]: ReturnType<Endpoint<any, any, any>['describe']>},
+              [_, ep]
+            ) => {
+              acc[ep.name] = ep.describe()
+              return acc
+            }, {})
+
+            return { contractAddress: address, description: JSON.stringify(description) }
           })
         }
       },
       Mutation: {
-        loadContract (_: any, { contractAddress, executableInfo, loadOpts }: { contractAddress: string, executableInfo: { type: ExecutableType, engine: Engine }, loadOpts: {filePath: string} }) {
-          return contractController.load(contractAddress, executableInfo, loadOpts)
+        loadContract (_: any, { contractAddress }: { contractAddress: string }) {
+          return contractController.load(contractAddress)
         },
         unloadContract (_: any, { contractAddress }: { contractAddress: string }) {
           return contractController.unload(contractAddress)
         },
-        callContract (_: any, instruction: ContractExecutionInstruction) {
+        callContract (_: any, instruction: ContractCallInstruction) {
           return contractController.call(instruction)
         }
       },

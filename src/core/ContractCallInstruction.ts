@@ -1,6 +1,6 @@
 import { Contract } from '.'
 
-export interface ContractExecutionInstruction {
+export interface ContractCallInstruction {
   originatorPk?: string
   method: string
   contractAddress: Contract['address']

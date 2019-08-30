@@ -9,14 +9,16 @@ import {
 
 export type Config = {
   apiPort: number
+  contractDirectory: string
   contractRepository: ContractRepository
   engineClients: Map<Engine, EngineClient>
   pubSubClient: PubSubEngine
 }
 
 export function Server (config: Config) {
-  const { contractRepository, engineClients, pubSubClient } = config
+  const { contractRepository, engineClients, pubSubClient, contractDirectory } = config
   const contractController = ContractController({
+    contractDirectory,
     contractRepository,
     engineClients,
     pubSubClient
@@ -28,6 +30,9 @@ export function Server (config: Config) {
   })
   let apiServer: http.Server
   return {
+    preloadContracts (): Promise<boolean[]> {
+      return contractController.loadAll()
+    },
     async boot (): Promise<void> {
       apiServer = await api.app.listen({ port: config.apiPort })
       api.apolloServer.installSubscriptionHandlers(apiServer)

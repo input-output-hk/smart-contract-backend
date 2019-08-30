@@ -1,6 +1,6 @@
 export * from './Bundle'
 export * from './Contract'
-export * from './ContractExecutionInstruction'
+export * from './ContractCallInstruction'
 export * from './ContractRepository'
 export * from './Endpoint'
 export * from './Engine'

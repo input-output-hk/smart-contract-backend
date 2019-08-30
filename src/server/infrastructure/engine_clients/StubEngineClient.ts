@@ -1,4 +1,4 @@
-import { Contract, ContractExecutionInstruction, EngineClient } from '../../../core'
+import { Contract, ContractCallInstruction, EngineClient } from '../../../core'
 
 export function StubEngineClient (): EngineClient {
   return {
@@ -9,7 +9,7 @@ export function StubEngineClient (): EngineClient {
     async unloadExecutable (contractAddress: Contract['address']) {
       return Promise.resolve(contractAddress)
     },
-    call ({ contractAddress, method, methodArguments }: ContractExecutionInstruction) {
+    call ({ contractAddress, method, methodArguments }: ContractCallInstruction) {
       return { contractAddress, method, methodArguments }
     }
   }
