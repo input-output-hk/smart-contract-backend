@@ -17,7 +17,7 @@ export function createEndpoint<A extends t.Any, R extends t.Any, S extends t.Any
       if (!validContractInput) throw new Error('Bad input')
 
       if (state) {
-        const validContractState = validateAgainstCodec(stateCodec, data)
+        const validContractState = validateAgainstCodec(stateCodec, state)
         if (!validContractState) throw new Error('Bad contract state')
       }
 

@@ -33,11 +33,11 @@ export async function compileContractSchema (uncompiledSchema: string) {
     throw e
   } finally {
     await fs.remove(tempTscFilePath)
-    // await fs.remove(tempOutputFilePath)
+    await fs.remove(tempOutputFilePath)
   }
 }
 
-function tscExecutionHandler(tscFilePath: string, outputFilePath: string) {
+function tscExecutionHandler (tscFilePath: string, outputFilePath: string) {
   return new Promise(async (resolve, reject) => {
     exec(`npx webpack \
       --entry ${tscFilePath} \

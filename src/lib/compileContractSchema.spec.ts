@@ -15,6 +15,6 @@ describe('compileContractSchema', () => {
 
     const schema = await compileContractSchema(contractSchema)
     const { Add } = requireFromString(schema)
-    expect(Add.validateArgs({number1: 1, number2: 2})).to.eql(true)
+    expect(Add.validateArgs({ number1: 1, number2: 2 })).to.eql(true)
   })
 })
