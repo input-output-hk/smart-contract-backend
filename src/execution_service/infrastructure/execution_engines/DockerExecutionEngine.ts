@@ -25,9 +25,10 @@ export function DockerEngine (config: Config): ExecutionEngine {
     load: async ({ contractAddress, executable }) => {
       const loadedContainer = await dockerClient.loadContainer({
         contractAddress,
-        dockerImageRepository: executable,
+        image: executable,
         hostPort: (await portMapper.getAvailablePort()).portNumber
       })
+
       if (!loadedContainer) return true
       let alive = false
       let pingCount = 0

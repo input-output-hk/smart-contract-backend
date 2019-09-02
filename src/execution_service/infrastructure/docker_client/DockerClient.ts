@@ -1,6 +1,7 @@
 import * as Docker from 'dockerode'
 import { Contract } from '../../../core'
 import { DockerExecutionEngineContext } from '../execution_engines'
+import { Readable } from 'stream'
 
 interface Config {
   dockerOptions?: Docker.DockerOptions | { socketPath: '/var/run/docker.sock' },
@@ -17,13 +18,20 @@ export function DockerClient (config: Config) {
     return { containerId: targetContainer.Id }
   }
 
-  const pullContainer = async (dockerImageRepository: string) => {
+  const loadContainer = async (image: string) => {
+    const imageAsBuffer = Buffer.from(image, 'base64')
+    const stream = new Readable()
+    stream.push(imageAsBuffer)
+    stream.push(null)
+
     return new Promise((resolve, reject) => {
-      docker.pull(dockerImageRepository, (err: Error, stream: any) => {
+      docker.loadImage(stream, (err: Error, stream: any) => {
         if (err) return reject(err)
-        const onFinished = (err: Error) => {
+        const onFinished = (err: Error, res: any) => {
+          const outputString = res[0].stream
+          const imageName = outputString.split('Loaded image: ')[1].split('\n')[0]
           if (err) return reject(err)
-          resolve()
+          resolve(imageName)
         }
         const onProgress = (): undefined => undefined
         docker.modem.followProgress(stream, onFinished, onProgress)
@@ -31,20 +39,23 @@ export function DockerClient (config: Config) {
     })
   }
 
-  const createContainer = async ({ contractAddress, dockerImageRepository, hostPort }: { contractAddress: Contract['address'], dockerImageRepository: string, hostPort: number }) => {
+  const createContainer = async ({ contractAddress, imageName, hostPort }: { contractAddress: Contract['address'], imageName: string, hostPort: number }) => {
     const baseHostConfig = {
       AutoRemove: true,
       PortBindings: { '8080/tcp': [{ 'HostPort': `${hostPort}` }] }
     }
+
     const targetHostConfig = config.executionContext === DockerExecutionEngineContext.docker
       ? { NetworkMode: 'smart-contract-backend_default', ...baseHostConfig }
       : baseHostConfig
-    const containerOpts: any = {
-      Image: dockerImageRepository,
+
+    const containerOpts: Docker.ContainerCreateOptions = {
+      Image: imageName.split(':')[0],
       name: contractAddress,
       ExposedPorts: { [`8080/tcp`]: {} },
       HostConfig: targetHostConfig
     }
+
     const host = config.executionContext === DockerExecutionEngineContext.docker
       ? `http://${contractAddress}:8080`
       : `http://localhost:${hostPort}`
@@ -72,12 +83,12 @@ export function DockerClient (config: Config) {
     async listContainers () {
       return docker.listContainers()
     },
-    async loadContainer ({ dockerImageRepository, contractAddress, hostPort }: { dockerImageRepository: string, contractAddress: Contract['address'], hostPort: number }): Promise<{ port: number, host: string } | null> {
+    async loadContainer ({ image, contractAddress, hostPort }: { image: string, contractAddress: Contract['address'], hostPort: number }): Promise<{ port: number, host: string } | null> {
       contractAddress = contractAddress.toLowerCase()
       const containerRunning = (await findContainerId(contractAddress)).containerId
       if (containerRunning) return Promise.resolve(null)
-      await pullContainer(dockerImageRepository)
-      return createContainer({ contractAddress, dockerImageRepository, hostPort })
+      const imageName = await loadContainer(image) as string
+      return createContainer({ contractAddress, imageName, hostPort })
     },
     async unloadContainer (contractAddress: Contract['address']) {
       contractAddress = contractAddress.toLowerCase()

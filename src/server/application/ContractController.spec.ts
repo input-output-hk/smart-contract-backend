@@ -2,11 +2,10 @@ import { expect, use } from 'chai'
 import { spy } from 'sinon'
 import * as sinonChai from 'sinon-chai'
 import { PubSub } from 'apollo-server'
-import { Contract, ContractRepository, Engine, EngineClient, ExecutableType } from '../../core'
+import { Contract, ContractRepository, Engine, EngineClient } from '../../core'
 import { InMemoryRepository } from '../../lib'
 import { ContractController } from '.'
 import { StubEngineClient } from '../infrastructure'
-import { join } from 'path'
 
 use(sinonChai)
 
@@ -14,7 +13,6 @@ describe('Contract Controller', () => {
   let repository: ContractRepository
   let engineClients: Map<Engine, EngineClient>
   let controller: ReturnType<typeof ContractController>
-  const testContractPath = join(__dirname, '..', '..', '..', 'test', 'bundles', 'nodejs', 'abcd')
   const testContractAddress = 'abcd'
 
   beforeEach(async () => {
@@ -24,6 +22,7 @@ describe('Contract Controller', () => {
       StubEngineClient()
     ]])
     controller = ContractController({
+      contractDirectory: 'test/bundles/nodejs',
       contractRepository: repository,
       engineClients,
       pubSubClient: new PubSub()
@@ -37,14 +36,14 @@ describe('Contract Controller', () => {
       expect(await repository.has(testContractAddress)).to.eq(false)
     })
     it('fetches the bundle, adds the contract to the repository & loads the executable', async () => {
-      const load = await controller.load(testContractAddress, { type: ExecutableType.js, engine: Engine.plutus }, { filePath: testContractPath })
+      const load = await controller.load(testContractAddress)
       expect(load).to.be.true
       expect(loadExecutable).to.have.been.calledOnce
       expect(await repository.has(testContractAddress)).to.eq(true)
     })
     it('uses the existing repository entry if present', async () => {
-      await controller.load(testContractAddress, { type: ExecutableType.js, engine: Engine.plutus }, { filePath: testContractPath })
-      const load = await controller.load(testContractAddress, { type: ExecutableType.js, engine: Engine.plutus }, { filePath: testContractPath })
+      await controller.load(testContractAddress)
+      const load = await controller.load(testContractAddress)
       expect(load).to.be.true
       expect(await repository.size()).to.eq(1)
     })
@@ -55,7 +54,7 @@ describe('Contract Controller', () => {
       let unloadExecutable: ReturnType<typeof spy>
       beforeEach(async () => {
         unloadExecutable = spy(engineClients.get(Engine.stub), 'unloadExecutable')
-        await controller.load(testContractAddress, { type: ExecutableType.js, engine: Engine.plutus }, { filePath: testContractPath })
+        await controller.load(testContractAddress)
         expect(await repository.has(testContractAddress)).to.eq(true)
       })
       it('Unloads the executable and removes the contract from the repository', async () => {

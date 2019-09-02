@@ -1,15 +1,11 @@
-import { Contract, Engine, ExecutableType } from '../../core'
+import { Contract, Engine } from '../../core'
 
 export const testContracts: Contract[] = [{
   id: 'testContract',
   address: 'testContract',
+  engine: Engine.plutus,
   bundle: {
     executable: Buffer.from(''),
-    meta: {
-      engine: Engine.plutus,
-      executableType: ExecutableType.js,
-      hash: 'abcd'
-    },
     schema: ''
   }
 }]

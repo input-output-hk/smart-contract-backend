@@ -7,6 +7,7 @@ import { getConfig } from '../config'
 import { ExecutionService } from '../application'
 import { DockerClient, DockerExecutionEngineContext } from '../infrastructure'
 import { checkPortIsFree } from '../../lib/test'
+import { readFileSync } from 'fs-extra'
 
 const MOCK_IMAGE = 'samjeston/smart_contract_server_mock'
 
@@ -71,7 +72,8 @@ describe('Docker Execution API Integration', () => {
 
   describe('/unloadSmartContract', () => {
     it('removes a contract container with the corresponding name', async () => {
-      await dockerClient.loadContainer({ dockerImageRepository: MOCK_IMAGE, contractAddress: 'abcd', hostPort: 10000 })
+      const MOCK_IMAGE = readFileSync('test/bundles/docker/abcd.tar.gz').toString('base64')
+      await dockerClient.loadContainer({ image: MOCK_IMAGE, contractAddress: 'abcd', hostPort: 10000 })
 
       return request(app)
         .post('/unloadSmartContract')
@@ -95,7 +97,8 @@ describe('Docker Execution API Integration', () => {
 
   describe('/execute', () => {
     it('successfully executes a method against a running contract', async () => {
-      await dockerClient.loadContainer({ dockerImageRepository: MOCK_IMAGE, contractAddress: 'abcd', hostPort: 10000 })
+      const MOCK_IMAGE = readFileSync('test/bundles/docker/abcd.tar.gz').toString('base64')
+      await dockerClient.loadContainer({ image: MOCK_IMAGE, contractAddress: 'abcd', hostPort: 10000 })
 
       return request(app)
         .post('/execute/abcd/add')

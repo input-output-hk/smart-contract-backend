@@ -4,8 +4,9 @@ import axios from 'axios'
 import { DockerClient } from './DockerClient'
 import { DockerExecutionEngineContext } from '../execution_engines'
 import { Contract } from '../../../core'
-
-const MOCK_IMAGE = 'samjeston/smart_contract_server_mock'
+import { readFileSync } from 'fs-extra'
+import { RetryPromise } from 'promise-exponential-retry'
+const MOCK_IMAGE = readFileSync('test/bundles/docker/abcd.tar.gz').toString('base64')
 
 describe('DockerClient', () => {
   const dockerSpecItFn = process.env.DOCKER_EXECUTION_ENGINE_CONTEXT === DockerExecutionEngineContext.docker ? it : it.skip
@@ -24,17 +25,17 @@ describe('DockerClient', () => {
       })
     })
     it('returns the host port mapped to the container', async () => {
-      await dockerClient.loadContainer({ dockerImageRepository: MOCK_IMAGE, contractAddress: 'abcd', hostPort: 4200 })
+      await dockerClient.loadContainer({ image: MOCK_IMAGE, contractAddress: 'abcd', hostPort: 4200 })
       expect(await dockerClient.findContainerPort('abcd')).to.eql(4200)
     })
   })
 
   describe('loadContainer', () => {
     async function tryLoadingTwice (dockerClient: ReturnType<typeof DockerClient>, contractAddress: Contract['address']): Promise<void> {
-      await dockerClient.loadContainer({ dockerImageRepository: MOCK_IMAGE, contractAddress, hostPort: 4200 })
-      await dockerClient.loadContainer({ dockerImageRepository: MOCK_IMAGE, contractAddress, hostPort: 4201 })
+      await dockerClient.loadContainer({ image: MOCK_IMAGE, contractAddress, hostPort: 4200 })
+      await dockerClient.loadContainer({ image: MOCK_IMAGE, contractAddress, hostPort: 4201 })
       const containers = await dockerClient.listContainers()
-      const contractContainers = containers.filter(container => container.Image === MOCK_IMAGE)
+      const contractContainers = containers.filter(container => container.Image === 'mock-contract')
       expect(contractContainers.length).to.eql(1)
     }
 
@@ -46,11 +47,13 @@ describe('DockerClient', () => {
         })
       })
       dockerSpecItFn('successfully boots a container that accepts HTTP on the returned port', async () => {
-        await dockerClient.loadContainer({ dockerImageRepository: MOCK_IMAGE, contractAddress: 'abcd', hostPort: 4200 })
-        const result = await axios.post(`http://abcd:8080/add`, {
-          number1: 1,
-          number2: 2
-        })
+        await dockerClient.loadContainer({ image: MOCK_IMAGE, contractAddress: 'abcd', hostPort: 4200 })
+        const result = await RetryPromise.retryPromise('serverBooting', () => {
+          return axios.post(`http://abcd:8080/add`, {
+            number1: 1,
+            number2: 2
+          })
+        }, 3)
         expect(result.status).to.eql(200)
       })
       dockerSpecItFn('does not boot a second container when a container with that address is already running', async () => {
@@ -59,7 +62,7 @@ describe('DockerClient', () => {
     })
 
     describe('Host networking', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         dockerClient = DockerClient({
           executionContext: DockerExecutionEngineContext.host,
           pipeStdout: false
@@ -67,11 +70,14 @@ describe('DockerClient', () => {
       })
 
       hostSpecItFn('successfully boots a container that accepts HTTP on the returned port', async () => {
-        const container = await dockerClient.loadContainer({ dockerImageRepository: MOCK_IMAGE, contractAddress: 'abcd', hostPort: 4200 })
-        const result = await axios.post(`http://localhost:${container.port}/add`, {
-          number1: 1,
-          number2: 2
-        })
+        const container = await dockerClient.loadContainer({ image: MOCK_IMAGE, contractAddress: 'abcd', hostPort: 4200 })
+        const result = await RetryPromise.retryPromise('serverBooting', () => {
+          return axios.post(`http://localhost:${container.port}/add`, {
+            number1: 1,
+            number2: 2
+          })
+        }, 3)
+
         expect(result.status).to.eql(200)
       })
 
@@ -89,7 +95,7 @@ describe('DockerClient', () => {
     })
 
     it('successfully terminates a contract instance for an address', async () => {
-      await dockerClient.loadContainer({ dockerImageRepository: MOCK_IMAGE, contractAddress: 'abcd', hostPort: 4200 })
+      await dockerClient.loadContainer({ image: MOCK_IMAGE, contractAddress: 'abcd', hostPort: 4200 })
       await dockerClient.unloadContainer('abcd')
       const containers = await dockerClient.listContainers()
       const contractContainers = containers.filter(container => container.Image === MOCK_IMAGE)
@@ -108,7 +114,7 @@ describe('DockerClient', () => {
 async function cleanupTestContainers () {
   const docker = new Docker({ socketPath: '/var/run/docker.sock' })
   const containers = await docker.listContainers()
-  const testContainers = containers.filter(container => container.Image === MOCK_IMAGE)
+  const testContainers = containers.filter(container => container.Image === 'mock-contract')
   await Promise.all(testContainers.map(async (container) => {
     await docker.getContainer(container.Id).remove({ force: true })
   }))

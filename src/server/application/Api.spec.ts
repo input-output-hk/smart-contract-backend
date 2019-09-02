@@ -19,6 +19,7 @@ describe('Api', () => {
     const pubSubClient = new PubSub()
     const contractRepository = await populatedContractRepository()
     const contractController = ContractController({
+      contractDirectory: 'test/bundles/nodejs',
       contractRepository,
       engineClients: new Map([[
         Engine.stub,

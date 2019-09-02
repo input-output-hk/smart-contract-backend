@@ -7,7 +7,6 @@ import {
   MemoryPubSubClient,
   RedisPubSubClient
 } from './infrastructure'
-import { BooleanType } from 'io-ts'
 
 const {
   API_PORT,

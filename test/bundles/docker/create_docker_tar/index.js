@@ -4,7 +4,7 @@ const app = express()
 const port = 8080
 
 app.use(bodyParser.json())
-app.post('/Add', (req, res) => res.json({ data: req.body.number1 + req.body.number2 }))
+app.post('/add', (req, res) => res.json({ data: req.body.number1 + req.body.number2 }))
 app.get('/schema', (req, res) => {
   const schema = `
     const addArgs = t.type({

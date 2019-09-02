@@ -2,13 +2,12 @@ import { expect, use } from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import axios from 'axios'
 import { PubSub } from 'apollo-server'
-import { Contract, Engine, PortAllocation, ExecutableType } from '../../core'
+import { Contract, Engine, PortAllocation } from '../../core'
 import { InMemoryRepository, Repository } from '../../lib'
 import { checkPortIsFree } from '../../lib/test'
 import { Client } from '../../client'
 import { Server } from '.'
 import { StubEngineClient } from '../infrastructure'
-import { join } from 'path'
 const nock = require('nock')
 
 use(chaiAsPromised)
@@ -24,7 +23,6 @@ describe('Server', () => {
     transactionHandler: () => { }
   })
 
-  const testContractPath = join(__dirname, '..', '..', '..', 'test', 'bundles', 'nodejs', 'abcd')
   const testContractAddress = 'abcd'
 
   beforeEach(async () => {
@@ -32,6 +30,7 @@ describe('Server', () => {
     portAllocationRepository = InMemoryRepository<PortAllocation>()
     server = Server({
       apiPort: API_PORT,
+      contractDirectory: 'test/bundles/nodejs',
       contractRepository: InMemoryRepository<Contract>(),
       engineClients: new Map([[
         Engine.stub,
@@ -62,7 +61,7 @@ describe('Server', () => {
     beforeEach(async () => {
       await server.boot()
       expect((await client.contracts()).length).to.eq(0)
-      await client.loadContract(testContractAddress, { engine: Engine.plutus, type: ExecutableType.js }, { filePath: testContractPath })
+      await client.loadContract(testContractAddress)
       expect((await client.contracts()).length).to.eq(1)
     })
 
