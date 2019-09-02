@@ -4,11 +4,11 @@ import { ExecutionFailure } from '../../../errors'
 
 describe('Puppeteer resource consumption protection', () => {
   it('aborts execution if it takes more than 2s', async () => {
-    const contract1 = `{
+    const contract1 = Buffer.from(`{
       foo: () => {
         while (true) { }
       },
-    }`
+    }`).toString('base64')
 
     await NodeJsExecutionEngine.load({ contractAddress: 'contract1', executable: contract1 })
 

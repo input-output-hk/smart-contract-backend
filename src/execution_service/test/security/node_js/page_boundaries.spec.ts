@@ -4,14 +4,14 @@ import { NodeJsExecutionEngine } from '../../../infrastructure'
 describe('Puppeteer Page Boundaries', () => {
   describe('State isolation', () => {
     beforeEach(async () => {
-      const contract1 = `{
+      const contract1 = Buffer.from(`{
         foo: () => window.a = 1,
         bar: () => window.a
-      }`
+      }`).toString('base64')
 
-      const contract2 = `{
+      const contract2 = Buffer.from(`{
         bar: () => window.a
-      }`
+      }`).toString('base64')
 
       await NodeJsExecutionEngine.load({ contractAddress: 'contract1', executable: contract1 })
       await NodeJsExecutionEngine.load({ contractAddress: 'contract2', executable: contract2 })

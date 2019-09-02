@@ -2,10 +2,9 @@ import axios from 'axios'
 import { PortMapper } from '../../../lib'
 import { ExecutionEngines } from '../../../core'
 import { ExecutionEngine } from '../../application'
-import { ContainerFailedToStart, ContractNotLoaded } from '../../errors'
+import { ContractNotLoaded } from '../../errors'
 import { DockerClient } from '..'
-
-const ping = require('ping')
+import { RetryPromise } from 'promise-exponential-retry'
 
 export enum DockerExecutionEngineContext {
   docker = 'docker',
@@ -30,16 +29,7 @@ export function DockerEngine (config: Config): ExecutionEngine {
       })
 
       if (!loadedContainer) return true
-      let alive = false
-      let pingCount = 0
-      while (!alive) {
-        if (pingCount > 10) {
-          throw new ContainerFailedToStart()
-        }
-        alive = await ping.promise.probe(loadedContainer.host)
-        await new Promise(resolve => setTimeout(resolve, 50))
-      }
-
+      await RetryPromise.retryPromise('contractLoading', () => axios.get(`${loadedContainer.host}/schema`), 5)
       return true
     },
     execute: async ({ contractAddress, method, methodArgs }) => {

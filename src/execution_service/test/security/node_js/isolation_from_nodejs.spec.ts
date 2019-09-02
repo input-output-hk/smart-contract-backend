@@ -3,11 +3,11 @@ import { NodeJsExecutionEngine } from '../../../infrastructure'
 
 describe('Puppeteer Isolation from NodeJS', () => {
   it('has no access to the Node API', async () => {
-    const contract1 = `{
+    const contract1 = Buffer.from(`{
       foo: () => {
         const fs = require('fs')
       },
-    }`
+    }`).toString('base64')
 
     await NodeJsExecutionEngine.load({ contractAddress: 'contract1', executable: contract1 })
 
@@ -18,9 +18,9 @@ describe('Puppeteer Isolation from NodeJS', () => {
   })
 
   it('has no access to the Node process globals', async () => {
-    const contract1 = `{
+    const contract1 = Buffer.from(`{
       foo: () => process,
-    }`
+    }`).toString('base64')
 
     await NodeJsExecutionEngine.load({ contractAddress: 'contract1', executable: contract1 })
 

@@ -4,13 +4,13 @@ describe('Puppeteer Load Test', () => {
   // Once we have an actual JS based contract, we can update this spec to use
   // it instead
   it('Executing a simple array map 500 times...', async () => {
-    const contract1 = `{
+    const contract1 = Buffer.from(`{
       foo: (args) => {
         const targetData = args.data
         const mappedResult = targetData.map(a => a + 1)
         return mappedResult
       },
-    }`
+    }`).toString('base64')
 
     await NodeJsExecutionEngine.load({ contractAddress: 'contract1', executable: contract1 })
 
