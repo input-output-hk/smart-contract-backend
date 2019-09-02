@@ -33,9 +33,9 @@ describe('Puppeteer Page Boundaries', () => {
   })
 
   it('Local storage inaccessible', async () => {
-    const contract1 = `{
+    const contract1 = Buffer.from(`{
       foo: () => localStorage.setItem('val', 1)
-    }`
+    }`).toString('base64')
 
     await NodeJsExecutionEngine.load({ contractAddress: 'contract1', executable: contract1 })
 
@@ -46,9 +46,9 @@ describe('Puppeteer Page Boundaries', () => {
   })
 
   it('Cookies inaccessible', async () => {
-    const contract1 = `{
+    const contract1 = Buffer.from(`{
       foo: () => document.cookie = "username=John Doe"
-    }`
+    }`).toString('base64')
 
     await NodeJsExecutionEngine.load({ contractAddress: 'contract1', executable: contract1 })
 

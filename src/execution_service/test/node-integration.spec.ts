@@ -10,7 +10,7 @@ import { checkPortIsFree } from '../../lib/test'
 describe('Node Execution API Integration', () => {
   let executionService: ReturnType<typeof ExecutionService>
   let app: http.Server
-  const mockModule = '{ foobar: (args) => { return {result: args.number1 + args.number2 }} }'
+  const mockModule = Buffer.from('{ foobar: (args) => { return {result: args.number1 + args.number2 }} }').toString('base64')
   const mockAddress = 'abcd'
 
   beforeEach(async () => {

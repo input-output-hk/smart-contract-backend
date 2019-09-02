@@ -1,7 +1,7 @@
 import * as express from 'express'
 import { ApolloServer } from 'apollo-server-express'
 import { gql, PubSubEngine } from 'apollo-server'
-import { Bundle, Contract, ContractRepository, ContractCallInstruction, Events, Endpoint } from '../../core'
+import { Bundle, Contract, ContractRepository, ContractCallInstruction, Events, Endpoint, Engine } from '../../core'
 import { ContractController } from '.'
 import { ContractNotLoaded } from './errors'
 import requireFromString = require('require-from-string')
@@ -30,6 +30,9 @@ export function Api (config: Config) {
 function buildApolloServer ({ contractController, contractRepository, pubSubClient }: Config) {
   return new ApolloServer({
     typeDefs: gql`
+        type SigningRequest {
+          transaction: String!
+        }
         type Contract {
           description: String!
           contractAddress: String!
@@ -44,7 +47,7 @@ function buildApolloServer ({ contractController, contractRepository, pubSubClie
           methodArguments: String
         }
         type Mutation {
-          loadContract(contractAddress: String!): Boolean
+          loadContract(contractAddress: String!, engine: String!): Boolean
           callContract(contractInstruction: ContractInstruction!): String
           unloadContract(contractAddress: String!): Boolean
         }
@@ -72,8 +75,9 @@ function buildApolloServer ({ contractController, contractRepository, pubSubClie
         }
       },
       Mutation: {
-        loadContract (_: any, { contractAddress }: { contractAddress: string }) {
-          return contractController.load(contractAddress)
+        loadContract (_: any, { contractAddress, engine }: { contractAddress: string, engine?: Engine }) {
+          if (!engine) engine = Engine.plutus
+          return contractController.load(contractAddress, engine)
         },
         unloadContract (_: any, { contractAddress }: { contractAddress: string }) {
           return contractController.unload(contractAddress)

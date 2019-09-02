@@ -105,7 +105,7 @@ export function Client (config: Config) {
     ) {
       const result = await apolloClient.mutate({
         mutation: gql`mutation {
-            loadContract(contractAddress: "${contractAddress}")
+            loadContract(contractAddress: "${contractAddress}", engine: "stub")
         }`
       })
       return result.data

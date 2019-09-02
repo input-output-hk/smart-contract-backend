@@ -36,13 +36,13 @@ describe('Contract Controller', () => {
       expect(await repository.has(testContractAddress)).to.eq(false)
     })
     it('fetches the bundle, adds the contract to the repository & loads the executable', async () => {
-      const load = await controller.load(testContractAddress)
+      const load = await controller.load(testContractAddress, Engine.stub)
       expect(load).to.be.true
       expect(loadExecutable).to.have.been.calledOnce
       expect(await repository.has(testContractAddress)).to.eq(true)
     })
     it('uses the existing repository entry if present', async () => {
-      await controller.load(testContractAddress)
+      await controller.load(testContractAddress, Engine.stub)
       const load = await controller.load(testContractAddress)
       expect(load).to.be.true
       expect(await repository.size()).to.eq(1)
@@ -54,7 +54,7 @@ describe('Contract Controller', () => {
       let unloadExecutable: ReturnType<typeof spy>
       beforeEach(async () => {
         unloadExecutable = spy(engineClients.get(Engine.stub), 'unloadExecutable')
-        await controller.load(testContractAddress)
+        await controller.load(testContractAddress, Engine.stub)
         expect(await repository.has(testContractAddress)).to.eq(true)
       })
       it('Unloads the executable and removes the contract from the repository', async () => {

@@ -2,20 +2,17 @@ import { expect, use } from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import axios from 'axios'
 import { PubSub } from 'apollo-server'
-import { Contract, Engine, PortAllocation } from '../../core'
-import { InMemoryRepository, Repository } from '../../lib'
+import { Contract, Engine } from '../../core'
+import { InMemoryRepository } from '../../lib'
 import { checkPortIsFree } from '../../lib/test'
 import { Client } from '../../client'
 import { Server } from '.'
 import { StubEngineClient } from '../infrastructure'
-const nock = require('nock')
 
 use(chaiAsPromised)
 
 describe('Server', () => {
   let server: ReturnType<typeof Server>
-  let portAllocationRepository: Repository<PortAllocation>
-  const executionEndpoint = 'http://execution'
   const API_PORT = 8081
   const client = Client({
     apiUri: `http://localhost:${API_PORT}`,
@@ -27,7 +24,6 @@ describe('Server', () => {
 
   beforeEach(async () => {
     await checkPortIsFree(8082)
-    portAllocationRepository = InMemoryRepository<PortAllocation>()
     server = Server({
       apiPort: API_PORT,
       contractDirectory: 'test/bundles/nodejs',
@@ -39,12 +35,7 @@ describe('Server', () => {
       pubSubClient: new PubSub()
     })
     await client.connect('abc')
-    nock(executionEndpoint)
-      .post()
-      .reply(200, { data: {} })
   })
-
-  afterEach(() => nock.cleanAll())
 
   describe('Boot', () => {
     beforeEach(async () => server.boot())
@@ -65,13 +56,9 @@ describe('Server', () => {
       expect((await client.contracts()).length).to.eq(1)
     })
 
-    it('Closes the API server and loaded contract API servers', async () => {
-      const contractPort = (await portAllocationRepository.getLast()).portNumber
-      expect((await checkServer(contractPort)).statusText).to.eq('OK')
-      expect((await checkServer(API_PORT)).statusText).to.eq('OK')
+    it('Closes the API server and loaded contracts', async () => {
       await server.shutdown()
-      await expect(checkServer(API_PORT)).to.be.rejected
-      await expect(checkServer(contractPort)).to.be.rejected
+      await expect(checkServer(API_PORT)).to.eventually.be.rejected
     })
   })
 })
