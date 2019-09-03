@@ -11,7 +11,7 @@ import { StubEngineClient } from '../infrastructure'
 
 use(chaiAsPromised)
 
-describe.only('Server', () => {
+describe('Server', () => {
   let server: ReturnType<typeof Server>
   const API_PORT = 8081
   const client = Client({
