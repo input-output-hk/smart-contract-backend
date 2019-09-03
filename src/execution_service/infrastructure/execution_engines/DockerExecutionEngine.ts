@@ -57,7 +57,7 @@ export function DockerEngine (config: Config): ExecutionEngine {
         result = await axios.post(`${contractEndpoint}/${method}`, methodArgs)
       }
 
-      return { data: result.data }
+      return result.data
     },
     unload: async ({ contractAddress }) => {
       await dockerClient.unloadContainer(contractAddress)

@@ -45,7 +45,7 @@ pipeline {
   }
   post {
     always {
-      sh 'npm run stop:local-process'
+      sh 'npm run stop:local-process || true'
       sh 'docker kill $(docker ps -q) || true'
       sh 'docker-compose -p smart-contract-backend down'
       sh 'docker system prune -a -f'

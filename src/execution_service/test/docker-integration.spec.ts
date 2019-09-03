@@ -8,7 +8,7 @@ import { ExecutionService } from '../application'
 import { DockerClient, DockerExecutionEngineContext } from '../infrastructure'
 import { checkPortIsFree } from '../../lib/test'
 import { readFileSync } from 'fs-extra'
-const MOCK_IMAGE = readFileSync('test/bundles/docker/abcd.tar.gz').toString('base64')
+const MOCK_IMAGE = readFileSync('test/bundles/docker/abcd').toString('base64')
 
 describe('Docker Execution API Integration', () => {
   let executionService: ReturnType<typeof ExecutionService>
@@ -108,7 +108,7 @@ describe('Docker Execution API Integration', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(response => {
-          expect(response.body.data.data).to.eql(3)
+          expect(response.body.data).to.eql(3)
         })
     })
 

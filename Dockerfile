@@ -24,8 +24,11 @@ RUN mkdir /application
 COPY --from=builder /application/src /application/src
 COPY --from=builder /application/dist/core /application/dist/core
 COPY --from=builder /application/dist/lib /application/dist/lib
+COPY --from=builder /application/dist/execution_service /application/dist/execution_service
 COPY --from=builder /application/dist/server /application/dist/server
-COPY --from=production_deps /application/node_modules /application/node_modules
+COPY --from=builder /application/webpack.config.js /application/webpack.config.js
+COPY --from=builder /application/tsconfig.json /application/tsconfig.json
+COPY --from=builder /application/node_modules /application/node_modules
 WORKDIR /application
 CMD ["npx", "pm2", "--no-daemon", "start", "dist/server/index.js"]
 

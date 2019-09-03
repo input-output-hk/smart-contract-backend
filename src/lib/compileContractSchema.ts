@@ -8,7 +8,7 @@ const uuidv4 = require('uuid/v4')
 // This function is called when dynamically loading straight off of
 // the Plutus contract, or we creating a bundle for distribution
 export async function compileContractSchema (uncompiledSchema: string) {
-  const absolutePathToSrcLib = `${__dirname}/../../src/lib` 
+  const absolutePathToSrcLib = `${__dirname}/../../src/lib`
   const tempfileAllocator = uuidv4()
   const tscFileName = `${tempfileAllocator}.ts`
   const outputFileName = `${tempfileAllocator}.js`

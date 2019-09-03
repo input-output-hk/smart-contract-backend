@@ -28,7 +28,8 @@ if (
   throw new Error('Required ENVs not set')
 }
 
-const networkInterface = axios.create()
+// Allow 200mb contract images
+const networkInterface = axios.create({ maxContentLength: 200000000 })
 
 const server = Server({
   apiPort: Number(API_PORT),
@@ -46,7 +47,8 @@ const server = Server({
     : MemoryPubSubClient()
 })
 
-server.preloadContracts()
-  .then(() => server.boot())
+server.boot()
   .then(() => console.log('Server booted'))
+  .then(() => server.preloadContracts())
+  .then(() => console.log('Contracts preloaded'))
   .catch((error) => console.error(error.message))

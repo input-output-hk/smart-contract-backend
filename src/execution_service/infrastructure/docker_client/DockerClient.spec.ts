@@ -6,7 +6,7 @@ import { DockerExecutionEngineContext } from '../execution_engines'
 import { Contract } from '../../../core'
 import { readFileSync } from 'fs-extra'
 import { RetryPromise } from 'promise-exponential-retry'
-const MOCK_IMAGE = readFileSync('test/bundles/docker/abcd.tar.gz').toString('base64')
+const MOCK_IMAGE = readFileSync('test/bundles/docker/abcd').toString('base64')
 
 describe('DockerClient', () => {
   const dockerSpecItFn = process.env.DOCKER_EXECUTION_ENGINE_CONTEXT === DockerExecutionEngineContext.docker ? it : it.skip
