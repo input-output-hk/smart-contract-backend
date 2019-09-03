@@ -82,8 +82,12 @@ function buildApolloServer ({ contractController, contractRepository, pubSubClie
         unloadContract (_: any, { contractAddress }: { contractAddress: string }) {
           return contractController.unload(contractAddress)
         },
-        callContract (_: any, instruction: ContractCallInstruction) {
-          return contractController.call(instruction)
+        callContract (_: any, { contractInstruction }: { contractInstruction: ContractCallInstruction }) {
+          const instructionWithParsedArgs = contractInstruction.methodArguments
+            ? { ...contractInstruction, methodArguments: JSON.parse(contractInstruction.methodArguments) }
+            : contractInstruction
+
+          return contractController.call(instructionWithParsedArgs)
         }
       },
       Subscription: {

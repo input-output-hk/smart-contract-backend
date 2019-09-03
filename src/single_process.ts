@@ -29,6 +29,5 @@ process.env.CONTAINER_LOWER_PORT_BOUND = CONTAINER_LOWER_PORT_BOUND || '11000'
 process.env.CONTAINER_UPPER_PORT_BOUND = CONTAINER_UPPER_PORT_BOUND || '12000'
 process.env.EXECUTION_ENGINE = EXECUTION_ENGINE || 'nodejs'
 
-require('./bundle_server')
 require('./execution_service')
 require('./server')

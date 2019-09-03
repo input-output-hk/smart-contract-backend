@@ -21,6 +21,7 @@ RUN npm i --production
 
 FROM node:10.15.3-alpine as server
 RUN mkdir /application
+COPY --from=builder /application/src /application/src
 COPY --from=builder /application/dist/core /application/dist/core
 COPY --from=builder /application/dist/lib /application/dist/lib
 COPY --from=builder /application/dist/server /application/dist/server
@@ -31,6 +32,7 @@ CMD ["npx", "pm2", "--no-daemon", "start", "dist/server/index.js"]
 FROM node:10.15.3-alpine as execution_service
 RUN mkdir /application
 RUN mkdir /application/docker
+COPY --from=builder /application/src /application/src
 COPY --from=builder /application/dist/core /application/dist/core
 COPY --from=builder /application/dist/lib /application/dist/lib
 COPY --from=builder /application/dist/execution_service /application/dist/execution_service

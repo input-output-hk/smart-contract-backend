@@ -57,7 +57,6 @@ export async function executeInBrowser (page: puppeteer.Page, endpoint: string, 
     // If endpoint execution takes more than 2 seconds, it is considered
     // an attack so the page is forcibly closed.
     const timer = setTimeout(async () => unloadPage(page), 2000)
-
     const result = await page.evaluate(({ endpoint, args }) => {
       const w: any = window
       const endpointFn = w.contract[endpoint]

@@ -12,10 +12,10 @@ app.get('/schema', (req, res) => {
       number2: t.number,
     })
 
-    export const Add = createEndpoint<typeof addArgs, typeof t.number, t.NullC>('Add', addArgs, t.number)
+    export const add = createEndpoint<typeof addArgs, typeof t.number, t.NullC>('add', addArgs, t.number)
   `
 
-  return res.json({ schema })
+  return res.json({ data: schema })
 })
 
 app.listen(port, () => console.log(`Mock contract listening on port ${port}!`))

@@ -52,7 +52,7 @@ describe('Server', () => {
     beforeEach(async () => {
       await server.boot()
       expect((await client.contracts()).length).to.eq(0)
-      await client.loadContract(testContractAddress)
+      await client.loadContract(testContractAddress, Engine.stub)
       expect((await client.contracts()).length).to.eq(1)
     })
 

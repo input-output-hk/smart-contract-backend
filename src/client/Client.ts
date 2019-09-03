@@ -7,7 +7,7 @@ import { Subscription } from 'apollo-client/util/Observable'
 import { WebSocketLink } from 'apollo-link-ws'
 import { getMainDefinition } from 'apollo-utilities'
 import { onError } from 'apollo-link-error'
-import { Contract, ContractCallInstruction } from '../core'
+import { Contract, ContractCallInstruction, Engine } from '../core'
 
 export interface Config {
   apiUri: string,
@@ -101,11 +101,12 @@ export function Client (config: Config) {
       return result.data.contracts
     },
     async loadContract (
-      contractAddress: Contract['address']
+      contractAddress: Contract['address'],
+      engine = Engine.plutus
     ) {
       const result = await apolloClient.mutate({
         mutation: gql`mutation {
-            loadContract(contractAddress: "${contractAddress}", engine: "stub")
+            loadContract(contractAddress: "${contractAddress}", engine: "${engine}")
         }`
       })
       return result.data
@@ -118,10 +119,10 @@ export function Client (config: Config) {
       })
       return result.data
     },
-    async callContract (contractInstruction: ContractCallInstruction) {
+    async callContract ({ originatorPk, contractAddress, method, methodArguments }: ContractCallInstruction) {
       return apolloClient.mutate({
         mutation: gql`mutation {
-            callContract(contractInstruction: "${contractInstruction}")
+            callContract(contractInstruction: {originatorPk: "${originatorPk}", contractAddress: "${contractAddress}", method: "${method}", methodArguments: ${JSON.stringify(methodArguments)}})
         }`
       })
     }

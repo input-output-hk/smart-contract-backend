@@ -17,9 +17,8 @@
     "start:docker-init": "docker-compose up --build",
     "stop:local-process": "pm2 stop e2e-single-process",
     "restart:docker": "docker-compose down && sudo rm -rf dist && npm run build && docker-compose up",
-    "e2e:build": "rimraf test/e2e/dist && tsc --project test/e2e",
-    "e2e:run": "cucumber-js --require \"test/e2e/dist/**/*.js\" --format node_modules/cucumber-pretty --exit --tags \"not @Todo\" features/**/*.feature",
-    "e2e": "npm run e2e:build && npm run e2e:run",
+    "e2e:run": "cucumber-js --require \"dist/test/e2e/**/*.js\" --format node_modules/cucumber-pretty --exit --tags \"not @Todo\" features/**/*.feature",
+    "e2e": "npm run build && npm run e2e:run",
     "e2e:docker": "cross-env TEST_MODE=docker APPLICATION_URI=http://127.0.0.1:8081 WS_URI=ws://localhost:8081/graphql npm run e2e",
     "e2e:nodejs": "cross-env TEST_MODE=nodejs APPLICATION_URI=http://127.0.0.1:8081 WS_URI=ws://localhost:8081/graphql npm run e2e",
     "bundle": "node bundle/bundle_and_store.js"

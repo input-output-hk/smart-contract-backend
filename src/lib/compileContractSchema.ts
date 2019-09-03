@@ -8,15 +8,16 @@ const uuidv4 = require('uuid/v4')
 // This function is called when dynamically loading straight off of
 // the Plutus contract, or we creating a bundle for distribution
 export async function compileContractSchema (uncompiledSchema: string) {
+  const absolutePathToSrcLib = `${__dirname}/../../src/lib` 
   const tempfileAllocator = uuidv4()
   const tscFileName = `${tempfileAllocator}.ts`
   const outputFileName = `${tempfileAllocator}.js`
-  const tempTscFilePath = `${__dirname}/${tscFileName}`
-  const tempOutputFilePath = `${__dirname}/${outputFileName}`
+  const tempTscFilePath = `${absolutePathToSrcLib}/${tscFileName}`
+  const tempOutputFilePath = `${absolutePathToSrcLib}/${outputFileName}`
 
   try {
     const iotsPrefix = `import * as t from 'io-ts'`
-    const createEndpointPrefix = `import { createEndpoint } from '${__dirname}/createEndpoint'`
+    const createEndpointPrefix = `import { createEndpoint } from '${absolutePathToSrcLib}/createEndpoint'`
 
     const uncompiledSchemaWithImports = `
       ${iotsPrefix}
@@ -44,12 +45,14 @@ function tscExecutionHandler (tscFilePath: string, outputFilePath: string) {
       --output ${outputFilePath} \
       --mode production \
       --output-library-target commonjs
-    `, (err, _stdout, stderr) => {
+    `, (err, stdout, stderr) => {
       if (err) {
+        console.error(stdout)
         reject(new Error('tsc error'))
       }
 
       if (stderr) {
+        console.error(stdout)
         reject(new Error('tsc error'))
       }
 

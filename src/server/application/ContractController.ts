@@ -8,7 +8,7 @@ import {
   Events,
   Endpoint
 } from '../../core'
-import { ContractNotLoaded } from '../../execution_service/errors'
+import { ContractNotLoaded, InvalidEndpoint } from '../../execution_service/errors'
 import * as fs from 'fs-extra'
 import { compileContractSchema } from '../../lib'
 import { join } from 'path'
@@ -36,7 +36,7 @@ export function ContractController (config: Config) {
       const executable = await fs.readFile(join(contractDirectory, contractAddress))
       await engineClient.loadExecutable({ contractAddress, executable })
 
-      const { schema: uncompiledContractSchema } = await engineClient.call({
+      const { data: { data: uncompiledContractSchema } } = await engineClient.call({
         contractAddress,
         method: 'schema'
       })
@@ -75,14 +75,22 @@ export function ContractController (config: Config) {
 
       // As this is runtime, we don't know the relevant generics of Endpoint,
       // but we can still leverage the interface
-      const endpoint = requireFromString(contract.bundle.schema)[instruction.method] as Endpoint<any, any, any>
+      const contractEndpoints = requireFromString(contract.bundle.schema)
+      const endpoint = contractEndpoints[instruction.method] as Endpoint<any, any, any>
+      if (!endpoint) {
+        throw new InvalidEndpoint(Object.keys(contractEndpoints))
+      }
+
       const response = await endpoint.call(
         instruction.methodArguments,
-        (_args, _state) => engineClient.call(instruction)
+        async (_args, _state) => {
+          const { data: { data } } = await engineClient.call(instruction)
+          return data
+        }
       )
 
-      await pubSubClient.publish(`${Events.SIGNATURE_REQUIRED}.${instruction.originatorPk}`, { transactionSigningRequest: { transaction: JSON.stringify(response.data) } })
-      return response.data
+      await pubSubClient.publish(`${Events.SIGNATURE_REQUIRED}.${instruction.originatorPk}`, { transactionSigningRequest: { transaction: JSON.stringify(response) } })
+      return response
     },
     async unload (contractAddress: Contract['address']): Promise<boolean> {
       let contract = await contractRepository.find(contractAddress)
