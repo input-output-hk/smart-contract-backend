@@ -33,6 +33,7 @@ pipeline {
     }
     stage('E2E Docker Setup') {
       steps {
+        sh 'git add -A && git reset --hard'
         sh 'docker-compose build'
         sh 'docker-compose -p smart-contract-backend up -d'
       }
@@ -45,7 +46,6 @@ pipeline {
   }
   post {
     always {
-      sh 'git add -A && git reset --hard'
       sh 'npm run stop:local-process || true'
       sh 'docker kill $(docker ps -q) || true'
       sh 'docker-compose -p smart-contract-backend down'
