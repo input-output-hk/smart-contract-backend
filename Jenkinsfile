@@ -28,12 +28,11 @@ pipeline {
     stage('E2E Single Process Test') {
       steps {
         sh 'npm run e2e:nodejs'
-        sh 'npm run stop:local-process'
       }
       post {
         always {
           sh 'npm stop || true'
-          sh 'git add -A && git reset --hard'
+          sh 'git add -A && git reset --hard || true'
         }
       }
     }
