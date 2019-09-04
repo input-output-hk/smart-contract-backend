@@ -15,7 +15,8 @@ const {
   OPERATION_MODE,
   REDIS_HOST,
   REDIS_PORT,
-  CONTRACT_DIRECTORY
+  CONTRACT_DIRECTORY,
+  MAX_CONTRACT_SIZE
 } = process.env
 
 if (
@@ -28,8 +29,8 @@ if (
   throw new Error('Required ENVs not set')
 }
 
-// Allow 200mb contract images
-const networkInterface = axios.create({ maxContentLength: 200000000 })
+// Default to allow ~200mb contract images
+const networkInterface = axios.create({ maxContentLength: Number(MAX_CONTRACT_SIZE) || 200000000 })
 
 const server = Server({
   apiPort: Number(API_PORT),
@@ -48,7 +49,7 @@ const server = Server({
 })
 
 server.boot()
-  .then(() => console.log('Server booted'))
+  .then(() => console.log(`Server booted. GraphQL Playground at http://localhost:${API_PORT}/graphql`))
   .then(() => server.preloadContracts())
   .then(() => console.log('Contracts preloaded'))
   .catch((error) => console.error(error.message))
