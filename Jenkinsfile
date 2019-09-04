@@ -39,7 +39,6 @@ pipeline {
     }
     stage('E2E Docker Setup') {
       steps {
-        // 
         sh 'docker-compose build'
         sh 'docker-compose -p smart-contract-backend up -d'
       }
