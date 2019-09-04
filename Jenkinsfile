@@ -22,7 +22,7 @@ pipeline {
     }
     stage('E2E Single Process Setup') {
       steps {
-        sh 'npm run start:local-process'
+        sh 'npm start'
       }
     }
     stage('E2E Single Process Test') {
@@ -32,7 +32,7 @@ pipeline {
       }
       post {
         always {
-          sh 'npm run stop:local-process || true'
+          sh 'npm stop || true'
           sh 'git add -A && git reset --hard'
         }
       }
