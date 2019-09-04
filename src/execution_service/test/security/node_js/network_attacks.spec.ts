@@ -22,7 +22,7 @@ describe('Puppeteer Network Security', () => {
 })
 
 async function tryXhr (httpMethod: string) {
-  const contract1 = `{
+  const contract1 = Buffer.from(`{
     foo: async (args) => {
       return new Promise((resolve, reject) => {
         const maliciousEndpoint = args.maliciousEndpoint
@@ -41,7 +41,7 @@ async function tryXhr (httpMethod: string) {
         httpRequest.send()
       })
     },
-  }`
+  }`).toString('base64')
 
   await NodeJsExecutionEngine.load({ contractAddress: 'contract1', executable: contract1 })
 

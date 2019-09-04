@@ -5,7 +5,7 @@ import { ContractNotLoaded, BadArgument, ExecutionFailure } from '../../errors'
 use(chaiAsPromised)
 
 describe('NodeJsExecutionEngine', () => {
-  const mockModule = '{ foobar: (args) => args.a + args.b }'
+  const mockModule = Buffer.from('{ foobar: (args) => args.a + args.b }').toString('base64')
   const mockAddress = 'abcd'
 
   afterEach(async () => {

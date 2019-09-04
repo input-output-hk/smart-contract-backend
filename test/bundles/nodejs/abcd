@@ -1,0 +1,13 @@
+{
+  add: (args) => args.number1 + args.number2,
+  schema: () => {
+    return `
+      const addArgs = t.type({
+        number1: t.number,
+        number2: t.number,
+      })
+
+      export const add = createEndpoint<typeof addArgs, typeof t.number, t.NullC>('add', addArgs, t.number)
+    `
+  }
+}

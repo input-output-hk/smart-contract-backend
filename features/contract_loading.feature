@@ -9,7 +9,7 @@ Feature: Contract Loading
 
     Examples:
       | address              | pk                | method | methodArguments                       |
-      | "plutusGuessingGame" | "uniquePublicKey" | "initialise"  | "{\"originatorPk\": \"myPublicKey\"}" |
+      | "someUnloadedContract" | "uniquePublicKey" | "noMethod"  | "{}" |
 
   Scenario Outline: a contract is loaded only once, with subsequent requests ignored
 

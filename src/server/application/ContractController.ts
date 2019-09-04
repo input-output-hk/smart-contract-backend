@@ -1,51 +1,101 @@
 import { PubSubEngine } from 'apollo-server'
-import { Contract, ContractRepository, Engine, EngineClient } from '../../core'
-import { BundleFetcher, ContractApiServerController, ContractInteractionController } from '.'
+import {
+  Contract,
+  ContractRepository,
+  Engine,
+  EngineClient,
+  ContractCallInstruction,
+  Events,
+  Endpoint
+} from '../../core'
+import { ContractNotLoaded, InvalidEndpoint } from '../../execution_service/errors'
+import * as fs from 'fs-extra'
+import { compileContractSchema } from '../../lib'
+import { join } from 'path'
 const requireFromString = require('require-from-string')
 
 type Config = {
-  apiServerController: ReturnType<typeof ContractApiServerController>
+  contractDirectory: string
   contractRepository: ContractRepository
-  bundleFetcher: BundleFetcher
   engineClients: Map<Engine, EngineClient>
   pubSubClient: PubSubEngine
 }
 
 export function ContractController (config: Config) {
   const {
-    apiServerController,
-    bundleFetcher,
+    contractDirectory,
     contractRepository,
     engineClients,
     pubSubClient
   } = config
-  return {
-    async load (contractAddress: Contract['address'], bundleUri: string): Promise<boolean> {
-      let contract = await contractRepository.find(contractAddress)
-      if (!contract) {
-        const bundle = await bundleFetcher.fetch(bundleUri)
-        contract = {
-          id: contractAddress,
-          address: contractAddress,
-          bundle
+
+  async function loadContract (contractAddress: Contract['address'], engine = Engine.plutus): Promise<boolean> {
+    let contract = await contractRepository.find(contractAddress)
+    if (!contract) {
+      const engineClient = engineClients.get(engine)
+      const executable = await fs.readFile(join(contractDirectory, contractAddress))
+      await engineClient.loadExecutable({ contractAddress, executable })
+
+      const { data: { data: uncompiledContractSchema } } = await engineClient.call({
+        contractAddress,
+        method: 'schema'
+      })
+
+      const schema = await compileContractSchema(uncompiledContractSchema)
+
+      contract = {
+        id: contractAddress,
+        address: contractAddress,
+        engine,
+        bundle: {
+          executable,
+          schema
         }
-        await contractRepository.add(contract)
       }
-      const { bundle: { graphQlSchema, meta, executable }, address } = contract
-      const engineClient = engineClients.get(meta.engine)
-      await engineClient.loadExecutable({ contractAddress: address, executable })
-      const schema = requireFromString(graphQlSchema)(ContractInteractionController({ engineClient, pubSubClient }))
-      await apiServerController.deploy(
-        address,
-        schema
+
+      await contractRepository.add(contract)
+    }
+
+    return true
+  }
+
+  return {
+    async loadAll () {
+      const contracts = await fs.readdir(contractDirectory)
+      return Promise.all(contracts.map(c => loadContract(c)))
+    },
+    load: loadContract,
+    async call (instruction: ContractCallInstruction) {
+      const contract = await contractRepository.find(instruction.contractAddress)
+      if (!contract) {
+        throw new ContractNotLoaded()
+      }
+
+      const engineClient = engineClients.get(contract.engine)
+
+      // As this is runtime, we don't know the relevant generics of Endpoint,
+      // but we can still leverage the interface
+      const contractEndpoints = requireFromString(contract.bundle.schema)
+      const endpoint = contractEndpoints[instruction.method] as Endpoint<any, any, any>
+      if (!endpoint) {
+        throw new InvalidEndpoint(Object.keys(contractEndpoints))
+      }
+
+      const response = await endpoint.call(
+        instruction.methodArguments,
+        async (_args, _state) => {
+          const { data: { data } } = await engineClient.call(instruction)
+          return data
+        }
       )
-      return true
+
+      await pubSubClient.publish(`${Events.SIGNATURE_REQUIRED}.${instruction.originatorPk}`, { transactionSigningRequest: { transaction: JSON.stringify(response) } })
+      return response
     },
     async unload (contractAddress: Contract['address']): Promise<boolean> {
       let contract = await contractRepository.find(contractAddress)
       if (!contract) return false
-      const engineClient = engineClients.get(contract.bundle.meta.engine)
-      await apiServerController.tearDown(contractAddress)
+      const engineClient = engineClients.get(contract.engine)
       await engineClient.unloadExecutable(contractAddress)
       return contractRepository.remove(contract.address)
     }

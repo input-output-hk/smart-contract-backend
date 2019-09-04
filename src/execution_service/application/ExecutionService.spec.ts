@@ -3,8 +3,7 @@ import * as chaiAsPromised from 'chai-as-promised'
 import axios from 'axios'
 import { ExecutionService } from '.'
 import { StubExecutionEngine } from '../infrastructure'
-import { checkPortIsFree, testContracts } from '../../lib/test'
-const nock = require('nock')
+import { checkPortIsFree } from '../../lib/test'
 
 use(chaiAsPromised)
 
@@ -12,7 +11,6 @@ describe('ExecutionService', () => {
   let executionService: ReturnType<typeof ExecutionService>
   const API_PORT = 9999
   const API_URI = `http://localhost:${API_PORT}`
-  const testContract = testContracts[0]
 
   beforeEach(async () => {
     await checkPortIsFree(9999)
@@ -20,12 +18,7 @@ describe('ExecutionService', () => {
       apiPort: API_PORT,
       engine: StubExecutionEngine()
     })
-    nock(testContract.location)
-      .get('/')
-      .reply(200, testContract.bundle)
   })
-
-  afterEach(() => nock.cleanAll())
 
   describe('Boot', () => {
     beforeEach(async () => executionService.boot())

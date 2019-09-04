@@ -9,16 +9,18 @@ services:
       - API_PORT=8081
       - WALLET_SERVICE_URI=http://wallet:0000
       - EXECUTION_SERVICE_URI=http://execution_service:9000
-      - CONTRACT_SERVER_LOWER_PORT_BOUND=8082
-      - CONTRACT_SERVER_UPPER_PORT_BOUND=8900
+      - CONTRACT_DIRECTORY=/application/bundles
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - OPERATION_MODE=distributed
-    # volumes:
+    volumes:
     #   - ./dist/server:/application/dist/server
+      - ./test/bundles/docker:/application/bundles
     ports:
       - 8081:8081
       - 8082:8082
+    depends_on:
+      - execution_service
   execution_service:
     build:
       context: .
@@ -36,19 +38,6 @@ services:
       # - ./dist/execution_service:/application/dist/execution_service
     ports:
       - 9000:9000
-  bundle_server:
-    build:
-      context: .
-      target: bundle_server
-    init: true
-    environment:
-      - BUNDLE_SERVER_PORT=9001
-      - BUNDLE_LOCATION=bundles
-    volumes:
-      - ./test/bundles/docker:/application/bundles
-      # - ./dist/bundle_server:/application/dist/bundle_server
-    ports:
-      - 9001:9001
   redis:
     image: redis:5.0.4
     ports:

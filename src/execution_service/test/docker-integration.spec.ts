@@ -7,8 +7,8 @@ import { getConfig } from '../config'
 import { ExecutionService } from '../application'
 import { DockerClient, DockerExecutionEngineContext } from '../infrastructure'
 import { checkPortIsFree } from '../../lib/test'
-
-const MOCK_IMAGE = 'samjeston/smart_contract_server_mock'
+import { readFileSync } from 'fs-extra'
+const MOCK_IMAGE = readFileSync('test/bundles/docker/abcd').toString('base64')
 
 describe('Docker Execution API Integration', () => {
   let executionService: ReturnType<typeof ExecutionService>
@@ -35,7 +35,7 @@ describe('Docker Execution API Integration', () => {
     await executionService.shutdown()
     const docker = new Docker({ socketPath: '/var/run/docker.sock' })
     const containers = await docker.listContainers()
-    const testContainers = containers.filter(container => container.Image === MOCK_IMAGE)
+    const testContainers = containers.filter(container => container.Image === 'mock-contract')
     await Promise.all(testContainers.map(container => docker.getContainer(container.Id).kill()))
   })
 
@@ -71,7 +71,7 @@ describe('Docker Execution API Integration', () => {
 
   describe('/unloadSmartContract', () => {
     it('removes a contract container with the corresponding name', async () => {
-      await dockerClient.loadContainer({ dockerImageRepository: MOCK_IMAGE, contractAddress: 'abcd', hostPort: 10000 })
+      await dockerClient.loadContainer({ image: MOCK_IMAGE, contractAddress: 'abcd', hostPort: 10000 })
 
       return request(app)
         .post('/unloadSmartContract')
@@ -95,7 +95,11 @@ describe('Docker Execution API Integration', () => {
 
   describe('/execute', () => {
     it('successfully executes a method against a running contract', async () => {
-      await dockerClient.loadContainer({ dockerImageRepository: MOCK_IMAGE, contractAddress: 'abcd', hostPort: 10000 })
+      await request(app)
+        .post('/loadSmartContract')
+        .send({ contractAddress: 'abcd', executable: MOCK_IMAGE })
+        .set('Accept', 'application/json')
+        .expect(204)
 
       return request(app)
         .post('/execute/abcd/add')
@@ -104,7 +108,7 @@ describe('Docker Execution API Integration', () => {
         .expect('Content-Type', /json/)
         .expect(200)
         .then(response => {
-          expect(response.body.data.success).to.eql(true)
+          expect(response.body.data).to.eql(3)
         })
     })
 

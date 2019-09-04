@@ -11,7 +11,7 @@ let contracts: {
 export const NodeJsExecutionEngine: ExecutionEngine = {
   name: ExecutionEngines.nodejs,
   load: async ({ contractAddress, executable }) => {
-    const deployment = await deploy(executable)
+    const deployment = await deploy(Buffer.from(executable, 'base64').toString('utf8'))
     contracts[contractAddress] = deployment
     return true
   },

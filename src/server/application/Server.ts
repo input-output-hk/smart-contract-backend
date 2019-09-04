@@ -1,50 +1,45 @@
 import http from 'http'
 import { PubSubEngine } from 'apollo-server'
 import { ContractRepository, Engine, EngineClient } from '../../core'
-import { httpEventPromiseHandler, PortMapper, PortMapperConfig } from '../../lib'
+import { httpEventPromiseHandler } from '../../lib'
 import {
   Api,
-  BundleFetcher,
-  ContractApiServerController,
   ContractController
 } from '.'
 
 export type Config = {
   apiPort: number
+  contractDirectory: string
   contractRepository: ContractRepository
-  portMapperConfig: PortMapperConfig
   engineClients: Map<Engine, EngineClient>
-  bundleFetcher: BundleFetcher
   pubSubClient: PubSubEngine
 }
 
 export function Server (config: Config) {
-  const { contractRepository, portMapperConfig, engineClients, bundleFetcher, pubSubClient } = config
-  const portMapper = PortMapper(portMapperConfig)
-  const apiServerController = ContractApiServerController(portMapper)
+  const { contractRepository, engineClients, pubSubClient, contractDirectory } = config
   const contractController = ContractController({
+    contractDirectory,
     contractRepository,
-    bundleFetcher,
-    apiServerController,
     engineClients,
     pubSubClient
   })
   let api = Api({
     contractController,
     contractRepository,
-    apiServerController,
     pubSubClient
   })
   let apiServer: http.Server
   return {
+    preloadContracts (): Promise<boolean[]> {
+      return contractController.loadAll()
+    },
     async boot (): Promise<void> {
       apiServer = await api.app.listen({ port: config.apiPort })
       api.apolloServer.installSubscriptionHandlers(apiServer)
     },
     async shutdown (): Promise<void> {
       await Promise.all([
-        httpEventPromiseHandler.close(apiServer),
-        apiServerController.closeAllServers()
+        httpEventPromiseHandler.close(apiServer)
       ])
     }
   }

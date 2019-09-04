@@ -1,4 +1,4 @@
-import { Bundle, Contract, ContractExecutionInstruction } from '.'
+import { Bundle, Contract, ContractCallInstruction } from '.'
 
 export interface EngineClient {
   name: string
@@ -7,7 +7,5 @@ export interface EngineClient {
     executable: Bundle['executable']
   }) => Promise<any>
   unloadExecutable: (contractAddress: Contract['address']) => Promise<any>
-  call: (executionInstruction: ContractExecutionInstruction) => any
-  execute: (executionInstruction: ContractExecutionInstruction) => Promise<any>
-  submitSignedTransaction: (transaction: string) => Promise<any>
+  call: (executionInstruction: ContractCallInstruction) => any
 }

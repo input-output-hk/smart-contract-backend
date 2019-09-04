@@ -1,30 +1,19 @@
 import * as express from 'express'
 import { ApolloServer } from 'apollo-server-express'
 import { gql, PubSubEngine } from 'apollo-server'
-import net from 'net'
-import { Bundle, Contract, ContractRepository, Events } from '../../core'
-import { ContractApiServerController, ContractController } from '.'
+import { Bundle, Contract, ContractRepository, ContractCallInstruction, Events, Endpoint, Engine } from '../../core'
+import { ContractController } from '.'
 import { ContractNotLoaded } from './errors'
-const httpProxy = require('http-proxy')
+import requireFromString = require('require-from-string')
 
 export type Config = {
   contractController: ReturnType<typeof ContractController>
   contractRepository: ContractRepository
-  apiServerController: ReturnType<typeof ContractApiServerController>
   pubSubClient: PubSubEngine
 }
 
 export function Api (config: Config) {
-  const { apiServerController } = config
   const app = express()
-  const contractProxy = httpProxy.createProxyServer({})
-  app.use('/contract/:address', (req, res, next) => {
-    const { address } = req.params
-    if (!apiServerController.servers.has(address)) return next(new ContractNotLoaded())
-    const { port } = apiServerController.servers.get(address).address().valueOf() as net.AddressInfo
-    contractProxy.web(req, res, { target: `http://localhost:${port}/graphql` })
-  })
-
   app.use((err: Error, _req: express.Request, response: express.Response, next: express.NextFunction) => {
     if (err instanceof ContractNotLoaded) {
       return response.status(404).json({ error: err.message })
@@ -42,21 +31,28 @@ function buildApolloServer ({ contractController, contractRepository, pubSubClie
   return new ApolloServer({
     typeDefs: gql`
         type SigningRequest {
-            transaction: String!
+          transaction: String!
         }
         type Contract {
-            engine: String!
-            contractAddress: String!
+          description: String!
+          contractAddress: String!
         }
         type Query {
             contracts: [Contract]!
         }
+        input ContractInstruction {
+          originatorPk: String
+          method: String!
+          contractAddress: String!
+          methodArguments: String
+        }
         type Mutation {
-            loadContract(contractAddress: String!, bundleLocation: String!): Boolean
-            unloadContract(contractAddress: String!): Boolean
+          loadContract(contractAddress: String!, engine: String!): Boolean
+          callContract(contractInstruction: ContractInstruction!): String
+          unloadContract(contractAddress: String!): Boolean
         }
         type Subscription {
-            transactionSigningRequest(publicKey: String!): SigningRequest
+          transactionSigningRequest(publicKey: String!): SigningRequest
         }
     `,
     resolvers: {
@@ -64,16 +60,34 @@ function buildApolloServer ({ contractController, contractRepository, pubSubClie
         async contracts () {
           const contracts = await contractRepository.findAll()
           return contracts.map(({ address, bundle }: { address: Contract['address'], bundle: Bundle }) => {
-            return { contractAddress: address, engine: bundle.meta.engine }
+            const schema = requireFromString(bundle.schema)
+            const eps: [string, Endpoint<any, any, any>][] = Object.entries(schema)
+            const description = eps.reduce((
+              acc: {[name: string]: ReturnType<Endpoint<any, any, any>['describe']>},
+              [_, ep]
+            ) => {
+              acc[ep.name] = ep.describe()
+              return acc
+            }, {})
+
+            return { contractAddress: address, description: JSON.stringify(description) }
           })
         }
       },
       Mutation: {
-        loadContract (_: any, { contractAddress, bundleLocation }: { contractAddress: string, bundleLocation: string }) {
-          return contractController.load(contractAddress, bundleLocation)
+        loadContract (_: any, { contractAddress, engine }: { contractAddress: string, engine?: Engine }) {
+          if (!engine) engine = Engine.plutus
+          return contractController.load(contractAddress, engine)
         },
         unloadContract (_: any, { contractAddress }: { contractAddress: string }) {
           return contractController.unload(contractAddress)
+        },
+        callContract (_: any, { contractInstruction }: { contractInstruction: ContractCallInstruction }) {
+          const instructionWithParsedArgs = contractInstruction.methodArguments
+            ? { ...contractInstruction, methodArguments: JSON.parse(contractInstruction.methodArguments) }
+            : contractInstruction
+
+          return contractController.call(instructionWithParsedArgs)
         }
       },
       Subscription: {

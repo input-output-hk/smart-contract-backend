@@ -1,3 +1,5 @@
+export * from './compileContractSchema'
+export * from './createEndpoint'
 export * from './Entity'
 export * from './expressEventPromiseHandler'
 export * from './fsPromises'

@@ -7,9 +7,9 @@ Feature: Contract Interaction
 
     When I load a contract by address <address>
     And I subscribe by public key <pk>
-    And I call the contract <address> with the method <method> and arguments <methodArguments>
+    And I call the contract <address> with the method <method>, arguments <methodArguments> and public key <pk>
     Then <pk> should receive a signing request
 
     Examples:
       | address | method | methodArguments                                                       | pk            |
-      | "abcd"  | "add"  | "{\"number1\": 1, \"number2\": 2, \"originatorPk\": \"myPublicKey\"}" | "myPublicKey" |
+      | "abcd"  | "add"  | "{\"number1\": 1, \"number2\": 2}" | "myPublicKey" |

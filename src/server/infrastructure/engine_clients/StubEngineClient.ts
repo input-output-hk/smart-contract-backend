@@ -1,22 +1,31 @@
-import { Contract, ContractExecutionInstruction, EngineClient } from '../../../core'
+import { Contract, ContractCallInstruction, EngineClient } from '../../../core'
 
 export function StubEngineClient (): EngineClient {
   return {
     name: 'stub',
-    async loadExecutable ({ contractAddress, executable }) {
-      return Promise.resolve({ contractAddress, executable })
+    async loadExecutable ({ contractAddress }) {
+      return Promise.resolve({ contractAddress, description: '' })
     },
     async unloadExecutable (contractAddress: Contract['address']) {
       return Promise.resolve(contractAddress)
     },
-    call ({ contractAddress, method, methodArguments }: ContractExecutionInstruction) {
+    call ({ contractAddress, method, methodArguments }: ContractCallInstruction) {
+      if (method === 'schema') {
+        return {
+          data: {
+            data: `
+              const addArgs = t.type({
+                number1: t.number,
+                number2: t.number,
+              })
+
+              export const Add = createEndpoint<typeof addArgs, typeof t.number, t.NullC>('Add', addArgs, t.number)
+            `
+          }
+        }
+      }
+
       return { contractAddress, method, methodArguments }
-    },
-    async execute ({ contractAddress, method, methodArguments }: ContractExecutionInstruction) {
-      return { contractAddress, method, methodArguments }
-    },
-    async submitSignedTransaction (transaction: string) {
-      return Promise.resolve(transaction)
     }
   }
 }

@@ -1,0 +1,10 @@
+{
+  initialise: () => true,
+  lock: () => true,
+  schema: () => {
+    return `
+      export const Lock = createEndpoint<t.NullC, t.NullC, t.NullC>('Lock', t.null, t.null)
+      export const Initialise = createEndpoint<t.NullC, t.NullC, t.NullC>('Initialise', t.null, t.null)
+    `
+  }
+}
