@@ -3,8 +3,9 @@
 
 ## What are the requirements to run a _**Plutus**_ contract?
 ### Loading
-1. The contract must be fetched from an external host
-2. It needs to be made available to the consumer to call it's endpoints
+1. The contract must be loaded from the file system.
+2. Dynamic [bundle](./contract_bundle.md) generation.
+3. It needs to be made available to the consumer to call it's endpoints
 ### Interaction
 1. Transactions generated must be sent to the client for signing and submission
 2. Any off-chain state persisted

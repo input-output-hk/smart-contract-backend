@@ -6,7 +6,7 @@ Run off-chain smart contract executables server-side in isolation, accessible vi
 
 For TypeScript/JavaScript applications the provided [client](src/client/README.MD) will serve as a good starting point, and provides a lightweight approach for most applications.
 
-The primary goal for the project is to deliver [a runtime and interaction model for Plutus](docs/Plutus_runtime_and_interaction_model.md), however there is no fixed coupling to any particular Smart Contract language, as demonstrated by implementing [support for Solidity](src/server/infrastructure/engine_clients/solidity/SolidityEngineClient.ts).
+The primary goal for the project is to deliver [a runtime and interaction model for Plutus](docs/Plutus_runtime_and_interaction_model.md), however there is no fixed coupling to any particular Smart Contract language.
 
  - [Features](features)
  - [More documentation](docs)

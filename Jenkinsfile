@@ -30,10 +30,16 @@ pipeline {
         sh 'npm run e2e:nodejs'
         sh 'npm run stop:local-process'
       }
+      post {
+        always {
+          sh 'npm run stop:local-process || true'
+          sh 'git add -A && git reset --hard'
+        }
+      }
     }
     stage('E2E Docker Setup') {
       steps {
-        sh 'git add -A && git reset --hard'
+        // 
         sh 'docker-compose build'
         sh 'docker-compose -p smart-contract-backend up -d'
       }
@@ -42,14 +48,13 @@ pipeline {
       steps {
         sh 'npm run e2e:docker'
       }
-    }
-  }
-  post {
-    always {
-      sh 'npm run stop:local-process || true'
-      sh 'docker kill $(docker ps -q) || true'
-      sh 'docker-compose -p smart-contract-backend down'
-      sh 'docker system prune -a -f'
+      post {
+        always {
+          sh 'docker kill $(docker ps -q) || true'
+          sh 'docker-compose -p smart-contract-backend down'
+          sh 'docker system prune -a -f'
+        }
+      }
     }
   }
 }
